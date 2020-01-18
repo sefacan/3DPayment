@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model PaymentViewModel
+
+<div class="row">
+    <div class="col-12 col-lg-6">
+        <div id="pay-invoice" class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h3 class="text-center">Payment Form</h3>
+                </div>
+                <hr>
+                <form asp-action="Index" asp-controller="Home" method="post" novalidate="novalidate" class="needs-validation">
+                    <div class="form-group text-center">
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><i class="text-muted fa fa-cc-visa fa-2x"></i></li>
+                            <li class="list-inline-item"><i class="fa fa-cc-mastercard fa-2x"></i></li>
+                            <li class="list-inline-item"><i class="fa fa-cc-amex fa-2x"></i></li>
+                            <li class="list-inline-item"><i class="fa fa-cc-discover fa-2x"></i></li>
+                        </ul>
+                    </div>
+                    <div class="form-group has-success">
+                        <label asp-for="CardHolderName" class="control-label mb-1">Card Holder Name</label>
+                        <input type="text" asp-for="CardHolderName" class="form-control cc-name" required autocomplete="cc-name" aria-required="true" aria-invalid="false" aria-describedby="cc-name-error">
+                        <span class="invalid-feedback">Enter the name as shown on credit card</span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CardNumber" class="control-label mb-1">Card Number</label>
+                        <input type="tel" asp-for="CardNumber" class="form-control cc-number identified visa" required="" pattern="[0-9]{16}">
+                        <span class="invalid-feedback">Enter a valid 16 digit card number</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label asp-for="ExpireMonth" class="control-label mb-1">Month</label>
+                                <input asp-for="ExpireMonth" type="tel" class="form-control cc-exp" required placeholder="MM" autocomplete="cc-exp">
+                                <span class="invalid-feedback">Enter the expiration month</span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label asp-for="ExpireYear" class="control-label mb-1">Year</label>
+                                <input type="tel" asp-for="ExpireYear" class="form-control cc-exp" required placeholder="YY" autocomplete="cc-exp">
+                                <span class="invalid-feedback">Enter the expiration year</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="CvvCode" class="control-label mb-1">Security code</label>
+                            <div class="input-group">
+                                <input type="tel" asp-for="CvvCode" class="form-control cc-cvc" required autocomplete="off">
+                                <span class="invalid-feedback order-last">Enter the 3-digit code on back</span>
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fa fa-question-circle fa-lg" data-toggle="popover" data-container="body" data-html="true" data-title="Security Code"
+                                              data-content="<div class='text-center one-card'>The 3 digit code on back of the card..<div class='visa-mc-cvc-preview'></div></div>"
+                                              data-trigger="hover"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SelectedBank" class="control-label mb-1">Bank</label>
+                        <select asp-for="SelectedBank" asp-items="Model.Banks" class="form-control" required=""></select>
+                        <span class="invalid-feedback">Select a bank</span>
+                    </div>
+                    <div>
+                        <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+                            <i class="fa fa-lock fa-lg"></i>&nbsp;
+                            <span id="payment-button-amount">Submit</span>
+                            <span id="payment-button-sending" style="display:none;">Sending…</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
