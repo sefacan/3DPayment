@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace ThreeDPayment.Payment
 {
     public interface IPaymentProvider
     {
-        IDictionary<string, object> GetPaymentParameters(PaymentRequest request);
+        PaymentParameterResult GetPaymentParameters(PaymentRequest request);
         PaymentResult GetPaymentResult(IFormCollection form);
-        Uri PaymentUrl { get; }
     }
 }

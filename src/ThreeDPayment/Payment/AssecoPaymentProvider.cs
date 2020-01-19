@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace ThreeDPayment.Payment
 {
     public class AssecoPaymentProvider : IPaymentProvider
     {
-        public IDictionary<string, object> GetPaymentParameters(PaymentRequest request)
+        public PaymentParameterResult GetPaymentParameters(PaymentRequest request)
         {
             string processType = "Auth";//İşlem tipi
             string clientId = "700655000200";//Mağaza numarası
@@ -20,40 +20,55 @@ namespace ThreeDPayment.Payment
             string failUrl = "https://localhost:5001/home/callback";//Hata Url
             string random = DateTime.Now.ToString();
 
-            var parameters = new Dictionary<string, object>();
-            parameters.Add("clientid", clientId);
-            parameters.Add("amount", request.TotalAmount.ToString(new CultureInfo("en-US")));//kuruş ayrımı nokta olmalı!!!
-            parameters.Add("oid", request.OrderNumber);//sipariş numarası
+            var parameterResult = new PaymentParameterResult();
+            try
+            {
+                var parameters = new Dictionary<string, object>();
+                parameters.Add("clientid", clientId);
+                parameters.Add("amount", request.TotalAmount.ToString(new CultureInfo("en-US")));//kuruş ayrımı nokta olmalı!!!
+                parameters.Add("oid", request.OrderNumber);//sipariş numarası
 
-            //işlem başarılı da olsa başarısız da olsa callback sayfasına yönlendirerek kendi tarafımızda işlem sonucunu kontrol ediyoruz
-            parameters.Add("okUrl", successUrl);//başarılı dönüş adresi
-            parameters.Add("failUrl", failUrl);//hatalı dönüş adresi
-            parameters.Add("islemtipi", processType);//direk satış
-            parameters.Add("taksit", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
-            parameters.Add("rnd", random);//rastgele bir sayı üretilmesi isteniyor
+                //işlem başarılı da olsa başarısız da olsa callback sayfasına yönlendirerek kendi tarafımızda işlem sonucunu kontrol ediyoruz
+                parameters.Add("okUrl", successUrl);//başarılı dönüş adresi
+                parameters.Add("failUrl", failUrl);//hatalı dönüş adresi
+                parameters.Add("islemtipi", processType);//direk satış
+                parameters.Add("taksit", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
+                parameters.Add("rnd", random);//rastgele bir sayı üretilmesi isteniyor
 
-            string hashstr = clientId + request.OrderNumber + request.TotalAmount + successUrl + failUrl + processType + request.Installment + random + storeKey;
-            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashstr));
-            var hashData = Convert.ToBase64String(inputbytes);
+                string hashstr = clientId + request.OrderNumber + request.TotalAmount + successUrl + failUrl + processType + request.Installment + random + storeKey;
+                var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+                var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashstr));
+                var hashData = Convert.ToBase64String(inputbytes);
 
-            parameters.Add("hash", hashData);//hash data
-            parameters.Add("currency", request.CurrencyIsoCode);//TL ISO code | EURO 978 | Dolar 840
+                parameters.Add("hash", hashData);//hash data
+                parameters.Add("currency", request.CurrencyIsoCode);//TL ISO code | EURO 978 | Dolar 840
 
-            //kart numarasından çizgi ve boşlukları kaldırıyoruz
-            string cardNumber = request.CardNumber.Replace("-", string.Empty);
-            cardNumber = cardNumber.Replace(" ", string.Empty).Trim();
-            parameters.Add("pan", cardNumber);
+                //kart numarasından çizgi ve boşlukları kaldırıyoruz
+                string cardNumber = request.CardNumber.Replace("-", string.Empty);
+                cardNumber = cardNumber.Replace(" ", string.Empty).Trim();
+                parameters.Add("pan", cardNumber);
 
-            parameters.Add("cardHolderName", request.CardHolderName);
-            parameters.Add("Ecom_Payment_Card_ExpDate_Month", request.ExpireMonth);//kart bitiş ay'ı
-            parameters.Add("Ecom_Payment_Card_ExpDate_Year", request.ExpireYear);//kart bitiş yıl'ı
-            parameters.Add("cv2", request.CvvCode);//kart güvenlik kodu
-            parameters.Add("cardType", "1");//kart tipi visa 1 | master 2 | amex 3
-            parameters.Add("storetype", storeType);
-            parameters.Add("lang", request.LanguageIsoCode);//iki haneli dil iso kodu
+                parameters.Add("cardHolderName", request.CardHolderName);
+                parameters.Add("Ecom_Payment_Card_ExpDate_Month", request.ExpireMonth);//kart bitiş ay'ı
+                parameters.Add("Ecom_Payment_Card_ExpDate_Year", request.ExpireYear);//kart bitiş yıl'ı
+                parameters.Add("cv2", request.CvvCode);//kart güvenlik kodu
+                parameters.Add("cardType", "1");//kart tipi visa 1 | master 2 | amex 3
+                parameters.Add("storetype", storeType);
+                parameters.Add("lang", request.LanguageIsoCode);//iki haneli dil iso kodu
 
-            return parameters;
+                parameterResult.Parameters = parameters;
+                parameterResult.Success = true;
+
+                //İş Bankası Canlı https://sanalpos.isbank.com.tr/fim/est3Dgate
+                parameterResult.PaymentUrl = new Uri("https://entegrasyon.asseco-see.com.tr/fim/est3Dgate");
+            }
+            catch (Exception ex)
+            {
+                parameterResult.Success = true;
+                parameterResult.ErrorMessage = ex.ToString();
+            }
+
+            return parameterResult;
         }
 
         public PaymentResult GetPaymentResult(IFormCollection form)
@@ -96,7 +111,5 @@ namespace ThreeDPayment.Payment
 
             return paymentResult;
         }
-
-        public Uri PaymentUrl => new Uri("https://entegrasyon.asseco-see.com.tr/fim/est3Dgate");
     }
 }

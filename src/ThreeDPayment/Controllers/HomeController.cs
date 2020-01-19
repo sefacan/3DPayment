@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Linq;
 using System.Text.Json;
 using ThreeDPayment.Models;
@@ -57,7 +58,7 @@ namespace ThreeDPayment.Controllers
                 return RedirectToAction(nameof(Index));
 
             var paymentProvider = _paymentProviderFactory.Create(paymentModel.SelectedBank);
-            var paymentParameters = paymentProvider.GetPaymentParameters(new PaymentRequest
+            var paymentParameterResult = paymentProvider.GetPaymentParameters(new PaymentRequest
             {
                 CardHolderName = paymentModel.CardHolderName,
                 CardNumber = paymentModel.CardNumber,
@@ -65,10 +66,14 @@ namespace ThreeDPayment.Controllers
                 ExpireYear = paymentModel.ExpireYear,
                 CvvCode = paymentModel.CvvCode,
                 Installment = paymentModel.Installment,
-                TotalAmount = 1.00m
+                TotalAmount = 1.00m,
+                CustomerIpAddress = HttpContext.Connection.RemoteIpAddress.ToString(),
+                CurrencyIsoCode = "949",
+                LanguageIsoCode = "tr",
+                OrderNumber = Guid.NewGuid().ToString()
             });
 
-            var paymentForm = _paymentProviderFactory.CreatePaymentForm(paymentParameters, paymentProvider.PaymentUrl);
+            var paymentForm = _paymentProviderFactory.CreatePaymentForm(paymentParameterResult.Parameters, paymentParameterResult.PaymentUrl);
             return View(model: paymentForm);
         }
 

@@ -63,6 +63,9 @@ namespace ThreeDPayment
                 app.UseHsts();
             }
 
+            //enable forwarded headers for proxy server
+            app.UseForwardedHeaders();
+
             //use https redirection
             app.UseHttpsRedirection();
 

@@ -1,4 +1,4 @@
-﻿namespace ThreeDPayment.Payment
+namespace ThreeDPayment.Payment
 {
     public class PaymentRequest
     {
@@ -12,5 +12,6 @@
         public string OrderNumber { get; set; }
         public string CurrencyIsoCode { get; set; }
         public string LanguageIsoCode { get; set; }
+        public string CustomerIpAddress { get; set; }
     }
 }

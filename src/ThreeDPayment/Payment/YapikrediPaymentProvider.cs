@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace ThreeDPayment.Payment
 {
     public class YapikrediPaymentProvider : IPaymentProvider
     {
-        public IDictionary<string, object> GetPaymentParameters(PaymentRequest request)
+        public PaymentParameterResult GetPaymentParameters(PaymentRequest request)
         {
             throw new NotImplementedException();
         }
