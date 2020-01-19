@@ -42,6 +42,8 @@ namespace ThreeDPayment
             if (HostEnvironment.IsDevelopment())
                 mvcBuilder.AddRazorRuntimeCompilation();
 
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
             services.AddSingleton<IPaymentProviderFactory, PaymentProviderFactory>();
         }
 
