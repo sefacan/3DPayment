@@ -77,7 +77,7 @@ namespace ThreeDPayment.Payment
             }
             catch (Exception ex)
             {
-                parameterResult.Success = true;
+                parameterResult.Success = false;
                 parameterResult.ErrorMessage = ex.ToString();
             }
 

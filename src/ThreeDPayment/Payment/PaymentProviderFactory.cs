@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ThreeDPayment.Payment
@@ -27,23 +28,29 @@ namespace ThreeDPayment.Payment
                 case Banks.ZiraatBankasi:
                 case Banks.FinansBank:
                 case Banks.KuveytTurk:
-                    return ActivatorUtilities.GetServiceOrCreateInstance<AssecoPaymentProvider>(_serviceProvider);
+                return ActivatorUtilities.GetServiceOrCreateInstance<AssecoPaymentProvider>(_serviceProvider);
                 //Posnet
                 case Banks.Yapikredi:
-                    return ActivatorUtilities.GetServiceOrCreateInstance<YapikrediPaymentProvider>(_serviceProvider);
+                return ActivatorUtilities.GetServiceOrCreateInstance<YapikrediPaymentProvider>(_serviceProvider);
                 //GVP
                 case Banks.Garanti:
-                    return ActivatorUtilities.GetServiceOrCreateInstance<GarantiPaymentProvider>(_serviceProvider);
+                return ActivatorUtilities.GetServiceOrCreateInstance<GarantiPaymentProvider>(_serviceProvider);
                 //GET 7/24
                 case Banks.VakifBank:
-                    return ActivatorUtilities.GetServiceOrCreateInstance<VakifbankPaymentProvider>(_serviceProvider);
+                return ActivatorUtilities.GetServiceOrCreateInstance<VakifbankPaymentProvider>(_serviceProvider);
                 default:
-                    throw new NotSupportedException("Bank not supported");
+                throw new NotSupportedException("Bank not supported");
             }
         }
 
         public string CreatePaymentForm(IDictionary<string, object> parameters, Uri paymentUrl, bool appendSubmitScript = true)
         {
+            if (parameters == null || !parameters.Any())
+                throw new ArgumentNullException(nameof(parameters));
+
+            if (paymentUrl == null)
+                throw new ArgumentNullException(nameof(paymentUrl));
+
             var formId = "PaymentForm";
             var formBuilder = new StringBuilder();
             formBuilder.Append($"<form id=\"{formId}\" name=\"{formId}\" action=\"{paymentUrl}\" role=\"form\" method=\"POST\">");

@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace ThreeDPayment.Payment
 {
     public enum Banks
@@ -19,7 +17,6 @@ namespace ThreeDPayment.Payment
         //GVP
         Garanti = 11,
         //GET 7/24
-        VakifBank = 12,
-
+        VakifBank = 12
     }
 }

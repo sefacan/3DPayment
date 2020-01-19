@@ -17,7 +17,5 @@ namespace ThreeDPayment.Payment
         {
             throw new NotImplementedException();
         }
-
-        public Uri PaymentUrl => new Uri(string.Empty);
     }
 }
