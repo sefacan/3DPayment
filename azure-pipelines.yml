@@ -1,0 +1,69 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+variables:
+  netCoreSdkVersion: '3.1.100'
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./ThreeDPayment.sln
+    displayName: 'dotnet build'
+  - script: dotnet test ./ThreeDPayment.sln
+    displayName: 'run tests'
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results **/*.trx'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '**/*.trx' 
+
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.13'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./ThreeDPayment.sln
+    displayName: 'dotnet build'
+  - script: dotnet test ./ThreeDPayment.sln
+    displayName: 'run tests'
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results **/*.trx'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '**/*.trx' 
+
+- job: Windows
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: DotNetCoreInstaller@0
+    inputs:
+      packageType: 'sdk'
+      version: $(netCoreSdkVersion)
+  - script: dotnet build ./ThreeDPayment.sln
+    displayName: 'dotnet build'
+  - script: dotnet test ./ThreeDPayment.sln
+    displayName: 'run tests'
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results **/*.trx'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '**/*.trx'
+      
