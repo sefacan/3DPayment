@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace ThreeDPayment.Tests
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
+            serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
