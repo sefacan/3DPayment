@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
@@ -27,7 +28,8 @@ namespace ThreeDPayment.Tests
         public void Vakifbank_GetPaymentParameterResult_UnSuccess()
         {
             var httpClientFactory = new Mock<IHttpClientFactory>();
-            var provider = new VakifbankPaymentProvider(httpClientFactory.Object);
+            var httpContextAccessor = new Mock<IHttpContextAccessor>();
+            var provider = new VakifbankPaymentProvider(httpClientFactory.Object, httpContextAccessor.Object);
 
             var parameterResult = provider.GetPaymentParameters(new PaymentRequest
             {
