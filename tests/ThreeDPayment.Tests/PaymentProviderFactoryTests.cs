@@ -33,9 +33,12 @@ namespace ThreeDPayment.Tests
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             var provider = paymentProviderFactory.Create((Banks)bankId);
 
-            var banks = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var banks = new[] { 1, 2, 3, 4, 5, 6, 7, 9 };
             if (banks.Contains(bankId))
                 Assert.IsType<AssecoPaymentProvider>(provider);
+
+            if (bankId == 8)
+                Assert.IsType<FinansbankPaymentProvider>(provider);
 
             if (bankId == 10)
                 Assert.IsType<YapikrediPaymentProvider>(provider);
