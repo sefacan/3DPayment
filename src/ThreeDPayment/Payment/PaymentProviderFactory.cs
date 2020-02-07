@@ -26,9 +26,10 @@ namespace ThreeDPayment.Payment
                 case Banks.DenizBank:
                 case Banks.IngBank:
                 case Banks.ZiraatBankasi:
-                case Banks.FinansBank:
                 case Banks.KuveytTurk:
                 return ActivatorUtilities.GetServiceOrCreateInstance<AssecoPaymentProvider>(_serviceProvider);
+                case Banks.FinansBank:
+                return ActivatorUtilities.GetServiceOrCreateInstance<FinansbankPaymentProvider>(_serviceProvider);
                 //Posnet
                 case Banks.Yapikredi:
                 return ActivatorUtilities.GetServiceOrCreateInstance<YapikrediPaymentProvider>(_serviceProvider);
