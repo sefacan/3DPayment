@@ -5,17 +5,10 @@ using Xunit;
 
 namespace ThreeDPayment.Tests
 {
-    public class AssecoPaymentProviderTests
+    public class FinansbankPaymentProviderTests
     {
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(5)]
-        [InlineData(6)]
-        [InlineData(7)]
-        [InlineData(9)]
+        [InlineData(8)]
         public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
         {
             var serviceCollection = new ServiceCollection();
@@ -25,13 +18,13 @@ namespace ThreeDPayment.Tests
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             var provider = paymentProviderFactory.Create((Banks)bankId);
 
-            Assert.IsType<AssecoPaymentProvider>(provider);
+            Assert.IsType<FinansbankPaymentProvider>(provider);
         }
 
         [Fact]
         public void Asseco_GetPaymentParameterResult_Success()
         {
-            var provider = new AssecoPaymentProvider();
+            var provider = new FinansbankPaymentProvider();
             var parameterResult = provider.GetPaymentParameters(new PaymentRequest
             {
                 CardHolderName = "Sefa Can",
@@ -53,7 +46,7 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void Asseco_GetPaymentParameterResult_UnSuccess()
         {
-            var provider = new AssecoPaymentProvider();
+            var provider = new FinansbankPaymentProvider();
             var parameterResult = provider.GetPaymentParameters(null);
 
             Assert.False(parameterResult.Success);
