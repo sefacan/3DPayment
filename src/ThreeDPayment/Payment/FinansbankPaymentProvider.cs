@@ -53,7 +53,7 @@ namespace ThreeDPayment.Payment
                 parameterResult.Success = true;
 
                 //yeni finans bank test ve canlı ortam 3dgate adresi
-                parameterResult.PaymentUrl = new Uri(string.Empty);
+                parameterResult.PaymentUrl = new Uri("https://finansbank.com");
             }
             catch (Exception ex)
             {

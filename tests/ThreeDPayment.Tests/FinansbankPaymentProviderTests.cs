@@ -22,7 +22,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public void Asseco_GetPaymentParameterResult_Success()
+        public void Finansbank_GetPaymentParameterResult_Success()
         {
             var provider = new FinansbankPaymentProvider();
             var parameterResult = provider.GetPaymentParameters(new PaymentRequest
@@ -44,7 +44,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public void Asseco_GetPaymentParameterResult_UnSuccess()
+        public void Finansbank_GetPaymentParameterResult_UnSuccess()
         {
             var provider = new FinansbankPaymentProvider();
             var parameterResult = provider.GetPaymentParameters(null);
