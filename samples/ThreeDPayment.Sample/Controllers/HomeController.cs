@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThreeDPayment.Controllers
+namespace ThreeDPayment.Sample.Controllers
 {
     public class HomeController : Controller
     {

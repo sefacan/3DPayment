@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Xml;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     /// <summary>
     /// Yapıkredi sanal pos işlemleri Vakıfbank ile benzer şekilde, girilen kart bilgisinin 3D doğrulamasını yapıp eğer sonuç başarılıysa banka sms sayfasına yönlendirme yapılmasını istiyor.
@@ -85,7 +85,7 @@ namespace ThreeDPayment.Payment
                 parameters.Add("posnetID", POSNET_ID);
 
                 //Vade Farklı işlemler için kullanılacak olan kampanya kodunu belirler.
-                //Üye İşyeri için tanımlı olan kampanya kodu, İşyeri Yönetici Ekranlarına giriş yapıldıktan sonra, Üye İşyeri bilgileri sayfasından öğrenilebilinir. 
+                //Üye İşyeri için tanımlı olan kampanya kodu, İşyeri Yönetici Ekranlarına giriş yapıldıktan sonra, Üye İşyeri bilgileri sayfasından öğrenilebilinir.
                 parameters.Add("vftCode", string.Empty);
 
                 string callbackUrl = "https://localhost:5001/home/callback";//Başarılı Url

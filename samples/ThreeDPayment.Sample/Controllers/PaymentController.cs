@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Text.Json;
-using ThreeDPayment.Models;
-using ThreeDPayment.Payment;
+using ThreeDPayment.Sample.Models;
 
 namespace ThreeDPayment.Controllers
 {

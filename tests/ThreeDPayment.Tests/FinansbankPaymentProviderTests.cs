@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using ThreeDPayment.Payment;
 using Xunit;
 
 namespace ThreeDPayment.Tests

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     public class GarantiPaymentProvider : IPaymentProvider
     {

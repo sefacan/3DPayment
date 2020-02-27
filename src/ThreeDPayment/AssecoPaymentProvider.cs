@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     public class AssecoPaymentProvider : IPaymentProvider
     {

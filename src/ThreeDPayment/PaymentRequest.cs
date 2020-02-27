@@ -1,4 +1,4 @@
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     public class PaymentRequest
     {

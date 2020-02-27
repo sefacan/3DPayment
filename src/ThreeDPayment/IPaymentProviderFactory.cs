@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     public interface IPaymentProviderFactory
     {

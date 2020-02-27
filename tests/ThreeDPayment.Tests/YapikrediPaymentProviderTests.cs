@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Net.Http;
-using ThreeDPayment.Payment;
 using Xunit;
 
 namespace ThreeDPayment.Tests
@@ -51,6 +50,7 @@ namespace ThreeDPayment.Tests
 
             Assert.False(parameterResult.Success);
         }
+
         [Fact]
         public void Yapikredi_GetPaymentResult_ThrowsNotImpl()
         {

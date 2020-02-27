@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Xml;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     /// <summary>
     /// Vakıfbank sanal pos işlemleri asseco yöntemine göre biraz daha farklı.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace ThreeDPayment.Payment
+namespace ThreeDPayment
 {
     public interface IPaymentProvider
     {

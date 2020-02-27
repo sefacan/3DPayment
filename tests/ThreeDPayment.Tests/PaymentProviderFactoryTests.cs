@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ThreeDPayment.Payment;
 using Xunit;
 
 namespace ThreeDPayment.Tests

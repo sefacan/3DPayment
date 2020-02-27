@@ -1,9 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>.Net Core ile geliştirilmiş Akbank, İş Bankası, Halk Bank, TEB, Deniz Bank, ING Bank, Ziraat Bankası, QNB Finansbank, Kuveyt Türk, Yapı Kredi, Garanti ve Vakıfbank Sanal Posları</Description>
+    <Version>1.0.0</Version>
+    <AssemblyName>ThreeDPayment</AssemblyName>
+    <RootNamespace>ThreeDPayment</RootNamespace>
+    <Copyright>2020 dotnetanywhere.com</Copyright>
+    <RepositoryUrl>https://github.com/sefacan/3DPaymentAspNetCore</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/sefacan/3DPaymentAspNetCore</PackageProjectUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Authors>Sefa Can</Authors>
+    <Company>dotnetanywhere.com</Company>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.2" />
   </ItemGroup>
 </Project>

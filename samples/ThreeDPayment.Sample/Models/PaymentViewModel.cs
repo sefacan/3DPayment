@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
-using ThreeDPayment.Payment;
 
-namespace ThreeDPayment.Models
+namespace ThreeDPayment.Sample.Models
 {
     public class PaymentViewModel
     {

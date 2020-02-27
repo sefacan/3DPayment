@@ -4,7 +4,6 @@ using Moq;
 using System;
 using System.Net;
 using System.Net.Http;
-using ThreeDPayment.Payment;
 using Xunit;
 
 namespace ThreeDPayment.Tests
