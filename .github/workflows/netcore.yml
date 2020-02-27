@@ -17,6 +17,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build
       run: dotnet build ./ThreeDPayment.sln --configuration Release
+    - name: Test
+      run: dotnet test ./ThreeDPayment.sln
     - name: Pack
       run: dotnet pack -c Release --no-build -o ./packages
     - name: Push
