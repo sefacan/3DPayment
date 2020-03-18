@@ -43,7 +43,7 @@ namespace ThreeDPayment
                 cardNumber = cardNumber.Replace(" ", string.Empty).Trim();
 
                 httpParameters.Add("Pan", cardNumber);
-                httpParameters.Add("ExpiryDate", $"{request.ExpireMonth}{request.ExpireYear}");
+                httpParameters.Add("ExpiryDate", $"{request.ExpireYear}{request.ExpireMonth}");
                 httpParameters.Add("PurchaseAmount", request.TotalAmount.ToString(new CultureInfo("en-US")));
                 httpParameters.Add("Currency", request.CurrencyIsoCode);//TL 949 | EURO 978 | Dolar 840
 
