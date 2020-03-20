@@ -59,7 +59,8 @@ namespace ThreeDPayment
                 httpParameters.Add("MerchantPassword", merchantPassword);
                 httpParameters.Add("SuccessUrl", successUrl);
                 httpParameters.Add("FailureUrl", failUrl);
-                httpParameters.Add("InstallmentCount", request.Installment.ToString());
+                if(request.Installment > 1)
+                    httpParameters.Add("InstallmentCount", request.Installment.ToString());
 
                 //Canlı https://3dsecure.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx
                 var enrollmentUrl = new Uri("https://3dsecuretest.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx");
