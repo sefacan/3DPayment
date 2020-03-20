@@ -7,12 +7,12 @@ trigger:
 - master
 
 variables:
-  netCoreSdkVersion: '3.1.200'
+  netCoreSdkVersion: '3.1.102'
 
 jobs:
 - job: Linux
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: 'ubuntu-18.04'
   steps:
   - task: DotNetCoreInstaller@0
     inputs:
@@ -31,7 +31,7 @@ jobs:
 
 - job: macOS
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: 'macOS-10.15'
   steps:
   - task: DotNetCoreInstaller@0
     inputs:
