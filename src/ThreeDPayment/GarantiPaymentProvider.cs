@@ -22,7 +22,6 @@ namespace ThreeDPayment
             string errorurl = "https://localhost:5001/home/callback";//Hata Url
             string type = "sales";
 
-            var parameterResult = new PaymentParameterResult();
             try
             {
                 var parameters = new Dictionary<string, object>();
@@ -69,19 +68,14 @@ namespace ThreeDPayment
                 string hashstr = terminalid + request.OrderNumber + amount + successUrl + errorurl + type + installment + storekey + securityData;//ilgili veriler birleştirilip hash oluşturuluyor
                 parameters.Add("secure3dhash", GetSHA1(hashstr).ToUpper());//ToUpper ile tüm karakterlerin büyük harf olması gerekiyor
 
-                parameterResult.Parameters = parameters;
-                parameterResult.Success = true;
-
                 //Garanti Canlı https://sanalposprov.garanti.com.tr/servlet/gt3dengine
-                parameterResult.PaymentUrl = new Uri("https://sanalposprovtest.garanti.com.tr/servlet/gt3dengine");
+
+                return PaymentParameterResult.Successed(parameters, "https://sanalposprovtest.garanti.com.tr/servlet/gt3dengine");
             }
             catch (Exception ex)
             {
-                parameterResult.Success = false;
-                parameterResult.ErrorMessage = ex.ToString();
+                return PaymentParameterResult.Failed(ex.ToString());
             }
-
-            return parameterResult;
         }
 
         private string GetSHA1(string text)

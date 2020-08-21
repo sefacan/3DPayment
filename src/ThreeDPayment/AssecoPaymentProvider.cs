@@ -20,7 +20,6 @@ namespace ThreeDPayment
             string failUrl = "https://localhost:5001/home/callback";//Hata Url
             string random = DateTime.Now.ToString();
 
-            var parameterResult = new PaymentParameterResult();
             try
             {
                 var parameters = new Dictionary<string, object>();
@@ -56,19 +55,14 @@ namespace ThreeDPayment
                 parameters.Add("storetype", storeType);
                 parameters.Add("lang", request.LanguageIsoCode);//iki haneli dil iso kodu
 
-                parameterResult.Parameters = parameters;
-                parameterResult.Success = true;
-
                 //İş Bankası Canlı https://sanalpos.isbank.com.tr/fim/est3Dgate
-                parameterResult.PaymentUrl = new Uri("https://entegrasyon.asseco-see.com.tr/fim/est3Dgate");
+
+                return PaymentParameterResult.Successed(parameters, "https://entegrasyon.asseco-see.com.tr/fim/est3Dgate");
             }
             catch (Exception ex)
             {
-                parameterResult.Success = false;
-                parameterResult.ErrorMessage = ex.ToString();
+                return PaymentParameterResult.Failed(ex.ToString());
             }
-
-            return parameterResult;
         }
 
         public PaymentResult GetPaymentResult(IFormCollection form)

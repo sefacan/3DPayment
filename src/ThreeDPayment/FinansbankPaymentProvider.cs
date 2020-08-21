@@ -21,7 +21,6 @@ namespace ThreeDPayment
             string successUrl = "https://localhost:5001/home/callback";//Başarılı Url
             string failUrl = "https://localhost:5001/home/callback";//Hata Url
 
-            var parameterResult = new PaymentParameterResult();
             try
             {
                 var parameters = new Dictionary<string, object>();
@@ -49,19 +48,14 @@ namespace ThreeDPayment
                 parameters.Add("SecureType", storeType);//NonSecure, 3Dpay, 3DModel, 3DHost
                 parameters.Add("Lang", request.LanguageIsoCode.ToUpper());//iki haneli dil iso kodu
 
-                parameterResult.Parameters = parameters;
-                parameterResult.Success = true;
-
                 //yeni finans bank test ve canlı ortam 3dgate adresi
-                parameterResult.PaymentUrl = new Uri("https://finansbank.com");
+
+                return PaymentParameterResult.Successed(parameters, "https://finansbank.com");
             }
             catch (Exception ex)
             {
-                parameterResult.Success = false;
-                parameterResult.ErrorMessage = ex.ToString();
+                return PaymentParameterResult.Failed(ex.ToString());
             }
-
-            return parameterResult;
         }
 
         public PaymentResult GetPaymentResult(IFormCollection form)

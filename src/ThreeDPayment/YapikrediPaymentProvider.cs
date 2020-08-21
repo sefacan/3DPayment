@@ -21,8 +21,6 @@ namespace ThreeDPayment
 
         public PaymentParameterResult GetPaymentParameters(PaymentRequest request)
         {
-            var parameterResult = new PaymentParameterResult();
-
             //Test ortam bilgileri
             string MERCHANT_ID = "6706598320";
             string TERMINAL_ID = "67020048";
@@ -68,8 +66,7 @@ namespace ThreeDPayment
                 var respTextNode = xmlDocument.SelectSingleNode("posnetResponse/respText");
                 if (approvedNode.InnerText != "1")
                 {
-                    parameterResult.ErrorMessage = respTextNode.InnerText;
-                    return parameterResult;
+                    return PaymentParameterResult.Failed(respTextNode.InnerText);
                 }
 
                 var data1Node = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/data1");
@@ -95,19 +92,12 @@ namespace ThreeDPayment
                 parameters.Add("openANewWindow", "0");//POST edilecek formun yeni bir sayfaya mı yoksa mevcut sayfayı mı yönlendirileceği
                 parameters.Add("useJokerVadaa", "1");//yapıkredi kartlarında vadaa kullanılabilirse izin verir
 
-                parameterResult.Parameters = parameters;
-                parameterResult.Success = true;
-
-                //İş Bankası Canlı https://sanalpos.isbank.com.tr/fim/est3Dgate
-                parameterResult.PaymentUrl = new Uri("https://setmpos.ykb.com/3DSWebService/YKBPaymentService");
+                return PaymentParameterResult.Successed(parameters, "https://setmpos.ykb.com/3DSWebService/YKBPaymentService");
             }
             catch (Exception ex)
             {
-                parameterResult.Success = false;
-                parameterResult.ErrorMessage = ex.ToString();
+                return PaymentParameterResult.Failed(ex.ToString());
             }
-
-            return parameterResult;
         }
 
         public PaymentResult GetPaymentResult(IFormCollection form)

@@ -27,8 +27,6 @@ namespace ThreeDPayment
 
         public PaymentParameterResult GetPaymentParameters(PaymentRequest request)
         {
-            var parameterResult = new PaymentParameterResult();
-
             string merchantId = "000100000013506";
             string merchantPassword = "123456";
             string successUrl = "https://localhost:5001/home/callback";//Başarılı Url
@@ -59,7 +57,7 @@ namespace ThreeDPayment
                 httpParameters.Add("MerchantPassword", merchantPassword);
                 httpParameters.Add("SuccessUrl", successUrl);
                 httpParameters.Add("FailureUrl", failUrl);
-                if(request.Installment > 1)
+                if (request.Installment > 1)
                     httpParameters.Add("InstallmentCount", request.Installment.ToString());
 
                 //Canlı https://3dsecure.vakifbank.com.tr:4443/MPIAPI/MPI_Enrollment.aspx
@@ -72,12 +70,10 @@ namespace ThreeDPayment
                 var statusNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/Status");
                 if (statusNode.InnerText != "Y")
                 {
-                    var messageErrorCodeNode = xmlDocument.SelectSingleNode("IPaySecure/MessageErrorCode");
                     var messageErrorNode = xmlDocument.SelectSingleNode("IPaySecure/ErrorMessage");
-                    parameterResult.ErrorMessage = $"{messageErrorNode.InnerText} - {messageErrorCodeNode?.InnerText}";
-                    parameterResult.Success = false;
+                    var messageErrorCodeNode = xmlDocument.SelectSingleNode("IPaySecure/MessageErrorCode");
 
-                    return parameterResult;
+                    return PaymentParameterResult.Failed(messageErrorNode.InnerText, messageErrorCodeNode?.InnerText);
                 }
 
                 var pareqNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/PaReq");
@@ -90,19 +86,13 @@ namespace ThreeDPayment
                 parameters.Add("TermUrl", termUrlNode.InnerText);
                 parameters.Add("MD", mdNode.InnerText);
 
-                parameterResult.Parameters = parameters;
-                parameterResult.Success = true;
-
                 //form post edilecek url xml response içerisinde bankadan dönüyor
-                parameterResult.PaymentUrl = new Uri(acsUrlNode.InnerText);
+                return PaymentParameterResult.Successed(parameters, acsUrlNode.InnerText);
             }
             catch (Exception ex)
             {
-                parameterResult.Success = false;
-                parameterResult.ErrorMessage = ex.ToString();
+                return PaymentParameterResult.Failed(ex.ToString());
             }
-
-            return parameterResult;
         }
 
         public PaymentResult GetPaymentResult(IFormCollection form)
