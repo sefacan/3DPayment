@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ThreeDPayment.Models;
 using ThreeDPayment.Providers;
@@ -15,6 +18,7 @@ namespace ThreeDPayment.Tests
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
@@ -26,13 +30,24 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Yapikredi_GetPaymentParameterResult_Success()
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddHttpClient();
+            string successResponseXml = @"<posnetResponse>
+                                          	<approved>1</approved>
+                                          	<respText>successed</respText>
+                                          	<oosRequestDataResponse>
+                                                  <data1>345345FDGSFSDF</data1>  
+                                                  <data2>345345FDGSFSDF</data2>  
+                                                  <sign>345345FDGSFSDF</sign>  
+                                            </oosRequestDataResponse>
+                                          </posnetResponse>";
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create(BankNames.Yapikredi);
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            var messageHandler = new FakeResponseHandler();
+            messageHandler.AddFakeResponse(new HttpResponseMessage(HttpStatusCode.OK), successResponseXml, true);
 
+            var httpClient = new HttpClient(new FakeResponseHandler(), false);
+            httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
+
+            var provider = new YapikrediPaymentProvider(httpClientFactory.Object);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
@@ -59,6 +74,7 @@ namespace ThreeDPayment.Tests
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
