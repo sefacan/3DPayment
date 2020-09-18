@@ -8,40 +8,31 @@ using Xunit;
 
 namespace ThreeDPayment.Tests
 {
-    public class AssecoPaymentProviderTests
+    public class DenizbankPaymentProviderTests
     {
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(5)]
-        [InlineData(6)]
-        [InlineData(7)]
-        [InlineData(8)]
-        public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
+        [Fact]
+        public void PaymentProviderFactory_CreateAssecoPaymentProvider()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((BankNames)bankId);
+            var provider = paymentProviderFactory.Create(BankNames.DenizBank);
 
-            Assert.IsType<AssecoPaymentProvider>(provider);
+            Assert.IsType<DenizbankPaymentProvider>(provider);
         }
 
         [Fact]
-        public async Task Asseco_GetPaymentParameterResult_Success()
+        public async Task Finansbank_GetPaymentParameterResult_Success()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            var provider = paymentProviderFactory.Create(BankNames.DenizBank);
 
-            var provider = paymentProviderFactory.Create(BankNames.IsBankasi);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
@@ -64,7 +55,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Asseco_GetPaymentParameterResult_UnSuccess()
+        public async Task Finansbank_GetPaymentParameterResult_UnSuccess()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -72,7 +63,7 @@ namespace ThreeDPayment.Tests
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            var provider = paymentProviderFactory.Create(BankNames.IsBankasi);
+            var provider = paymentProviderFactory.Create(BankNames.DenizBank);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
 
             Assert.False(paymentGatewayResult.Success);

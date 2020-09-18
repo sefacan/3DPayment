@@ -1,30 +1,39 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net;
+using System.Threading.Tasks;
+using ThreeDPayment.Models;
+using ThreeDPayment.Providers;
 using Xunit;
 
 namespace ThreeDPayment.Tests
 {
     public class FinansbankPaymentProviderTests
     {
-        [Theory]
-        [InlineData(8)]
-        public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
+        [Fact]
+        public void PaymentProviderFactory_CreateAssecoPaymentProvider()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((Banks)bankId);
+            var provider = paymentProviderFactory.Create(BankNames.FinansBank);
 
             Assert.IsType<FinansbankPaymentProvider>(provider);
         }
 
         [Fact]
-        public void Finansbank_GetPaymentParameterResult_Success()
+        public async Task Finansbank_GetPaymentParameterResult_Success()
         {
-            var provider = new FinansbankPaymentProvider();
-            var parameterResult = provider.GetPaymentParameters(new PaymentRequest
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            var provider = paymentProviderFactory.Create(BankNames.FinansBank);
+
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
                 CardNumber = "4508-0345-0803-4509",
@@ -33,22 +42,31 @@ namespace ThreeDPayment.Tests
                 CvvCode = "000",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = string.Empty,
+                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
+                OrderNumber = Guid.NewGuid().ToString(),
+                BankName = BankNames.IsBankasi,
+                BankParameters = provider.TestParameters,
+                CallbackUrl = new Uri("https://google.com")
             });
 
-            Assert.True(parameterResult.Success);
+            Assert.True(paymentGatewayResult.Success);
         }
 
         [Fact]
-        public void Finansbank_GetPaymentParameterResult_UnSuccess()
+        public async Task Finansbank_GetPaymentParameterResult_UnSuccess()
         {
-            var provider = new FinansbankPaymentProvider();
-            var parameterResult = provider.GetPaymentParameters(null);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
 
-            Assert.False(parameterResult.Success);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+
+            var provider = paymentProviderFactory.Create(BankNames.FinansBank);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+
+            Assert.False(paymentGatewayResult.Success);
         }
     }
 }

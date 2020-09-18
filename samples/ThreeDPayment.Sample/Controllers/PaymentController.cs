@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
+using ThreeDPayment.Models;
 using ThreeDPayment.Sample.Models;
 
 namespace ThreeDPayment.Controllers
@@ -27,7 +29,7 @@ namespace ThreeDPayment.Controllers
         {
             var model = new PaymentViewModel
             {
-                Banks = _htmlHelper.GetEnumSelectList<Banks>().ToList()
+                Banks = _htmlHelper.GetEnumSelectList<BankNames>().ToList()
             };
             model.Banks.Insert(0, new SelectListItem("Seçiniz", string.Empty));
 
@@ -47,7 +49,7 @@ namespace ThreeDPayment.Controllers
             return View(model);
         }
 
-        public IActionResult ThreeDGate()
+        public async Task<IActionResult> ThreeDGate()
         {
             if (HttpContext.Session.TryGetValue(PaymentSessionName, out byte[] paymentInfo))
                 return RedirectToAction(nameof(Index));
@@ -57,7 +59,7 @@ namespace ThreeDPayment.Controllers
                 return RedirectToAction(nameof(Index));
 
             var paymentProvider = _paymentProviderFactory.Create(paymentModel.SelectedBank);
-            var paymentParameterResult = paymentProvider.GetPaymentParameters(new PaymentRequest
+            var paymentGatewayResult = await paymentProvider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = paymentModel.CardHolderName,
                 CardNumber = paymentModel.CardNumber,
@@ -66,17 +68,21 @@ namespace ThreeDPayment.Controllers
                 CvvCode = paymentModel.CvvCode,
                 Installment = paymentModel.Installment,
                 TotalAmount = 1.00m,
-                CustomerIpAddress = HttpContext.Connection.RemoteIpAddress.ToString(),
+                CustomerIpAddress = HttpContext.Connection.RemoteIpAddress,
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
+                CartType = "1",
+                OrderNumber = Guid.NewGuid().ToString(),
+                BankName = paymentModel.SelectedBank,
+                CallbackUrl = new Uri($"{Request.Scheme}://{Request.Host}{Request.PathBase}" + Url.Action("Callback", "Payment")),
+                BankParameters = paymentProvider.TestParameters //canli ortam bilgileri veritabanından gelecek
             });
 
-            var paymentForm = _paymentProviderFactory.CreatePaymentForm(paymentParameterResult.Parameters, paymentParameterResult.PaymentUrl);
+            var paymentForm = _paymentProviderFactory.CreatePaymentFormHtml(paymentGatewayResult.Parameters, paymentGatewayResult.GatewayUrl);
             return View(model: paymentForm);
         }
 
-        public IActionResult Callback(IFormCollection form)
+        public async Task<IActionResult> Callback(IFormCollection form)
         {
             if (HttpContext.Session.TryGetValue(PaymentSessionName, out byte[] paymentInfo))
                 return RedirectToAction(nameof(Index));
@@ -89,10 +95,13 @@ namespace ThreeDPayment.Controllers
             HttpContext.Session.Remove(PaymentSessionName);
 
             var paymentProvider = _paymentProviderFactory.Create(paymentModel.SelectedBank);
-            var paymentResult = paymentProvider.GetPaymentResult(form);
-            HttpContext.Session.Set(PaymentResultSessionName, JsonSerializer.SerializeToUtf8Bytes(paymentResult));
+            var verifyGatewayResult = await paymentProvider.VerifyGateway(new VerifyGatewayRequest
+            {
 
-            if (paymentResult.Success)
+            }, form);
+            HttpContext.Session.Set(PaymentResultSessionName, JsonSerializer.SerializeToUtf8Bytes(verifyGatewayResult));
+
+            if (verifyGatewayResult.Success)
             {
                 return RedirectToAction(nameof(Success));
             }
@@ -105,7 +114,7 @@ namespace ThreeDPayment.Controllers
             if (HttpContext.Session.TryGetValue(PaymentResultSessionName, out byte[] result))
                 return RedirectToAction(nameof(Index));
 
-            var paymentResult = JsonSerializer.Deserialize<PaymentResult>(result);
+            var paymentResult = JsonSerializer.Deserialize<VerifyGatewayResult>(result);
             if (paymentResult == null)
                 return RedirectToAction(nameof(Index));
 
@@ -117,7 +126,7 @@ namespace ThreeDPayment.Controllers
             if (HttpContext.Session.TryGetValue(PaymentResultSessionName, out byte[] result))
                 return RedirectToAction(nameof(Index));
 
-            var paymentResult = JsonSerializer.Deserialize<PaymentResult>(result);
+            var paymentResult = JsonSerializer.Deserialize<VerifyGatewayResult>(result);
             if (paymentResult == null)
                 return RedirectToAction(nameof(Index));
 

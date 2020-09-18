@@ -25,8 +25,8 @@ namespace ThreeDPayment.Sample
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            //enable cookie lax policy for redirection from bank
-            services.Configure<CookiePolicyOptions>(options => options.MinimumSameSitePolicy = SameSiteMode.Lax);
+            //disable cookie policy for redirection from bank
+            services.Configure<CookiePolicyOptions>(options => options.MinimumSameSitePolicy = SameSiteMode.None);
 
             //add response compression
             services.AddResponseCompression();
@@ -41,9 +41,8 @@ namespace ThreeDPayment.Sample
             if (HostEnvironment.IsDevelopment())
                 mvcBuilder.AddRazorRuntimeCompilation();
 
-            services.AddHttpContextAccessor();
-            services.AddHttpClient();
-            services.AddSingleton<IPaymentProviderFactory, PaymentProviderFactory>();
+            //register common payment services
+            services.AddPaymentServices();
         }
 
         /// <summary>

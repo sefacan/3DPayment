@@ -4,29 +4,31 @@ using Moq;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
+using ThreeDPayment.Models;
+using ThreeDPayment.Providers;
 using Xunit;
 
 namespace ThreeDPayment.Tests
 {
     public class VakifbankPaymentProviderTests
     {
-        [Theory]
-        [InlineData(12)]
-        public void PaymentProviderFactory_CreateVakifbankPaymentProvider(int bankId)
+        [Fact]
+        public void PaymentProviderFactory_CreateVakifbankPaymentProvider()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            serviceCollection.AddHttpContextAccessor();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((Banks)bankId);
+            var provider = paymentProviderFactory.Create(BankNames.VakifBank);
 
             Assert.IsType<VakifbankPaymentProvider>(provider);
         }
 
         [Fact]
-        public void Vakifbank_GetPaymentParameterResult_Success()
+        public async Task Vakifbank_GetPaymentParameterResult_Success()
         {
             string successResponseXml = @"<IPaySecure>
                                           	<Message>
@@ -54,7 +56,7 @@ namespace ThreeDPayment.Tests
             httpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
 
             var provider = new VakifbankPaymentProvider(httpClientFactory.Object, httpContextAccessor.Object);
-            var parameterResult = provider.GetPaymentParameters(new PaymentRequest
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
                 CardNumber = "4508-0345-0803-4509",
@@ -63,40 +65,32 @@ namespace ThreeDPayment.Tests
                 CvvCode = "000",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = string.Empty,
+                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
+                OrderNumber = Guid.NewGuid().ToString(),
+                BankName = BankNames.VakifBank,
+                BankParameters = provider.TestParameters,
+                CallbackUrl = new Uri("https://google.com")
             });
 
-            Assert.True(parameterResult.Success);
+            Assert.True(paymentGatewayResult.Success);
         }
 
         [Fact]
-        public void Vakifbank_GetPaymentParameterResult_UnSuccess()
+        public async Task Vakifbank_GetPaymentParameterResult_UnSuccess()
         {
-            var httpClientFactory = new Mock<IHttpClientFactory>();
-            var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext();
-            httpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
 
-            var provider = new VakifbankPaymentProvider(httpClientFactory.Object, httpContextAccessor.Object);
-            var parameterResult = provider.GetPaymentParameters(new PaymentRequest
-            {
-                CardHolderName = "Sefa Can",
-                CardNumber = "4508-0345-0803-4509",
-                ExpireMonth = 12,
-                ExpireYear = 21,
-                CvvCode = "000",
-                Installment = 1,
-                TotalAmount = 1.60m,
-                CustomerIpAddress = string.Empty,
-                CurrencyIsoCode = "949",
-                LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
-            });
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            Assert.False(parameterResult.Success);
+            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+
+            Assert.False(paymentGatewayResult.Success);
         }
     }
 }

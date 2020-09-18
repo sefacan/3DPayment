@@ -1,39 +1,39 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using System;
-using System.Net.Http;
+using System.Net;
+using System.Threading.Tasks;
+using ThreeDPayment.Models;
+using ThreeDPayment.Providers;
 using Xunit;
 
 namespace ThreeDPayment.Tests
 {
     public class YapikrediPaymentProviderTests
     {
-        [Theory]
-        [InlineData(10)]
-        public void PaymentProviderFactory_CreateYapikrediPaymentProvider(int bankId)
+        [Fact]
+        public void PaymentProviderFactory_CreateYapikrediPaymentProvider()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((Banks)bankId);
+            var provider = paymentProviderFactory.Create(BankNames.Yapikredi);
 
             Assert.IsType<YapikrediPaymentProvider>(provider);
         }
 
         [Fact]
-        public void Yapikredi_GetPaymentParameterResult_UnSuccess()
+        public async Task Yapikredi_GetPaymentParameterResult_Success()
         {
-            var httpClientFactory = new Mock<IHttpClientFactory>();
-            var httpContextAccessor = new Mock<IHttpContextAccessor>();
-            var context = new DefaultHttpContext();
-            httpContextAccessor.Setup(_ => _.HttpContext).Returns(context);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
 
-            var provider = new YapikrediPaymentProvider(httpClientFactory.Object);
-            var parameterResult = provider.GetPaymentParameters(new PaymentRequest
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            var provider = paymentProviderFactory.Create(BankNames.Yapikredi);
+
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
                 CardNumber = "4508-0345-0803-4509",
@@ -42,21 +42,31 @@ namespace ThreeDPayment.Tests
                 CvvCode = "000",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = string.Empty,
+                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
+                OrderNumber = Guid.NewGuid().ToString(),
+                BankName = BankNames.IsBankasi,
+                BankParameters = provider.TestParameters,
+                CallbackUrl = new Uri("https://google.com")
             });
 
-            Assert.False(parameterResult.Success);
+            Assert.True(paymentGatewayResult.Success);
         }
 
         [Fact]
-        public void Yapikredi_GetPaymentResult_ThrowsNotImpl()
+        public async Task Yapikredi_GetPaymentResult_UnSuccess()
         {
-            var httpClientFactory = new Mock<IHttpClientFactory>();
-            var provider = new YapikrediPaymentProvider(httpClientFactory.Object);
-            Assert.Throws<NotImplementedException>(() => provider.GetPaymentResult(null));
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+
+            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+
+            Assert.False(paymentGatewayResult.Success);
         }
     }
 }

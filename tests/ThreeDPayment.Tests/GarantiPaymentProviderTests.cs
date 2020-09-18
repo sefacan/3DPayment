@@ -1,30 +1,41 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Net;
+using System.Threading.Tasks;
+using ThreeDPayment.Models;
+using ThreeDPayment.Providers;
 using Xunit;
 
 namespace ThreeDPayment.Tests
 {
     public class GarantiPaymentProviderTests
     {
-        [Theory]
-        [InlineData(11)]
-        public void PaymentProviderFactory_CreateGarantiPaymentProvider(int bankId)
+        [Fact]
+        public void PaymentProviderFactory_CreateGarantiPaymentProvider()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((Banks)bankId);
+            var provider = paymentProviderFactory.Create(BankNames.Garanti);
 
             Assert.IsType<GarantiPaymentProvider>(provider);
         }
 
         [Fact]
-        public void Garanti_GetPaymentParameterResult_Success()
+        public async Task Garanti_GetPaymentParameterResult_Success()
         {
-            var provider = new GarantiPaymentProvider();
-            var parameterResult = provider.GetPaymentParameters(new PaymentRequest
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
+
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
                 CardNumber = "4508-0345-0803-4509",
@@ -33,22 +44,32 @@ namespace ThreeDPayment.Tests
                 CvvCode = "000",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = string.Empty,
+                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                OrderNumber = Guid.NewGuid().ToString()
+                OrderNumber = Guid.NewGuid().ToString(),
+                BankName = BankNames.IsBankasi,
+                BankParameters = provider.TestParameters,
+                CallbackUrl = new Uri("https://google.com")
             });
 
-            Assert.True(parameterResult.Success);
+            Assert.True(paymentGatewayResult.Success);
         }
 
         [Fact]
-        public void Garanti_GetPaymentParameterResult_UnSuccess()
+        public async Task Garanti_GetPaymentParameterResult_UnSuccess()
         {
-            var provider = new GarantiPaymentProvider();
-            var parameterResult = provider.GetPaymentParameters(null);
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+            serviceCollection.AddHttpContextAccessor();
 
-            Assert.False(parameterResult.Success);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+
+            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+
+            Assert.False(paymentGatewayResult.Success);
         }
     }
 }

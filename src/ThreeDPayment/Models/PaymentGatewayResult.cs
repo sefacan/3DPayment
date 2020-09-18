@@ -1,31 +1,33 @@
 using System;
 using System.Collections.Generic;
 
-namespace ThreeDPayment
+namespace ThreeDPayment.Models
 {
-    public class PaymentParameterResult
+    public class PaymentGatewayResult
     {
         public IDictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
-        public Uri PaymentUrl { get; set; }
+        public Uri GatewayUrl { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
         public string ErrorMessage { get; set; }
         public string ErrorCode { get; set; }
 
-        public static PaymentParameterResult Successed(IDictionary<string, object> parameters, string paymentUrl, string message = null)
+        public static PaymentGatewayResult Successed(IDictionary<string, object> parameters,
+            string gatewayUrl,
+            string message = null)
         {
-            return new PaymentParameterResult
+            return new PaymentGatewayResult
             {
                 Success = true,
                 Parameters = parameters,
-                PaymentUrl = new Uri(paymentUrl),
+                GatewayUrl = new Uri(gatewayUrl),
                 Message = message
             };
         }
 
-        public static PaymentParameterResult Failed(string errorMessage, string errorCode = null)
+        public static PaymentGatewayResult Failed(string errorMessage, string errorCode = null)
         {
-            return new PaymentParameterResult
+            return new PaymentGatewayResult
             {
                 Success = false,
                 ErrorMessage = errorMessage,

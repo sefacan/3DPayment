@@ -11,7 +11,7 @@ namespace ThreeDPayment.Sample.Models
         public int ExpireYear { get; set; }
         public string CvvCode { get; set; }
         public int Installment { get; set; }
-        public Banks SelectedBank { get; set; }
+        public BankNames SelectedBank { get; set; }
         public IList<SelectListItem> Banks { get; set; }
     }
 }
