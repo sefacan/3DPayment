@@ -48,7 +48,7 @@ namespace ThreeDPayment.Tests
             var messageHandler = new FakeResponseHandler();
             messageHandler.AddFakeResponse(new HttpResponseMessage(HttpStatusCode.OK), successResponseXml, true);
 
-            var httpClient = new HttpClient(new FakeResponseHandler(), false);
+            var httpClient = new HttpClient(messageHandler, false);
             httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             var httpContextAccessor = new Mock<IHttpContextAccessor>();
@@ -63,6 +63,7 @@ namespace ThreeDPayment.Tests
                 ExpireMonth = 12,
                 ExpireYear = 21,
                 CvvCode = "000",
+                CartType = "1",
                 Installment = 1,
                 TotalAmount = 1.60m,
                 CustomerIpAddress = IPAddress.Parse("127.0.0.1"),

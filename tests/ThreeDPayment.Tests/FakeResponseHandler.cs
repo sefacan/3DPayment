@@ -9,7 +9,7 @@ namespace ThreeDPayment.Tests
 {
     public class FakeResponseHandler : DelegatingHandler
     {
-        private static readonly IList<HttpResponseMessage> _fakeResponses = new List<HttpResponseMessage>();
+        private readonly IList<HttpResponseMessage> _fakeResponses = new List<HttpResponseMessage>();
 
         public void AddFakeResponse(HttpResponseMessage responseMessage, string content = "", bool xml = false)
         {

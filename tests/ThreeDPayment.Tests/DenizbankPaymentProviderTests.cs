@@ -41,6 +41,7 @@ namespace ThreeDPayment.Tests
                 ExpireYear = 21,
                 CvvCode = "000",
                 Installment = 1,
+                CartType = "1",
                 TotalAmount = 1.60m,
                 CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
                 CurrencyIsoCode = "949",
