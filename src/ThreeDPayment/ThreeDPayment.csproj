@@ -2,14 +2,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>.Net Core ile geliştirilmiş Akbank, İş Bankası, Halk Bank, TEB, Deniz Bank, ING Bank, Ziraat Bankası, QNB Finansbank, Kuveyt Türk, Yapı Kredi, Garanti ve Vakıfbank Sanal Posları</Description>
-    <Version>1.0.0</Version>
+    <Version>1.5.0</Version>
     <AssemblyName>ThreeDPayment</AssemblyName>
     <RootNamespace>ThreeDPayment</RootNamespace>
     <Copyright>2020 dotnetanywhere.com</Copyright>
     <RepositoryUrl>https://github.com/sefacan/3DPaymentAspNetCore</RepositoryUrl>
     <PackageProjectUrl>https://github.com/sefacan/3DPaymentAspNetCore</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>1.5.0.0</AssemblyVersion>
     <Authors>Sefa Can</Authors>
     <Company>dotnetanywhere.com</Company>
   </PropertyGroup>
