@@ -29,7 +29,7 @@ namespace ThreeDPayment.Tests
             var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             var provider = paymentProviderFactory.Create((BankNames)bankId);
 
-            Assert.IsType<AssecoPaymentProvider>(provider);
+            Assert.IsType<NestPayPaymentProvider>(provider);
         }
 
         [Fact]

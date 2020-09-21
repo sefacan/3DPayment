@@ -12,11 +12,11 @@ using ThreeDPayment.Models;
 
 namespace ThreeDPayment.Providers
 {
-    public class AssecoPaymentProvider : IPaymentProvider
+    public class NestPayPaymentProvider : IPaymentProvider
     {
         private readonly HttpClient client;
 
-        public AssecoPaymentProvider(IHttpClientFactory httpClientFactory)
+        public NestPayPaymentProvider(IHttpClientFactory httpClientFactory)
         {
             client = httpClientFactory.CreateClient();
         }

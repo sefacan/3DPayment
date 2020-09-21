@@ -38,7 +38,7 @@ namespace ThreeDPayment.Tests
 
             var banks = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
             if (banks.Contains(bankId))
-                Assert.IsType<AssecoPaymentProvider>(provider);
+                Assert.IsType<NestPayPaymentProvider>(provider);
 
             if (bankId == 9)
                 Assert.IsType<DenizbankPaymentProvider>(provider);

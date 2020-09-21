@@ -30,8 +30,8 @@ namespace ThreeDPayment
                 case BankNames.AnadoluBank:
                 case BankNames.HSBC:
                 {
-                    //Asseco(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC)
-                    return ActivatorUtilities.CreateInstance<AssecoPaymentProvider>(_serviceProvider);
+                    //NestPay(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC)
+                    return ActivatorUtilities.CreateInstance<NestPayPaymentProvider>(_serviceProvider);
                 }
                 case BankNames.DenizBank:
                 {

@@ -2,7 +2,7 @@ namespace ThreeDPayment
 {
     public enum BankNames
     {
-        //Asseco
+        //NestPay
         AkBank,
         IsBankasi,
         HalkBank,
