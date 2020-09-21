@@ -1,0 +1,180 @@
+<GVPSResponse>
+	<Mode></Mode>
+	<Order>
+		<OrderID></OrderID>
+		<GroupID></GroupID>not null
+		<OrderInqResult>orderinq		
+			<ChargeType></ChargeType>
+			<PreAuthAmount></PreAuthAmount>
+			<PreAuthDate></PreAuthDate>
+			<AuthAmount></AuthAmount>
+			<AuthDate></AuthDate>
+		</OrderInqResult>
+		<CommercialCardLimit></CommercialCardLimit>
+		<OrderHistInqResult>orderhistinq
+			<OrderTxnList>
+				<OrderTxn>
+					<Type></Type>
+					<Status></Status>
+					<PreAuthAmount></PreAuthAmount>
+					<AuthAmount></AuthAmount>
+					<PreAuthDate></PreAuthDate>
+					<AuthDate></AuthDate>
+					<VoidDate></VoidDate>
+					<RetrefNum></RetrefNum>
+					<AuthCode></AuthCode>
+					<ReturnCode></ReturnCode>
+					<BatchNum></BatchNum>
+				</OrderTxn>
+			</OrderTxnList>
+		</OrderHistInqResult>
+		<OrderListInqResult>
+			<OrderTxnList>
+				<OrderTxn>
+					<Id></Id>
+					<LastTrxDate></LastTrxDate>
+					<TrxType></TrxType>
+					<OrderID></OrderID>
+					<Name></Name>
+					<CardNumberMasked></CardNumberMasked>
+					<BankBin></BankBin>
+					<BatchNum></BatchNum>
+					<AuthCode></AuthCode>
+					<RetrefNum></RetrefNum>
+					<InstallmentCnt></InstallmentCnt>
+					<Status></Status>
+					<AuthAmount></AuthAmount>
+					<CurrencyCode></CurrencyCode>
+					<SafeType></SafeType>
+					<Comment1></Comment1>
+					<Comment2></Comment2>
+					<Comment3></Comment3>
+				</OrderTxn>
+			</OrderTxnList>
+		</OrderListInqResult>
+	</Order>
+	<Transaction>
+		<Response>
+			<Source>HOST</Source>
+			<Code>96</Code><!--00 dan baþka bir kod hata demek-->
+			<ReasonCode>9600</ReasonCode>
+			<Message>Declined</Message>
+			<ErrorMsg>Expire card</ErrorMsg>
+			<SysErrMsg>Son kullanma tarihi hatali</SysErrMsg>
+		</Response>
+		<RetrefNum></RetrefNum>not null
+		<AuthCode></AuthCode>not null
+		<BatchNum></BatchNum>not null
+		<SequenceNum></SequenceNum>not null
+		<ProvDate></ProvDate>not null
+		<CardNumberMasked></CardNumberMasked>not null
+		<CardHolderName></CardHolderName>
+		<HashData></HashData>
+		<HostMsgList>
+			<HostMsg></HostMsg>
+		</HostMsgList>
+		<ExtendedCreditResult>exteded credit inq, exrended credit
+			<TotalAmount></TotalAmount>
+			<InterestAmount></InterestAmount>
+			<BITTAmount></BITTAmount>
+			<RUSFAmount></RUSFAmount>
+			<InterestRate></InterestRate>
+			<BITTRate></BITTRate>
+			<RUSFRate></RUSFRate>
+			<InstallmentCnt></InstallmentCnt>
+			<PaymentList>
+				<Payment> 
+					<PaymentNumber></PaymentNumber>
+					<Amount></Amount>					
+					<DueDate></DueDate>
+				</Payment>
+			</PaymentList>
+		</ExtendedCreditResult>
+		<RewardInqResult>
+			<RewardList>
+				<Reward>
+					<Type>MR, Bonus, Mil, FirmBasedBns</Type>
+					<TotalAmount></TotalAmount>
+					<LastTxnGainAmount></LastTxnGainAmount>
+				</Reward>
+			</RewardList>
+			<ChequeList>
+				<Cheque>
+					<Type>Player / Sozunuze Urun</Type>
+					<Amount></Amount>					
+					<Count></Count> <!-- Player -->					
+					<ExpireDate></ExpireDate>
+					<UsageRate></UsageRate>
+					<MinTxnAmount></MinTxnAmount>
+					<ID></ID> <!-- Sozunuze Urun -->
+					<Bitmap></Bitmap>
+					<Description></Description>
+				</Cheque>
+			</ChequeList>
+		</RewardInqResult>
+		<UtilityPaymentInqResult>utility payment inq, utilitypaymentvoidinq 
+			<SubscriberCode></SubscriberCode>
+			<SubscriberName></SubscriberName>
+			<InvoiceCount></InvoiceCount>----------
+			<InvoiceList>
+				<Invoice>
+					<ID></ID>
+					<DueDate></DueDate>
+					<Amount></Amount>
+					<AmountChangeInd></AmountChangeInd> 
+					<CommissionAmount></CommissionAmount>
+					<RewardAmount></RewardAmount>
+					<RetrefNum></RetrefNum>				
+				</Invoice>
+			</InvoiceList>
+		</UtilityPaymentInqResult>
+		<GSMUnitInqResult>gsm unit inq
+			<SubscriberCode></SubscriberCode>
+			<SubscriberName></SubscriberName>
+			<ItemCount></ItemCount>------
+			<ItemList>
+				<Item>
+					<UnitID></UnitID>
+					<Quantity></Quantity>
+					<Amount></Amount>
+					<CommissionAmount></CommissionAmount>
+				</Item>
+			</ItemList>
+		</GSMUnitInqResult>
+		<CepBankInqResult>cep bank inq
+			<GSMNumber></GSMNumber>
+			<TxnStatusCode></TxnStatusCode>
+			<SentClient></SentClient>
+			<PaymentType>Credit / Debit / Account</PaymentType>
+			<TxnAmount></TxnAmount>
+			<BonusAmount></BonusAmount>
+			<InstallmentCnt></InstallmentCnt>
+			<ResponseCode></ResponseCode>
+			<Message></Message>
+		</CepBankInqResult>		
+	</Transaction>
+	<SettlementInqResult>settlement inq
+		<Date></Date>
+		<TransactionSummList>
+			<TransactionSumm>
+				<CurrencyCode></CurrencyCode>			
+				<Type></Type>
+				<Count></Count>
+				<Amount></Amount>
+			</TransactionSumm>
+		</TransactionSummList>
+	</SettlementInqResult>
+	<DCCInqResult>
+		<Count></Count>
+		<Markup></Markup>
+		<CommisionRate></CommisionRate>
+		<DCC>
+			<Currency></Currency>
+			<CurrencySymbol></CurrencySymbol>
+			<TrxAmount></TrxAmount>
+			<DecimalPoint></DecimalPoint>
+			<Display></Display>
+			<ExchangeRate></ExchangeRate>
+		</DCC>
+	</DCCInqResult>
+</GVPSResponse>

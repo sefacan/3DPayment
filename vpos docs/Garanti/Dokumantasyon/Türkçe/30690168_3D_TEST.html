@@ -1,0 +1,243 @@
+<html>
+<head>
+<title>MPI Tester</title>
+<script type="text/javascript" language="javascript">
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+/*  SHA-1 implementation in JavaScript (c) Chris Veness 2002-2009                                 */
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+function sha1Hash(msg)
+{
+    // constants [§4.2.1]
+    var K = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
+
+
+    // PREPROCESSING 
+ 
+    msg += String.fromCharCode(0x80); // add trailing '1' bit (+ 0's padding) to string [§5.1.1]
+
+    // convert string msg into 512-bit/16-integer blocks arrays of ints [§5.2.1]
+    var l = msg.length/4 + 2;  // length (in 32-bit integers) of msg + ‘1’ + appended length
+    var N = Math.ceil(l/16);   // number of 16-integer-blocks required to hold 'l' ints
+    var M = new Array(N);
+    for (var i=0; i<N; i++) {
+        M[i] = new Array(16);
+        for (var j=0; j<16; j++) {  // encode 4 chars per integer, big-endian encoding
+            M[i][j] = (msg.charCodeAt(i*64+j*4)<<24) | (msg.charCodeAt(i*64+j*4+1)<<16) | 
+                      (msg.charCodeAt(i*64+j*4+2)<<8) | (msg.charCodeAt(i*64+j*4+3));
+        }
+    }
+    // add length (in bits) into final pair of 32-bit integers (big-endian) [5.1.1]
+    // note: most significant word would be (len-1)*8 >>> 32, but since JS converts
+    // bitwise-op args to 32 bits, we need to simulate this by arithmetic operators
+    M[N-1][14] = ((msg.length-1)*8) / Math.pow(2, 32); M[N-1][14] = Math.floor(M[N-1][14])
+    M[N-1][15] = ((msg.length-1)*8) & 0xffffffff;
+
+    // set initial hash value [§5.3.1]
+    var H0 = 0x67452301;
+    var H1 = 0xefcdab89;
+    var H2 = 0x98badcfe;
+    var H3 = 0x10325476;
+    var H4 = 0xc3d2e1f0;
+
+    // HASH COMPUTATION [§6.1.2]
+
+    var W = new Array(80); var a, b, c, d, e;
+    for (var i=0; i<N; i++) {
+
+        // 1 - prepare message schedule 'W'
+        for (var t=0;  t<16; t++) W[t] = M[i][t];
+        for (var t=16; t<80; t++) W[t] = ROTL(W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16], 1);
+
+        // 2 - initialise five working variables a, b, c, d, e with previous hash value
+        a = H0; b = H1; c = H2; d = H3; e = H4;
+
+        // 3 - main loop
+        for (var t=0; t<80; t++) {
+            var s = Math.floor(t/20); // seq for blocks of 'f' functions and 'K' constants
+            var T = (ROTL(a,5) + f(s,b,c,d) + e + K[s] + W[t]) & 0xffffffff;
+            e = d;
+            d = c;
+            c = ROTL(b, 30);
+            b = a;
+            a = T;
+        }
+
+        // 4 - compute the new intermediate hash value
+        H0 = (H0+a) & 0xffffffff;  // note 'addition modulo 2^32'
+        H1 = (H1+b) & 0xffffffff; 
+        H2 = (H2+c) & 0xffffffff; 
+        H3 = (H3+d) & 0xffffffff; 
+        H4 = (H4+e) & 0xffffffff;
+    }
+
+    return H0.toHexStr() + H1.toHexStr() + H2.toHexStr() + H3.toHexStr() + H4.toHexStr();
+}
+
+//
+// function 'f' [§4.1.1]
+//
+function f(s, x, y, z) 
+{
+    switch (s) {
+    case 0: return (x & y) ^ (~x & z);           // Ch()
+    case 1: return x ^ y ^ z;                    // Parity()
+    case 2: return (x & y) ^ (x & z) ^ (y & z);  // Maj()
+    case 3: return x ^ y ^ z;                    // Parity()
+    }
+}
+
+//
+// rotate left (circular left shift) value x by n positions [§3.2.5]
+//
+function ROTL(x, n)
+{
+    return (x<<n) | (x>>>(32-n));
+}
+
+//
+// extend Number class with a tailored hex-string method 
+//   (note toString(16) is implementation-dependant, and 
+//   in IE returns signed numbers when used on full words)
+//
+Number.prototype.toHexStr = function()
+{
+    var s="", v;
+    for (var i=7; i>=0; i--) { v = (this>>>(i*4)) & 0xf; s += v.toString(16); }
+    return s;
+}
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+
+
+
+function moveWindow() {
+  document.myform.submit();
+}
+
+function hashGenerate(){
+	//terminalId + orderid + amount + okurl + failurl + islemtipi + taksit + storekey + provUser.getPasswordText()	
+	document.getElementById('secure3dhash').value= sha1Hash(document.getElementById('terminalId').value + 
+					document.getElementById('orderid').value+
+					document.getElementById('txnamount').value+
+					document.getElementById('successurl').value+
+					document.getElementById('errorurl').value+
+					document.getElementById('txntype').value+
+					document.getElementById('txninstallmentcount').value+
+					"12345678"+
+					"9BDA86CA8E9817861691929A18B5DF88E4287630").toUpperCase();
+	document.getElementById('testdata').value=document.getElementById('terminalId').value + 
+					document.getElementById('orderid').value+
+					document.getElementById('txnamount').value+
+					document.getElementById('successurl').value+
+					document.getElementById('errorurl').value+
+					document.getElementById('txntype').value+
+					document.getElementById('txninstallmentcount').value+
+					"12345678"+
+					"9BDA86CA8E9817861691929A18B5DF88E4287630";
+					
+	return true;
+
+}
+</script>
+</head>
+<body >
+<form name="myform" action="http://sanalpos.fw.garanti.com.tr/servlet/gt3dengine" method="POST">
+    <input type="submit" name="submit" value="Submit">
+	<input type="button" name="hashButton" value="HASH GENERATOR!!!" onclick="javascript:hashGenerate();">
+	<br/>	
+	Secure3D Security Level: 
+    <select name="secure3dsecuritylevel">
+	  <option value="3D">3D
+	  <option value="3D_PAY">3D_PAY
+	  <option value="3D_FULL">3D_FULL
+	  <option value="3D_HALF">3D_HALF
+	  <option value="3D_OOS_PAY">3D_OOS_PAY
+	  <option value="3D_OOS_FULL">3D_OOS_FULL	  
+	  <option value="3D_OOS_HALF">3D_OOS_HALF
+	  <option value="OOS_PAY">OOS_PAY
+	  <option value="QR_PAY">QR_PAY
+	  <option value="CUSTOM_PAY">CUSTOM_PAY
+  </select><br>
+
+  Card No<input type="text" name="cardnumber" value=""><br>
+  Expire (mm-yy)<input type="text" name="cardexpiredatemonth" value="">-<input type="text" name="cardexpiredateyear" value=""><br>
+  
+	<td>mode <input type="text" name="mode" value="TEST">
+
+	orderid <input type="text" name="orderid" value="deneme1"><br>
+cardcvv2  <input type="text" name="cardcvv2" value=""><br>
+  	apiversion <input type="text" name="apiversion" value="v1.0"><br>
+		terminalProvUserID <input type="text" name="terminalprovuserid"
+			value="PROVOOS"><br>
+		terminalUserID <input type="text" name="terminaluserid" value="OZCAN"><br>
+		terminalID <input type="text" name="terminalid" value="30690168"><br>
+		terminalMerchantID <input type="text" name="terminalmerchantid"
+			value="7000679"><br>
+		customerIPAddress <input type="text" name="customeripaddress"
+			value="127.0.0.1"><br>
+		customerEmailAddress <input type="text" name="customeremailaddress"
+			value="pembe@mail.com"><br>
+		txnType <input type="text" name="txntype" value="sales"><br>
+		txnAmount <input type="text" name="txnamount" value="100"><br>
+		txnCurrencyCode <input type="text" name="txncurrencycode" value="949"><br>
+		companyName <input type="text" name="companyname"
+			value="TEST MAÐAZASI"><br>
+		txnInstallmentCount <input type="text" name="txninstallmentcount"
+			value="0"><br>
+		successurl <input type="text" name="successurl"
+			value="http://www.google.com.tr/search?q=success"><br>
+		errorurl <input type="text" name="errorurl"
+			value="http://www.google.com.tr/search?q=error"><br>
+		secure3dhash <input type="text" name="secure3dhash"		
+			value=""><br>
+		motoind <input type="text" name="txnmotoind"
+			value="N"><br>			
+		mobilind <input type="text" name="mobilind"
+			value="N"><br>	
+		fimcardno <input type="text" name="fimcardno"
+			value="N"><br>				
+		txntimestamp <input type="text" name="txntimestamp"
+			value="20100111174711"><br>
+		userid <input type="text" name="terminaluserid" value="oosuser"><br>
+		lang <input type="text" name="lang" value="tr"><br>
+		refreshtime <input type="text" name="refreshtime" value="5"><br>
+
+		orderitemcount <input type="text" name="orderitemcount" value="2"><br>
+		orderitemnumber1 <input type="text" name="orderitemnumber1"
+			value="1"><br>
+		orderitemproductid1 <input type="text" name="orderitemproductid1"
+			value="A1"><br>
+		orderitemproductcode1 <input type="text"
+			name="orderitemproductcode1" value="A1"><br>
+		orderitemquantity1 <input type="text" name="orderitemquantity1"
+			value="1"><br>
+		orderitemprice1 <input type="text" name="orderitemprice1"
+			value="100"><br>
+		orderitemtotalamount1 <input type="text"
+			name="orderitemtotalamount1" value="100"><br>
+		orderitemdescription1 <input type="text"
+			name="orderitemdescription1" value="AAA"><br>
+
+		orderitemnumber2 <input type="text" name="orderitemnumber2"
+			value="2"><br>
+		orderitemproductid2 <input type="text" name="orderitemproductid2"
+			value="A2"><br>
+		orderitemproductcode2 <input type="text"
+			name="orderitemproductcode2" value="A2"><br>
+		orderitemquantity2 <input type="text" name="orderitemquantity2"
+			value="1"><br>
+		orderitemprice2 <input type="text" name="orderitemprice2"
+			value="200"><br>
+		orderitemtotalamount2 <input type="text"
+			name="orderitemtotalamount2" value="200"><br>		
+
+<input type="text" name="testdata"
+			value="">
+
+    Please click the submit button below.<br>
+    <input type="submit" name="submit" value="Submit">
+</form>
+
+</body>
+</html>
+

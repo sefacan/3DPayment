@@ -1,0 +1,29 @@
+<GVPSResponse>
+<Mode> </Mode>
+<Order>
+<OrderID>SISTE20C15E38F1446AF92DABFB4059E87F6</OrderID>
+<GroupID> </GroupID>
+</Order>
+<Transaction>
+<Response>
+<Source>HOST</Source>
+<Code>54</Code>
+<ReasonCode>54</ReasonCode>
+<Message>Declined</Message>
+<ErrorMsg>Ýþleminizi gerçekleþtiremiyoruz.Tekrar deneyiniz</ErrorMsg>
+<SysErrMsg>SON KULLANMA TARIHI HATALI</SysErrMsg>
+</Response>
+<RetrefNum>105809652540</RetrefNum>
+<AuthCode> </AuthCode>
+<BatchNum>000574</BatchNum>
+<SequenceNum>000510</SequenceNum>
+<ProvDate>20110227 09:40:48</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName>HA*** YIL***</CardHolderName> <HashData>8D8E2BE7FC080AD985CA0506C50479035FC2C206</HashData>
+<HostMsgList> </HostMsgList>
+<RewardInqResult>
+<RewardList> </RewardList>
+<ChequeList> </ChequeList>
+</RewardInqResult>
+</Transaction>
+</GVPSResponse>

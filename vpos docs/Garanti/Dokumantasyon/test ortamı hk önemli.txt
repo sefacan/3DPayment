@@ -1,0 +1,117 @@
+Güncel kod örnekleri için link; 
+http://www.garantipos.com.tr/mailing/GVP.zip 
+
+ 
+test ortamý raporlama için:
+https://sanalposwebtest.garanti.com.tr
+ 
+iþyerino 	: 7000679
+Kullanýcý Adý   : GARANTI
+Parola    	: destek
+Þifre  		: 123456WqE
+
+ 
+Provizyon post adresi : 
+https://sanalposprovtest.garanti.com.tr/VPServlet
+
+3d secure sorgulama ve OOS iþlemler için post adresi : 
+https://sanalposprovtest.garanti.com.tr/servlet/gt3dengine
+  
+  
+hosts dosyasýna
+Provizyon denemeleri sýrasýnda 
+194.29.209.226 sanalposprovtest.garanti.com.tr 
+ 
+Raporlar ekraný testleri sýrasýnda
+194.29.209.225  sanalposwebtest.garanti.com.tr 
+yazýlmasý gerekiyor.
+
+eriþim denemesi telnet;
+telnet 194.29.209.226 443
+telnet 194.29.209.226 80
+telnet 194.29.209.225 443
+telnet 194.29.209.225 80
+ 
+Test maðazasý için yazýlýmda kullanýlacak bilgiler: 
+
+
+Model (secure3dsecuritylevel)	MerchantID	TerminalID
+
+3D 				7000679		30691297
+3D_PAY                  	7000679		30691298
+3D_OOS_PAY       		7000679		30691299
+OOS_PAY 			7000679		30691300
+3D_FULL   			7000679		30691301
+
+
+3D’siz XML kurulumlarý için yukarýdaki MerchantID ve TerminalID deðerlerinden herhangi biri kullanýlabilir. 
+
+MerchantID  				 : 7000679
+ProvUserID				 : PROVAUT/PROVRFN/PROVOOS
+ProvisionPassword			 : 123qweASD
+Securekey				 : 12345678
+   
+Test sunucusundaki xml iþlemlerinde kullanýlacak test kredi kartý: 
+
+
+Number             4282209027132016
+ExpireDate         0515
+CVV2               232
+
+Number             4824894728063019
+ExpireDate         0617
+CVV2               959
+
+
+3D testleri için;
+
+Kartlar alacaklarý MD status ve host cevaplarý aþaðýdaki þekilde. 
+
+Number  	  4282209004348015
+ExpireDate 	  0215 
+CVV2		  123
+
+Number  	  375622005485014
+ExpireDate 	  0215 
+CVV2		  123
+
+Status :00
+MD status 1 
+
+4050904902128481
+Status : 58:15-015-SON KULLANIM TARIHI GECMIS
+MD status 1
+
+5400370000004079
+96:SISTEM HATASI
+MD status 0 
+
+5400370000009060
+41:KAYIP KART
+MD status 2 
+
+5586992008243767
+57:TESLIM EDILEMEDIGINDEN KAPALI.
+MD Status 1 
+
+6768274573178712
+58:28-028-KART BULUNAMADI . 6768274573
+MD Status 1 
+
+5213500000422015
+58:Yurtdisi kart ile islem yapilamaz.
+MD status 2 
+ 
+Test üyeiþyeri sabit 7000679 dir; 
+ 
+asp yazýlýmdaki örneði;
+ 
+        strMode = "TEST"
+        strVersion = "v0.01"
+        strTerminalID = "30691297"
+        strTerminalID_ = "030691297" 'TerminalID baþýna 0 ile 9 digit yapýlmalý
+        strProvUserID = "PROVAUT"
+        strProvisionPassword = "123qweASD" 'SanalPos þifreniz ( PROVAUT kullanýcýsýnýn þifresi )
+        strUserID = "PROVAUT"
+        strMerchantID = "7000679" 'MerchantID (Uye isyeri no)
+ 

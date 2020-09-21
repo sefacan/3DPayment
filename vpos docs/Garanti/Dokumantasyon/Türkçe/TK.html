@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-9">
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1254">
+<TITLE>Garanti Sanal POS XML İşlem Test Sayfası</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<FONT SIZE=5> XML İşlem Test Sayfası </FONT>
+<P>
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+Aşağıdaki kod örneğini size gönderilen hesap bilgileriyle güncelleyerek XML formatında işlem gönderimini test edebilirsiniz.<br>
+(*** = hesap bilgilerinizi girmeniz gereken alan)<br>
+(xxx = kart ve ödeme bilgilerinizi girmeniz gereken alan)
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+<br>
+<FORM ACTION="https://sanalposprovtest.garanti.com.tr/VPServlet" METHOD=POST>
+<TEXTAREA cols="80" rows="40" name="data" >
+<?xml version="1.0" encoding="UTF-8"?>
+<GVPSRequest>
+<Mode>TEST</Mode>
+<Version>v0.00</Version>
+<Terminal>
+	<ProvUserID>PROVAUT</ProvUserID>
+	<HashData>Hash data</HashData>
+	<UserID>PROVAUT</UserID>
+	<ID>111995</ID>
+	<MerchantID>600218</MerchantID>
+</Terminal>
+<Customer>
+	<IPAddress>1.1.111.111</IPAddress>
+	<EmailAddress>Cem@cem.com</EmailAddress>
+</Customer>
+<Card>
+	<Number>4242424242424242</Number>
+	<ExpireDate>0411</ExpireDate>
+<CVV2></CVV2>
+</Card>
+	<Order>
+	<OrderID></OrderID>
+	<GroupID></GroupID>
+</Order>
+<Transaction>
+	<Type>extendedcredit</Type>
+	<InstallmentCnt>4</InstallmentCnt>
+	<Amount>2000</Amount>
+	<CurrencyCode>949</CurrencyCode>
+	<CardholderPresentCode>0</CardholderPresentCode>		
+	<MotoInd>H</MotoInd>
+	<OriginalRetrefNum></OriginalRetrefNum>
+</Transaction>
+</GVPSRequest>
+</TEXTAREA>
+<CENTER><INPUT type=submit value="Submit" >&nbsp;&nbsp;&nbsp;
+<INPUT type=reset value="Reset"></CENTER>
+</FORM>
+</BODY>
+</HTML>

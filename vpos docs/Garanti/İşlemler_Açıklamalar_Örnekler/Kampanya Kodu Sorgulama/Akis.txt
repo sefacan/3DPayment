@@ -1,0 +1,2 @@
+<Type>campaigncodeinq</Type>  iþlem tipi ile bir istek yollanmasý gerekiyor
+<CampaingCode>51170390</CampaingCode>  alanýnda doðrulama yapýlacak iþlem kodunun döndürülmesi gerekiyor. Doðrulama ok ise ‘00’  - Approved geri dönüþü alýnýyor. Doðrulama geçersiz ise hata kodu  - declined  geri dönüþü ile iþlem sonlandýrýlýyor

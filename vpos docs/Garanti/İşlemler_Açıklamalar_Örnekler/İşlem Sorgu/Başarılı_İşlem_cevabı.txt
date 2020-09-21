@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GVPSResponse>
+<Mode></Mode>
+<Terminal>
+<ProvUserID>PROVAUT</ProvUserID>
+<UserID>XXXX</UserID>
+<ID>30691292</ID>
+<MerchantID>3424113</MerchantID></Terminal>
+<Customer>
+<IPAddress>127.0.0.1</IPAddress>
+<EmailAddress>eticaret@garanti.com.tr</EmailAddress></Customer>
+<Order>
+<OrderID>1476</OrderID>
+<GroupID></GroupID>
+<OrderInqResult>
+<ChargeType>S</ChargeType>
+<PreAuthAmount>0</PreAuthAmount>
+<PreAuthDate></PreAuthDate>
+<AuthAmount>100</AuthAmount>
+<AuthDate>2013-04-26 17:19:01.226</AuthDate>
+<RecurringInfo>N</RecurringInfo>
+<RecurringStatus></RecurringStatus>
+<Status>APPROVED</Status></OrderInqResult></Order>
+<Transaction>
+<Response>
+<Source>GVPS</Source>
+<Code>00</Code>
+<ReasonCode></ReasonCode>
+<Message>Approved</Message>
+<ErrorMsg></ErrorMsg>
+<SysErrMsg></SysErrMsg></Response>
+<RetrefNum></RetrefNum>
+<AuthCode></AuthCode>
+<BatchNum></BatchNum>
+<SequenceNum></SequenceNum>
+<ProvDate>20130426 17:28:47</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName></CardHolderName>
+<CardType></CardType>
+<HashData>098AA39B175005F81D6809F18395C5499BBB093B</HashData>
+<HostMsgList></HostMsgList>
+<RewardInqResult>
+<RewardList></RewardList>
+<ChequeList></ChequeList></RewardInqResult></Transaction></GVPSResponse>

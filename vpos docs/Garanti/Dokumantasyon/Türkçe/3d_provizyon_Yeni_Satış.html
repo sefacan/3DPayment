@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-9">
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1254">
+<TITLE>Garanti Sanal POS XML İşlem Test Sayfası</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<FONT SIZE=5> XML İşlem Test Sayfası </FONT>
+<P>
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+Aşağıdaki kod örneğini size gönderilen hesap bilgileriyle güncelleyerek XML formatında işlem gönderimini test edebilirsiniz.<br>
+(*** = hesap bilgilerinizi girmeniz gereken alan)<br>
+(xxx = kart ve ödeme bilgilerinizi girmeniz gereken alan)
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+<br>
+<FORM ACTION="https://sanalposprovtest.garanti.com.tr/VPServlet" METHOD=POST>
+<TEXTAREA cols="80" rows="40" name="data" >
+<?xml version="1.0" encoding="UTF-8"?>
+<GVPSRequest>
+<Mode>TEST</Mode>
+<Version>v0.00</Version>
+<Terminal>
+	<ProvUserID>PROVAUT</ProvUserID>
+	<HashData>hesaplanıp yazılacak</HashData>
+	<UserID>PROVAUT</UserID>
+	<ID>111995</ID>
+	<MerchantID>600218</MerchantID>
+</Terminal>
+<Customer>
+	<IPAddress>1.1.111.111</IPAddress>
+	<EmailAddress>Cem@cem.com</EmailAddress>
+</Customer>
+<Card>
+	<Number></Number>
+	<ExpireDate></ExpireDate>
+	<CVV2></CVV2>
+</Card>
+<Order>
+	<OrderID></OrderID>
+	<GroupID></GroupID>
+</Order>
+<Transaction>
+	<Type>sales</Type>
+	<InstallmentCnt></InstallmentCnt>
+	<Amount>1110</Amount>
+	<CurrencyCode>949</CurrencyCode>
+	<CardholderPresentCode>13</CardholderPresentCode>	///3D için 13 olacaktır. 	
+	<MotoInd>H</MotoInd>
+	<Description></Description>
+	<Secure3D>
+    		<AuthenticationCode>CAVV değeri</AuthenticationCode>   
+    		<SecurityLevel>ECI değeri</SecurityLevel>
+    		<TxnID>XID değeri</TxnID>
+    		<Md>MD değeri</Md> //// Kart bilgileri yerine bu alan kullanılıyor. 
+	</Secure3D>
+</Transaction>
+</GVPSRequest>
+</TEXTAREA>
+<CENTER><INPUT type=submit value="Submit" >&nbsp;&nbsp;&nbsp;
+<INPUT type=reset value="Reset"></CENTER>
+</FORM>
+</BODY>
+</HTML>

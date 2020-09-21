@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GVPSResponse>
+<Mode></Mode>
+<Terminal>
+<ProvUserID>PROVAUT</ProvUserID>
+<UserID>XXXX</UserID>
+<ID>30691292</ID>
+<MerchantID>3424113</MerchantID></Terminal>
+<Customer>
+<IPAddress>127.0.0.1</IPAddress>
+<EmailAddress>eticaret@garanti.com.tr</EmailAddress></Customer>
+<Order>
+<OrderID>1476sfsd</OrderID>
+<GroupID></GroupID>
+<OrderInqResult>
+<ChargeType></ChargeType>
+<PreAuthAmount>0</PreAuthAmount>
+<PreAuthDate></PreAuthDate>
+<AuthAmount>0</AuthAmount>
+<AuthDate></AuthDate>
+<RecurringInfo></RecurringInfo>
+<RecurringStatus></RecurringStatus>
+<Status></Status></OrderInqResult></Order>
+<Transaction>
+<Response>
+<Source>GVPS</Source>
+<Code>92</Code>
+<ReasonCode>0110</ReasonCode>
+<Message>Declined</Message>
+<ErrorMsg>Ýþlem bulunamadý</ErrorMsg>
+<SysErrMsg>ErrorId: 0110</SysErrMsg></Response>
+<RetrefNum></RetrefNum>
+<AuthCode></AuthCode>
+<BatchNum></BatchNum>
+<SequenceNum></SequenceNum>
+<ProvDate>20130426 17:30:46</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName></CardHolderName>
+<CardType></CardType>
+<HashData>92CA3B9CA8BED5DFABC2D594C8D46D8A88B61A6A</HashData>
+<HostMsgList></HostMsgList>
+<RewardInqResult>
+<RewardList></RewardList>
+<ChequeList></ChequeList></RewardInqResult></Transaction>
+</GVPSResponse>

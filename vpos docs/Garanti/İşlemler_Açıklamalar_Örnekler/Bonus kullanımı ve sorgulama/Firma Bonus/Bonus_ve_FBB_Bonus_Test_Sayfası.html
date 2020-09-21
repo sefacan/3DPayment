@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-9">
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1254">
+<TITLE>Garanti Sanal POS XML İşlem Test Sayfası</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<FONT SIZE=5> XML İşlem Test Sayfası </FONT>
+<P>
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+Aşağıdaki kod örneğini size gönderilen hesap bilgileriyle güncelleyerek XML formatında işlem gönderimini test edebilirsiniz.<br>
+(*** = hesap bilgilerinizi girmeniz gereken alan)<br>
+(xxx = kart ve ödeme bilgilerinizi girmeniz gereken alan)
+<HR ALIGN=LEFT WIDTH=100% SIZE=2>
+<br>
+<FORM ACTION="https://sanalposprovtest.garanti.com.tr/VPServlet" METHOD=POST>
+<TEXTAREA cols="80" rows="40" name="data" >
+<?xml version="1.0" encoding="UTF-8"?>
+<GVPSRequest>
+<Mode>PROD</Mode>
+<Version>v0.01</Version>
+<ChannelCode></ChannelCode>
+<Terminal>
+<ProvUserID>PROVAUT</ProvUserID>
+<HashData>A4BBFB8B305F0E6E899B362A951E4060CDEE5277</HashData>
+<UserID>XXXX</UserID>
+<ID>30691292</ID>
+<MerchantID>3424113</MerchantID></Terminal>
+<Customer>
+<IPAddress>127.0.0.1</IPAddress>
+<EmailAddress>eticaret@garanti.com.tr</EmailAddress></Customer>
+<Card>
+<Number>5549609023403012</Number>
+<ExpireDate>1015</ExpireDate>
+<CVV2>788</CVV2></Card>
+<Order>
+<OrderID></OrderID>
+<GroupID></GroupID>
+<AddressList>
+<Address>
+<Type>S</Type>
+<Name></Name>
+<LastName></LastName>
+<Company></Company>
+<Text></Text>
+<District></District>
+<City></City>
+<PostalCode></PostalCode>
+<Country></Country>
+<PhoneNumber></PhoneNumber></Address></AddressList></Order>
+<Transaction>
+<Type>sales</Type>
+<InstallmentCnt></InstallmentCnt>
+<Amount>100</Amount>
+<CurrencyCode>949</CurrencyCode>
+<CardholderPresentCode>0</CardholderPresentCode>
+<MotoInd>N</MotoInd>
+<Secure3D>
+<AuthenticationCode></AuthenticationCode>
+<SecurityLevel></SecurityLevel>
+<TxnID></TxnID>
+<Md></Md></Secure3D>
+
+    <RewardList>
+      <Reward>
+        <Type>FBB</Type>
+        <UsedAmount>10</UsedAmount>
+      </Reward>
+
+      <Reward>
+        <Type>BNS</Type>
+        <UsedAmount>20</UsedAmount>
+      </Reward>
+
+    </RewardList>
+
+</Transaction>
+</GVPSRequest>
+</TEXTAREA>
+<CENTER><INPUT type=submit value="Submit" >&nbsp;&nbsp;&nbsp;
+<INPUT type=reset value="Reset"></CENTER>
+</FORM>
+</BODY>
+</HTML>

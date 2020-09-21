@@ -1,0 +1,55 @@
+
+* xmlpay  -> 3d siz normal sanal pos tanýmý olan firmalar için
+
+* 3D  ->  3D_model tanýmý olan iþyerleri içindir
+
+* 3d_pay -> 3d_pay / 3d_full ve 3d_half tanýmý için örnekleride içermekte. örnek 3D_FULL için secure3dsecuritylevel 3D_FULL 
+
+
+* 3d_oos_pay -> Ortak Ödeme Sayfasý ve 3d secureli kod örneðidir. içeriðinde 3d_oos_full ve 3d_ooo_half 
+seçeneklerinide içeririr.  örnek secure3dsecuritylevel 3D_OOS_FULL
+
+* OOS_PAY 3d secure kullanýmý olmayan ortak ödeme sayfasý tanýmlý sanal poslar için kullanýlmaktadýr.
+
+
+* Not: 3d_full sadece 3D li iþlemleri kabul etmektedir,
+kurulumda banka sisteminde tanýmlý model kullanýlmalýdýr. Tanýmlý modelinizi bilinmiyorsanýz banka yetkilisine danýþýnýz...
+
+* OOS modellerinde *PROVOOS kullanýcýsý*
+diðerlerinde *PROVAUT kullanýcýsý* yazýlýmda TerminalProvUserID alanýnda kullanýlýyor.
+
+* xmlpay haricinde diðer tüm modeller storekey gerektirmektedir, "yönetim panelinden 3d Güvenlik Key" alanýndan 
+tanýmlanmaktadýr.
+
+
+önemli;
+----------
+Validation dosyalarý hakkýnda bilgi:
+
+3D_PAY/3D_HALF/3D_FULL/3D_OOS_FULL/3D_OOS_PAY/3D_OOS_HALF ve OOS_PAY KULLANILAN ÝÞYERLERÝNDE
+GELEN MESAJ BANKADANMI GELMEKTEDÝR BUNUN KONTROLÜ AMAÇLI GUVENLIK DOGRULAMASI ÝÇÝNDÝR...
+
+storekey alana kendi storekey verinizi yazmanýz gerekiyor.
+
+ Gate3DEngineCallBack Dosyasý iþlemin dönüþü bankadanmý geliyor kontrol için hazýrlanmýþ bir uygulamadýr.
+
+Validation :True ise yanýt bankadan geliyor. Dönüþte mutlaka True sonucu aranýr.Validation True iþlemin onaylandýðý anlamýna gelmez. 
+
+* yanýt bankadan geliyorsa  procreturncode deðerini kontrol edebiliriz 00 ise iþlem onay alýnmýþ anlamýna gelmektedir *
+
+
+dönen deðerlerde : 
+Validation sonucu :True olmalýdýr.
+onay için procreturncode örnek 00  olmalýdýr "00 onay" diðer dönüþ mesajlarý onaylanmadý anlamýna gelir (örnek 51 "hesap müsait deðildir" gibi.)
+errmsg hatanýn nedeni örnek : "Müþteri hesap limiti yetersiz "
+authcode alanýnda onay numarasý döner.
+----------
+
+
+Güvenlik amaçlý 
+
+•	Siteden sanal posa post edilen tutar deðeri müþterinin site üzerinde gördüðü yada bir önceki sayfadaki sepet tutar yerine veri tabanýndan çekilecek tutar kullanýlmalý, 
+•	Ýþlem sonucunda dönen tutar ile orijinal iþlem tutarýný kontrol edebilir,
+•	Þifreli cevap yapýsýna geçebilir, Bu yapýda tutar þifreli alanlar içerisinde geleceði için tutarýn deðiþtirilmesi söz konusu olmaz. Kullanýcý cevapta dönen iþlem tutarý ile iþlemdeki tutarý kontrol ederek iþlemde oynama olup olmadýðýný bu þekilde daha güvenli olarak yakalar.
+•	Firma satýþ sonrasýnda orderinq yada orderhisinq fonksiyonlarýný kullanarak sorgulama sonrasýnda iþlem durumunu kontrol edip, gelen tutarla, sepet tutarýný karþýlaþtýrabilir. 
+

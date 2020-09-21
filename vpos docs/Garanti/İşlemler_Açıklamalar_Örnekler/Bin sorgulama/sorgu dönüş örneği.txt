@@ -1,0 +1,1782 @@
+<GVPSResponse>
+  <Mode /> 
+<Terminal>
+  <ProvUserID>PROVAUT</ProvUserID> 
+  <UserID>XXXX</UserID> 
+  <ID>30691292</ID> 
+  <MerchantID>3424113</MerchantID> 
+  </Terminal>
+<Customer>
+  <IPAddress>127.0.0.1</IPAddress> 
+  <EmailAddress>eticaret@garanti.com.tr</EmailAddress> 
+  </Customer>
+<Order>
+  <OrderID /> 
+  <GroupID /> 
+<BINInqResult>
+<BINList>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>374422</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>SMAXPLTN</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>374424</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>SMAXPLTN</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>374425</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMXBE</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
++ <BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>374426</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMXBG</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>374427</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>BNSCMP</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375622</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMEXG</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375623</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMEXG</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375624</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMEXP</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375625</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMXBE</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375626</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMXBG</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375627</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>BNSAMEX</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375628</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>SMAXGOLD</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375629</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>SMAXPLTN</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>375631</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>AMEXB</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>400684</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>401738</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>PARACARD</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>402458</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>402459</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>403280</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SANAL</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>403666</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>404308</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>405051</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>405090</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>406015</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>408579</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>409070</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>409219</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBDK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>410141</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>411156</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>411157</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>411158</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>411159</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SBBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>413729</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>413836</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>413972</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>420322</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>420323</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>420324</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>420556</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>420557</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>424360</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>424361</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>426886</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>426887</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>426888</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>426889</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>427314</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BNSTK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>427315</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>428220</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>FLEXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>428221</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>FLEXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>206</BankCode> 
+  <BankName>TFKB</BankName> 
+  <BINNum>428462</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TFKBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>428967</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>428968</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>432154</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>FLEXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>440293</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>448472</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>456057</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>456059</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>459026</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>461668</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>462274</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EKINBNS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>466280</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>466281</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>466282</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>466283</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>467293</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>467294</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>467295</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>472914</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>474151</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>479323</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>479324</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>480296</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>INGBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>482489</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>MGRBNS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>482490</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>MGRBNS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>482491</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>MGRBNS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>487074</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>487075</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>489455</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>PARACARD</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>489456</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>489457</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>489458</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>489478</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>489495</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>489496</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>490175</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>492186</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>492187</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>492193</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>493845</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>125</BankCode> 
+  <BankName>TEKFEN BANK A.Þ.</BankName> 
+  <BINNum>498516</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EBTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>125</BankCode> 
+  <BankName>TEKFEN BANK A.Þ.</BankName> 
+  <BINNum>498517</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EBTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>125</BankCode> 
+  <BankName>TEKFEN BANK A.Þ.</BankName> 
+  <BINNum>498518</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EBTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>125</BankCode> 
+  <BankName>TEKFEN BANK A.Þ.</BankName> 
+  <BINNum>498519</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EBTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>125</BankCode> 
+  <BankName>TEKFEN BANK A.Þ.</BankName> 
+  <BINNum>498520</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>EBTBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>510118</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>510138</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>510151</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>510221</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>512017</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>512117</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>512803</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>514025</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>514915</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>516458</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>517040</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>517041</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PARACARD</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>517042</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>517048</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>517049</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>520019</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>520097</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>520303</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>520922</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>520940</BINNum> 
+  <Organization>AMEX</Organization> 
+  <Product>BNSCMP</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>520988</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>521394</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>521824</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>521825</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>521832</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>206</BankCode> 
+  <BankName>TFKB</BankName> 
+  <BINNum>521848</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TFKBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>521875</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>522204</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>522221</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>ALTNFBNS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>524839</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>524840</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>524899</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>528920</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>528939</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>528956</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>530853</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>530866</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>532443</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>533169</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>SMTK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>534261</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>206</BankCode> 
+  <BankName>TFKB</BankName> 
+  <BINNum>537719</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TFKBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>900</BankCode> 
+  <BankName>AKK TURÝZM VE TÝCARET A.Þ.</BankName> 
+  <BINNum>539605</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZPTBNS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540036</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540037</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BNSTK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540118</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540226</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540227</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540669</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>540709</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>541815</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>FLEXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>541858</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>541865</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>FLEXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>542030</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>542965</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>542967</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>543738</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>544078</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>544294</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>544836</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>545102</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>545124</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>545769</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>545770</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TKSBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>134</BankCode> 
+  <BankName>DENÝZ BANK A.Þ.</BankName> 
+  <BINNum>546764</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>DNZBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>547311</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SBBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>547765</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>548935</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>549208</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>206</BankCode> 
+  <BankName>TFKB</BankName> 
+  <BINNum>549294</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TFKBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>59</BankCode> 
+  <BankName>ÞEKERBANK T.A.Þ.</BankName> 
+  <BINNum>549394</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SBBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>900</BankCode> 
+  <BankName>AKK TURÝZM VE TÝCARET A.Þ.</BankName> 
+  <BINNum>549938</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZPTBNS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>550074</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>552095</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>32</BankCode> 
+  <BankName>TÜRK EKONOMÝ BANKASI A.Þ.</BankName> 
+  <BINNum>553090</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TEBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>553130</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BNSTK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>900</BankCode> 
+  <BankName>AKK TURÝZM VE TÝCARET A.Þ.</BankName> 
+  <BINNum>554566</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>DNZPTBNS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>99</BankCode> 
+  <BankName>ING BANK A.S.</BankName> 
+  <BINNum>554570</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>INGBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>554796</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>GBKK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>554960</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>BONUS</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>557023</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>SANAL</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>124</BankCode> 
+  <BankName>ALTERNATÝF BANK A.Þ.</BankName> 
+  <BINNum>558485</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>ALTBONUS</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>109</BankCode> 
+  <BankName>TEKSTÝLBANK A.Þ.</BankName> 
+  <BINNum>558634</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>TKSBNSTK</Product> 
+  <Group>BONUSNET</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>558699</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>ORTAK</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>589318</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>600208</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>602970</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>HEDIYE</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>603480</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>YKM</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>603492</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>GECICI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>603614</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PG</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>605036</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>MAGAZA</Product> 
+  <Group>Garanti</Group> 
+  <CardType>M</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>642010</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>MAXI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>642011</BINNum> 
+  <Organization>GARANTI</Organization> 
+  <Product>LCW</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>670606</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>676255</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>676283</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>676651</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>KONTOR</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>676827</BINNum> 
+  <Organization>MASTER</Organization> 
+  <Product>PREPAID</Product> 
+  <Group>Garanti</Group> 
+  <CardType>D</CardType> 
+  </BIN>
+<BIN>
+  <BankCode>62</BankCode> 
+  <BankName>T. GARANTÝ BANKASI A.Þ.</BankName> 
+  <BINNum>724365</BINNum> 
+  <Organization>VISA</Organization> 
+  <Product>MINI</Product> 
+  <Group>Garanti</Group> 
+  <CardType>C</CardType> 
+  </BIN>
+  </BINList>
+  </BINInqResult>
+  </Order>
+<Transaction>
+<Response>
+  <Source>GVPS</Source> 
+  <Code>00</Code> 
+  <ReasonCode /> 
+  <Message>Approved</Message> 
+  <ErrorMsg /> 
+  <SysErrMsg /> 
+  </Response>
+  <RetrefNum /> 
+  <AuthCode /> 
+  <BatchNum /> 
+  <SequenceNum /> 
+  <ProvDate>20130426 16:14:31</ProvDate> 
+  <CardNumberMasked /> 
+  <CardHolderName /> 
+  <CardType /> 
+  <HashData>FC19C4009AFCF3FEB9F77C099F4E4FA11F951B60</HashData> 
+  <HostMsgList /> 
+<RewardInqResult>
+  <RewardList /> 
+  <ChequeList /> 
+  </RewardInqResult>
+  </Transaction>
+  </GVPSResponse>

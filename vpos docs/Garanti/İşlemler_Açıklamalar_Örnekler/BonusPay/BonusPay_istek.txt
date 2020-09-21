@@ -1,0 +1,38 @@
+<GVPSRequest>
+<Mode>TEST</Mode>
+<Version>v0.00</Version>
+<Terminal>
+	<ProvUserID>PROVAUT</ProvUserID>
+	<HashData>5C53C57B0B6146FCEB1DB7C3E734AAE4C9D89A4B</HashData>
+	<UserID>PROVAUT</UserID>
+	<ID>505181</ID>
+	<MerchantID>3424113</MerchantID>
+</Terminal>
+<Customer>
+	<IPAddress>1.1.111.111</IPAddress>
+	<EmailAddress>Cem@cem.com</EmailAddress>
+</Customer>
+<Card>
+	<Number></Number>
+	<ExpireDate></ExpireDate>
+	<CVV2></CVV2>
+</Card>
+<Order>
+	<OrderID></OrderID>
+	<GroupID></GroupID>
+	<Description></Description>
+</Order>
+<Transaction>
+	<Type>cepbank</Type>
+	<InstallmentCnt></InstallmentCnt>
+	<Amount>100</Amount>
+	<CurrencyCode>949</CurrencyCode>
+	<CardholderPresentCode>0</CardholderPresentCode>		
+	<MotoInd>N</MotoInd>
+	<Description></Description>
+<CepBank>
+	<GSMNumber>535XXXXXXX</GSMNumber>
+	<PaymentType>K</PaymentType>
+</CepBank>
+</Transaction>
+</GVPSRequest>

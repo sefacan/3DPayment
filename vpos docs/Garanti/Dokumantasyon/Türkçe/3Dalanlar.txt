@@ -1,0 +1,95 @@
+cardnumber
+cardcvv2
+cardexpiredatemonth
+cardexpiredateyear
+cardholder
+
+secure3dauthenticationcode
+secure3dsecuritylevel
+secure3dtxnid
+secure3drnd
+secure3dhash
+secure3DRecordKey
+
+mode
+apiversion
+customeremailaddress
+customeripaddress
+terminalid
+terminalmerchantid
+txnamount
+txntype
+firmacardno
+txncurrencycode
+companyname
+txninstallmentcount
+txninstallmentperiod
+errorurl
+successurl
+terminalprovuserid
+terminaluserid
+txntimestamp
+orderid
+refreshtime
+lang
+ordergroupid
+orderdescription
+txndownpayrate
+txndelaydaycnt
+txncardholderpresentcode
+txndescription
+txnmotoind
+utilitypayinvoiceid
+utilitypaysubscode
+utilitypaytype
+gsmquantity
+gsmsalesamnt
+gsmsalesunitid
+moneyccdisc
+moneyextradisc
+moneyinvoice
+moneypayment
+moneyproductbaseddisc
+
+orderitemcount
+orderitemnumber+ Count
+orderitemproductid+ Count
+orderitemproductcode+ Count
+orderitemquantity+ Count
+orderitemprice+ Count
+orderitemtotalamount+ Count
+orderitemdescription+ Count
+
+orderaddresscount
+orderaddresscity+ Count
+orderaddresscompany+ Count
+orderaddresscountry+ Count
+orderaddressdistrict+ Count
+orderaddressfaxnumber+ Count
+orderaddressgsmnumber+ Count
+orderaddresslastname+ Count
+orderaddressname+ Count
+orderaddressphonenumber+ Count
+orderaddresspostalcode+ Count
+orderaddresstext+ Count
+orderaddresstype+ Count
+
+ordercommentcount
+ordercommenttext+ Count
+ordercommentnumber+ Count
+
+txnrewardcount
+txnrewardtype+ Count
+txnrewardgainedamount+ Count
+txnrewardusedamount+ Count
+
+txnchequecount
+txnchequetype+ Count
+txnchequeamount+ Count
+txnchequebitmap+ Count
+txnchequeid+ Count
+txnchequecount+ Count
+
+
+
+

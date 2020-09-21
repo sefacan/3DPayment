@@ -1,0 +1,31 @@
+<GVPSResponse>
+<Mode></Mode>
+<Order>
+<OrderID>SIST2E8748F43EA24754912E365D637B91D8</OrderID>
+<GroupID></GroupID>
+</Order>
+<Transaction>
+<Response>
+<Source>HOST</Source>
+<Code>00</Code>
+<ReasonCode>00</ReasonCode>
+<Message>Approved</Message>
+<ErrorMsg></ErrorMsg>
+<SysErrMsg></SysErrMsg>
+</Response>
+<RetrefNum>105809652539</RetrefNum>
+<AuthCode>914729</AuthCode>
+<BatchNum>000574</BatchNum>
+<SequenceNum>000509</SequenceNum>
+<ProvDate>20110227 09:26:12</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName>HA*** YIL***</CardHolderName>
+<HashData>6F39EA85C6A5BBA9040F40FA7C8F199C70D7343A</HashData>
+<HostMsgList>
+</HostMsgList>
+<RewardInqResult>
+<RewardList></RewardList>
+<ChequeList></ChequeList>
+</RewardInqResult>
+</Transaction>
+</GVPSResponse>

@@ -1,0 +1,35 @@
+
+
+
+Güvenlik amaçlý 
+
+•	Siteden sanal posa post edilen tutar deðeri müþterinin site üzerinde gördüðü yada bir önceki sayfadaki sepet tutar yerine veri tabanýndan çekilecek tutar kullanýlmalý, 
+•	Ýþlem sonucunda dönen tutar ile orijinal iþlem tutarýný kontrol edebilir,
+•	Þifreli cevap yapýsýna geçebilir, Bu yapýda tutar þifreli alanlar içerisinde geleceði için tutarýn deðiþtirilmesi söz konusu olmaz. Kullanýcý cevapta dönen iþlem tutarý ile iþlemdeki tutarý kontrol ederek iþlemde oynama olup olmadýðýný bu þekilde daha güvenli olarak yakalar.
+•	Firma satýþ sonrasýnda orderinq yada orderhisinq fonksiyonlarýný kullanarak sorgulama sonrasýnda iþlem durumunu kontrol edip, gelen tutarla, sepet tutarýný karþýlaþtýrabilir. 
+
+
+----------
+Validation dosyalarý hakkýnda bilgi:
+
+3D_PAY/3D_HALF/3D_FULL/3D_OOS_FULL/3D_OOS_PAY/3D_OOS_HALF ve OOS_PAY KULLANILAN ÝÞYERLERÝNDE
+GELEN MESAJ BANKADANMI GELMEKTEDÝR BUNUN KONTROLÜ AMAÇLI GUVENLIK DOGRULAMASI ÝÇÝNDÝR...
+
+storekey alana kendi storekey verinizi yazmanýz gerekiyor.
+
+ Gate3DEngineCallBack Dosyasý iþlemin dönüþü bankadanmý geliyor kontrol için hazýrlanmýþ bir uygulamadýr.
+
+Validation :True ise yanýt bankadan geliyor. Dönüþte mutlaka True sonucu aranýr.Validation True iþlemin onaylandýðý anlamýna gelmez. 
+
+* yanýt bankadan geliyorsa  procreturncode deðerini kontrol edebiliriz 00 ise iþlem onay alýnmýþ anlamýna gelmektedir *
+
+
+dönen deðerlerde : 
+Validation sonucu :True olmalýdýr.
+onay için procreturncode örnek 00  olmalýdýr "00 onay" diðer dönüþ mesajlarý onaylanmadý anlamýna gelir (örnek 51 "hesap müsait deðildir" gibi.)
+errmsg hatanýn nedeni örnek : "Müþteri hesap limiti yetersiz "
+authcode alanýnda onay numarasý döner.
+----------
+
+
+Bilgilerinize sunarýz. Ýyi çalýþmalar. 

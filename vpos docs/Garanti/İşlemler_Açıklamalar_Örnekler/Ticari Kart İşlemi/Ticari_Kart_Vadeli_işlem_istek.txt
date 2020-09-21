@@ -1,0 +1,48 @@
+<GVPSRequest>
+<Mode>TEST</Mode>
+<Version>v0.00</Version>
+<Terminal>
+	<ProvUserID>PROVAUT</ProvUserID>
+	<HashData>hash</HashData>
+	<UserID>PROVAUT</UserID>
+	<ID>111995</ID>
+	<MerchantID>600218</MerchantID>
+</Terminal>
+<Customer>
+	<IPAddress>1.1.111.111</IPAddress>
+	<EmailAddress>Cem@cem.com</EmailAddress>
+</Customer>
+<Card>
+	<Number></Number>
+	<ExpireDate>0911</ExpireDate>
+	<CVV2></CVV2>
+</Card>
+<Order>
+	<OrderID></OrderID>
+	<GroupID></GroupID>
+</Order>
+<Transaction>
+	<Type>commercialcardextendedcredit</Type>
+	<SubType></SubType>
+	<InstallmentCnt>2</InstallmentCnt>
+	<Amount>2422</Amount>
+	<CurrencyCode>949</CurrencyCode>
+	<CardholderPresentCode>0</CardholderPresentCode>		
+	<MotoInd>H</MotoInd>
+	<CommercialCardExtendedCredit>
+		<PaymentList>
+			<Payment> 
+				<Number>1</Number>
+				<DueDate>20110307</DueDate>
+				<Amount>1211</Amount>
+			</Payment>
+			<Payment> 
+				<Number>2</Number>
+				<DueDate>20110309</DueDate>
+				<Amount>1211</Amount>
+			</Payment>
+
+		</PaymentList>
+	</CommercialCardExtendedCredit>
+</Transaction> 
+</GVPSRequest>

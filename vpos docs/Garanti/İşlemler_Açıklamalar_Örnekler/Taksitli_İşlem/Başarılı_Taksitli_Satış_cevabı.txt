@@ -1,0 +1,40 @@
+<GVPSResponse>
+<Mode></Mode>
+<Terminal>
+<ProvUserID>PROVAUT</ProvUserID>
+<UserID>XXXX</UserID>
+<ID>30691292</ID>
+<MerchantID>3424113</MerchantID></Terminal>
+<Customer>
+<IPAddress>127.0.0.1</IPAddress>
+<EmailAddress>eticaret@garanti.com.tr</EmailAddress></Customer>
+<Order>
+<OrderID>siparis1deneme</OrderID>
+<GroupID></GroupID></Order>
+<Transaction>
+<Response>
+<Source>HOST</Source>
+<Code>00</Code>
+<ReasonCode>00</ReasonCode>
+<Message>Approved</Message>
+<ErrorMsg></ErrorMsg>
+<SysErrMsg></SysErrMsg></Response>
+<RetrefNum>311710676038</RetrefNum>
+<AuthCode>490535</AuthCode>
+<BatchNum>000008</BatchNum>
+<SequenceNum>000055</SequenceNum>
+<ProvDate>20130427 10:29:39</ProvDate>
+<CardNumberMasked>554960******3012</CardNumberMasked>
+<CardHolderName>PE*** PEL** TON***</CardHolderName>
+<CardType>BONUS</CardType>
+<HashData>A0775603CAD3F951E8FF746CDC0401728B9BF2ED</HashData>
+<HostMsgList>
+<HostMsg>OFFF COK TAKSIT ALDIM</HostMsg></HostMsgList>
+<RewardInqResult>
+<RewardList>
+<Reward>
+<Type>FBB</Type>
+<TotalAmount>0</TotalAmount>
+<LastTxnGainAmount>10</LastTxnGainAmount></Reward></RewardList>
+<ChequeList></ChequeList></RewardInqResult></Transaction>
+</GVPSResponse>

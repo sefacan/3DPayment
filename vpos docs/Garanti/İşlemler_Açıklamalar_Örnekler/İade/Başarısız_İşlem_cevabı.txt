@@ -1,0 +1,34 @@
+<GVPSResponse>
+<Mode></Mode>
+<Terminal>
+<ProvUserID>PROVRFN</ProvUserID>
+<UserID>XXXX</UserID>
+<ID>30691292</ID>
+<MerchantID>3424113</MerchantID></Terminal>
+<Customer>
+<IPAddress>127.0.0.1</IPAddress>
+<EmailAddress>eticaret@garanti.com.tr</EmailAddress></Customer>
+<Order>
+<OrderID>1476</OrderID>
+<GroupID></GroupID></Order>
+<Transaction>
+<Response>
+<Source>GVPS</Source>
+<Code>92</Code>
+<ReasonCode>0214</ReasonCode>
+<Message>Declined</Message>
+<ErrorMsg>Ýade tutarý, satýþ tutarýndan büyük olamaz</ErrorMsg>
+<SysErrMsg>ErrorId: 0214</SysErrMsg></Response>
+<RetrefNum>311616674775</RetrefNum>
+<AuthCode></AuthCode>
+<BatchNum>000008</BatchNum>
+<SequenceNum>000030</SequenceNum>
+<ProvDate>20130426 16:56:35</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName></CardHolderName>
+<CardType></CardType>
+<HashData>34F10F1DAAA651C8B7AF421BEB8E497794E27851</HashData>
+<HostMsgList></HostMsgList>
+<RewardInqResult>
+<RewardList></RewardList>
+<ChequeList></ChequeList></RewardInqResult></Transaction></GVPSResponse>

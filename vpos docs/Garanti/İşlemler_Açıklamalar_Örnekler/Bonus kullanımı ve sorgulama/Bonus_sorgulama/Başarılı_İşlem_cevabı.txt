@@ -1,0 +1,64 @@
+<GVPSResponse>
+  <Mode /> 
+<Terminal>
+  <ProvUserID>PROVAUT</ProvUserID> 
+  <UserID>XXXX</UserID> 
+  <ID>30691292</ID> 
+  <MerchantID>3424113</MerchantID> 
+  </Terminal>
+<Customer>
+  <IPAddress>127.0.0.1</IPAddress> 
+  <EmailAddress>eticaret@garanti.com.tr</EmailAddress> 
+  </Customer>
+<Order>
+  <OrderID>SISTB2B7F49CDC5A44C6AFC3540689820D9F</OrderID> 
+  <GroupID /> 
+  </Order>
+<Transaction>
+<Response>
+  <Source>HOST</Source> 
+  <Code>00</Code> 
+  <ReasonCode>00</ReasonCode> 
+  <Message>Approved</Message> 
+  <ErrorMsg /> 
+  <SysErrMsg /> 
+  </Response>
+  <RetrefNum>311615674611</RetrefNum> 
+  <AuthCode /> 
+  <BatchNum>000008</BatchNum> 
+  <SequenceNum>000014</SequenceNum> 
+  <ProvDate>20130426 15:34:34</ProvDate> 
+  <CardNumberMasked>554960******3012</CardNumberMasked> 
+  <CardHolderName /> 
+  <CardType>BONUS</CardType> 
+  <HashData>B33E3CEFC099ADA1F18234E39E2B5A12C45A4702</HashData> 
+  <HostMsgList /> 
+<RewardInqResult>
+<RewardList>
+<Reward>
+  <Type>FBB</Type> 
+  <TotalAmount>148988</TotalAmount> 
+  <LastTxnGainAmount>0</LastTxnGainAmount> 
+  </Reward>
+<Reward>
+  <Type>BNS</Type> 
+  <TotalAmount>4494</TotalAmount> 
+  <LastTxnGainAmount>0</LastTxnGainAmount> 
+  </Reward>
+  </RewardList>
+<ChequeList>
+<Cheque>
+  <Type>P</Type> 
+  <Amount>500</Amount> 
+  <Count>280</Count> 
+  <ExpireDate>20200101</ExpireDate> 
+  <UsageRate>0000</UsageRate> 
+  <MinTxnAmount>1</MinTxnAmount> 
+  <ID>0000006533</ID> 
+  <Bitmap>3C00</Bitmap> 
+  <Description /> 
+  </Cheque>
+  </ChequeList>
+  </RewardInqResult>
+  </Transaction>
+  </GVPSResponse>

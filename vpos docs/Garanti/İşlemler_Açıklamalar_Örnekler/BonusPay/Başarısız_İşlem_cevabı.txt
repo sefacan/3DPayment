@@ -1,0 +1,30 @@
+<GVPSResponse>
+<Mode></Mode>
+<Order>
+<OrderID>111111</OrderID>
+<GroupID></GroupID>
+</Order>
+<Transaction>
+<Response>
+<Source>GVPS</Source>
+<Code>95</Code>
+<ReasonCode>0599</ReasonCode>
+<Message>Declined</Message>
+<ErrorMsg>Bonuspay Ýþleminizi gerçekleþiremiyoruz.Tekrar deneyiniz.</ErrorMsg>
+<SysErrMsg>Bonuspay ErrID : 6511</SysErrMsg>
+</Response>
+<RetrefNum></RetrefNum>
+<AuthCode></AuthCode>
+<BatchNum></BatchNum>
+<SequenceNum></SequenceNum>
+<ProvDate>20110306 12:18:40</ProvDate>
+<CardNumberMasked></CardNumberMasked>
+<CardHolderName></CardHolderName>
+<HashData>2E2E1AAECE4291FB4D6F090F93C18492907BE3A1</HashData>
+<HostMsgList></HostMsgList>
+<RewardInqResult><RewardList>
+</RewardList>
+<ChequeList></ChequeList>
+</RewardInqResult>
+</Transaction>
+</GVPSResponse>

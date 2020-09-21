@@ -1,0 +1,41 @@
+<GVPSResponse>
+  <Mode /> 
+<Terminal>
+  <ProvUserID>PROVRFN</ProvUserID> 
+  <UserID>XXXX</UserID> 
+  <ID>30691292</ID> 
+  <MerchantID>3424113</MerchantID> 
+  </Terminal>
+<Customer>
+  <IPAddress>127.0.0.1</IPAddress> 
+  <EmailAddress>eticaret@garanti.com.tr</EmailAddress> 
+  </Customer>
+<Order>
+  <OrderID>1476</OrderID> 
+  <GroupID /> 
+  </Order>
+<Transaction>
+<Response>
+  <Source>GVPS</Source> 
+  <Code>92</Code> 
+  <ReasonCode>0202</ReasonCode> 
+  <Message>Declined</Message> 
+  <ErrorMsg>Ýptal edebileceðiniz birden fazla iþlem var, RRN bilgisi gonderi</ErrorMsg> 
+  <SysErrMsg>ErrorId: 0202</SysErrMsg> 
+  </Response>
+  <RetrefNum>311617674819</RetrefNum> 
+  <AuthCode /> 
+  <BatchNum>000008</BatchNum> 
+  <SequenceNum>000038</SequenceNum> 
+  <ProvDate>20130426 17:16:51</ProvDate> 
+  <CardNumberMasked>554960******3012</CardNumberMasked> 
+  <CardHolderName /> 
+  <CardType /> 
+  <HashData>6FD41A05196DB5EB6145D6DF1720F881DCC9AAB9</HashData> 
+  <HostMsgList /> 
+<RewardInqResult>
+  <RewardList /> 
+  <ChequeList /> 
+  </RewardInqResult>
+  </Transaction>
+  </GVPSResponse>
