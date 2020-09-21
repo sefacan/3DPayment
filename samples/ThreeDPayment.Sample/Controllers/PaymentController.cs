@@ -71,7 +71,7 @@ namespace ThreeDPayment.Controllers
                 CustomerIpAddress = HttpContext.Connection.RemoteIpAddress,
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
-                CartType = "1",
+                CardType = "1",
                 OrderNumber = Guid.NewGuid().ToString(),
                 BankName = paymentModel.SelectedBank,
                 CallbackUrl = new Uri($"{Request.Scheme}://{Request.Host}{Request.PathBase}" + Url.Action("Callback", "Payment")),

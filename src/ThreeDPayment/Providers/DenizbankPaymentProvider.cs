@@ -55,7 +55,7 @@ namespace ThreeDPayment.Providers
 
                 parameters.Add("Expiry", $"{request.ExpireMonth}{request.ExpireYear}");//kart bitiş ay-yıl birleşik
                 parameters.Add("Cvv2", request.CvvCode);//kart güvenlik kodu
-                parameters.Add("CartType", request.CartType);//kart tipi visa 1 | master 2 | amex 3
+                parameters.Add("CartType", request.CardType);//kart tipi visa 1 | master 2 | amex 3
                 parameters.Add("SecureType", secureType);
                 parameters.Add("Lang", request.LanguageIsoCode.ToUpper());//iki haneli dil iso kodu
 

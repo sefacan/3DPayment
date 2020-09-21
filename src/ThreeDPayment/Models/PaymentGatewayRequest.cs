@@ -11,7 +11,7 @@ namespace ThreeDPayment.Models
         public int ExpireMonth { get; set; }
         public int ExpireYear { get; set; }
         public string CvvCode { get; set; }
-        public string CartType { get; set; }
+        public string CardType { get; set; }
         public int Installment { get; set; }
         public decimal TotalAmount { get; set; }
         public string OrderNumber { get; set; }
