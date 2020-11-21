@@ -12,7 +12,7 @@ jobs:
     - name: Setup .NET Core if needed
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.x'
+        dotnet-version: '5.0.x'
       if: matrix.os == 'ubuntu-latest'
     - uses: actions/checkout@v1
     - name: Build
