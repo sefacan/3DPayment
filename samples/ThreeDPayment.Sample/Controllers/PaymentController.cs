@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
+using System.Collections;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ThreeDPayment.Models;
@@ -17,12 +18,15 @@ namespace ThreeDPayment.Controllers
 
         private readonly IHtmlHelper _htmlHelper;
         private readonly IPaymentProviderFactory _paymentProviderFactory;
+        private readonly ICreditCardResolver _creditCardResolver;
 
         public PaymentController(IHtmlHelper htmlHelper,
-            IPaymentProviderFactory paymentProviderFactory)
+            IPaymentProviderFactory paymentProviderFactory,
+            ICreditCardResolver creditCardResolver)
         {
             _htmlHelper = htmlHelper;
             _paymentProviderFactory = paymentProviderFactory;
+            _creditCardResolver = creditCardResolver;
         }
 
         public IActionResult Index()
@@ -51,14 +55,15 @@ namespace ThreeDPayment.Controllers
 
         public async Task<IActionResult> ThreeDGate()
         {
-            if (HttpContext.Session.TryGetValue(PaymentSessionName, out byte[] paymentInfo))
+            if (!HttpContext.Session.TryGetValue(PaymentSessionName, out byte[] paymentInfo))
                 return RedirectToAction(nameof(Index));
 
             var paymentModel = JsonSerializer.Deserialize<PaymentViewModel>(paymentInfo);
             if (paymentModel == null)
                 return RedirectToAction(nameof(Index));
 
-            var paymentProvider = _paymentProviderFactory.Create(paymentModel.SelectedBank);
+            var bankName = _creditCardResolver.GetBankName(paymentModel.CardNumber);
+            var paymentProvider = _paymentProviderFactory.Create(bankName);
             var paymentGatewayResult = await paymentProvider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = paymentModel.CardHolderName,

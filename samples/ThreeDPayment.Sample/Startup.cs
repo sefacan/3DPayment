@@ -34,6 +34,8 @@ namespace ThreeDPayment.Sample
             //add session support
             services.AddSession();
 
+            services.AddSingleton(typeof(ICreditCardResolver), typeof(CreditCardResolver));
+
             //add controller with views support
             var mvcBuilder = services.AddControllersWithViews();
 

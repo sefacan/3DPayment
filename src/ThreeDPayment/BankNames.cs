@@ -3,26 +3,26 @@ namespace ThreeDPayment
     public enum BankNames
     {
         //NestPay
-        AkBank,
-        IsBankasi,
-        HalkBank,
-        ZiraatBankasi,
-        TurkEkonomiBankasi,
-        IngBank,
-        TurkiyeFinans,
-        AnadoluBank,
-        HSBC,
+        AkBank = 46,
+        IsBankasi = 64,
+        HalkBank = 12,
+        ZiraatBankasi = 10,
+        TurkEkonomiBankasi = 32,
+        IngBank = 99,
+        TurkiyeFinans = 206,
+        AnadoluBank = 135,
+        HSBC = 123,
         //InterVPOS
-        DenizBank,
+        DenizBank = 134,
         //PayFor
-        FinansBank,
+        FinansBank = 111,
         //GVP
-        Garanti,
+        Garanti = 62,
         //KuveytTurk
-        KuveytTurk,
+        KuveytTurk = 205,
         //GET 7/24
-        VakifBank,
+        VakifBank = 15,
         //Posnet
-        Yapikredi
+        Yapikredi = 67
     }
 }
