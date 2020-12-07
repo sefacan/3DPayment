@@ -102,7 +102,7 @@ namespace ThreeDPayment.Controllers
             var paymentProvider = _paymentProviderFactory.Create(paymentModel.SelectedBank);
             var verifyGatewayResult = await paymentProvider.VerifyGateway(new VerifyGatewayRequest
             {
-
+                BankParameters = paymentProvider.TestParameters
             }, form);
             HttpContext.Session.Set(PaymentResultSessionName, JsonSerializer.SerializeToUtf8Bytes(verifyGatewayResult));
 

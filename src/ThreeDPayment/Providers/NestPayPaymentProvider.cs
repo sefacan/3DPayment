@@ -75,6 +75,30 @@ namespace ThreeDPayment.Providers
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
+            string clientId = request.BankParameters["clientId"];
+            string storeKey = request.BankParameters["storeKey"];
+            StringBuilder hashBuilder = new StringBuilder();
+            hashBuilder.Append(clientId);
+            hashBuilder.Append(form["oid"]);
+            hashBuilder.Append(form["AuthCode"]);
+            hashBuilder.Append(form["ProcReturnCode"]);
+            hashBuilder.Append(form["Response"]);
+            hashBuilder.Append(form["mdStatus"]);
+            hashBuilder.Append(form["cavv"]);
+            hashBuilder.Append(form["eci"]);
+            hashBuilder.Append(form["md"]);
+            hashBuilder.Append(form["rnd"]);
+            hashBuilder.Append(storeKey);
+
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashBuilder.ToString()));
+            var hashData = Convert.ToBase64String(inputbytes);
+
+            if (form["HASH"] != hashData)
+            {
+                return Task.FromResult(VerifyGatewayResult.Failed("Invalid verification request"));
+            }
+
             var mdStatus = form["mdStatus"];
             if (StringValues.IsNullOrEmpty(mdStatus))
             {
