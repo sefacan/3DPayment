@@ -11,75 +11,97 @@ namespace ThreeDPayment.Tests
     public class PaymentProviderFactoryTests
     {
         [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(5)]
-        [InlineData(6)]
-        [InlineData(7)]
-        [InlineData(8)]
-        [InlineData(9)]
-        [InlineData(10)]
-        [InlineData(11)]
+        [InlineData(46)]
+        [InlineData(64)]
         [InlineData(12)]
-        [InlineData(13)]
-        [InlineData(14)]
+        [InlineData(10)]
+        [InlineData(32)]
+        [InlineData(99)]
+        [InlineData(206)]
+        [InlineData(135)]
+        [InlineData(123)]
+        [InlineData(59)]
+        [InlineData(134)]
+        [InlineData(111)]
+        [InlineData(62)]
+        [InlineData(205)]
+        [InlineData(15)]
+        [InlineData(67)]
+        [InlineData(203)]
         public void PaymentProviderFactory_CreateProvider_ByBank(int bankId)
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((BankNames)bankId);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            IPaymentProvider provider = paymentProviderFactory.Create((BankNames)bankId);
 
-            var banks = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+            //NestPay
+            int[] banks = new[] { 46, 64, 12, 10, 32, 99, 206, 135, 123, 59 };
             if (banks.Contains(bankId))
+            {
                 Assert.IsType<NestPayPaymentProvider>(provider);
+            }
 
-            if (bankId == 9)
+            //InterVPOS
+            if (bankId == 134)
+            {
                 Assert.IsType<DenizbankPaymentProvider>(provider);
+            }
 
-            if (bankId == 10)
+            //PayFor
+            if (bankId == 111)
+            {
                 Assert.IsType<FinansbankPaymentProvider>(provider);
+            }
 
-            if (bankId == 11)
+            //GVP
+            if (bankId == 62)
+            {
                 Assert.IsType<GarantiPaymentProvider>(provider);
+            }
 
-            if (bankId == 12)
+            //KuveytTurk
+            if (bankId == 205)
+            {
                 Assert.IsType<KuveytTurkPaymentProvider>(provider);
+            }
 
-            if (bankId == 13)
+            //GET 7/24
+            if (bankId == 15)
+            {
                 Assert.IsType<VakifbankPaymentProvider>(provider);
+            }
 
-            if (bankId == 14)
-                Assert.IsType<YapikrediPaymentProvider>(provider);
+            //Posnet
+            if (bankId == 67 || bankId == 203)
+            {
+                Assert.IsType<PosnetPaymentProvider>(provider);
+            }
         }
 
         [Fact]
         public void PaymentProviderFactory_CreatePaymentForm_EmptyParameters_ThrowNullException()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             Assert.Throws<ArgumentNullException>(() => paymentProviderFactory.CreatePaymentFormHtml(null, new Uri("https://google.com")));
         }
 
         [Fact]
         public void PaymentProviderFactory_CreatePaymentForm_PaymentUri_ThrowNullException()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            var parameters = new Dictionary<string, object>();
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("test", decimal.Zero);
             parameters.Add("test-1", int.MaxValue);
             parameters.Add("test-2", int.MinValue);

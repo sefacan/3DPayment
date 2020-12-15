@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using ThreeDPayment.Models;
 using ThreeDPayment.Providers;
+using ThreeDPayment.Requests;
 using Xunit;
 
 namespace ThreeDPayment.Tests
@@ -13,13 +13,13 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreateGarantiPaymentProvider()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
             serviceCollection.AddHttpContextAccessor();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
 
             Assert.IsType<GarantiPaymentProvider>(provider);
         }
@@ -27,13 +27,13 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Garanti_GetPaymentParameterResult_Success()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
             serviceCollection.AddHttpContextAccessor();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create(BankNames.Garanti);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
 
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
@@ -45,7 +45,7 @@ namespace ThreeDPayment.Tests
                 CardType = "1",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
+                CustomerIpAddress = "127.0.0.1",
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
                 OrderNumber = Guid.NewGuid().ToString(),
@@ -60,15 +60,15 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Garanti_GetPaymentParameterResult_UnSuccess()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
             serviceCollection.AddHttpContextAccessor();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            var provider = paymentProviderFactory.Create(BankNames.Garanti);
-            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
+            Results.PaymentGatewayResult paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
 
             Assert.False(paymentGatewayResult.Success);
         }

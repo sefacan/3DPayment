@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-
 namespace ThreeDPayment.Sample.Models
 {
     public class PaymentViewModel
@@ -10,8 +7,10 @@ namespace ThreeDPayment.Sample.Models
         public int ExpireMonth { get; set; }
         public int ExpireYear { get; set; }
         public string CvvCode { get; set; }
+        public string CardType { get; set; }
         public int Installment { get; set; }
-        public BankNames SelectedBank { get; set; }
-        public IList<SelectListItem> Banks { get; set; }
+        public bool ManufacturerCard { get; set; }
+        public decimal TotalAmount { get; set; }
+        public int? BankId { get; set; }
     }
 }

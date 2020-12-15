@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Ödeme Tamamlandı";
+}
+@model CompletedViewModel
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col text-center">
+                <p><strong>@Model.CardHolderName</strong></p>
+                <p><strong>@Model.OrderNumber</strong></p>
+                <p><strong>@Model.BankName</strong></p>
+                <p><strong class="font-size-h2">@Model.TotalAmount.ToString("N2")</strong> TL</p>
+                <p>@(Model.Installment > 1 ? $"{Model.Installment} taksit" : "peşin")</p>
+            </div>
+        </div>
+    </div>
+</div>

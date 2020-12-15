@@ -29,8 +29,9 @@ namespace ThreeDPayment
                 case BankNames.TurkiyeFinans:
                 case BankNames.AnadoluBank:
                 case BankNames.HSBC:
+                case BankNames.SekerBank:
                 {
-                    //NestPay(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC)
+                    //NestPay(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC, SekerBank)
                     return ActivatorUtilities.CreateInstance<NestPayPaymentProvider>(_serviceProvider);
                 }
                 case BankNames.DenizBank:
@@ -40,7 +41,7 @@ namespace ThreeDPayment
                 }
                 case BankNames.FinansBank:
                 {
-                    //nsbank(PayFor)
+                    //Finansbank(PayFor)
                     return ActivatorUtilities.CreateInstance<FinansbankPaymentProvider>(_serviceProvider);
                 }
                 case BankNames.Garanti:
@@ -59,9 +60,10 @@ namespace ThreeDPayment
                     return ActivatorUtilities.CreateInstance<VakifbankPaymentProvider>(_serviceProvider);
                 }
                 case BankNames.Yapikredi:
+                case BankNames.Albaraka:
                 {
-                    //Yapıkredi(YKB POSNET)
-                    return ActivatorUtilities.CreateInstance<YapikrediPaymentProvider>(_serviceProvider);
+                    //POSNET(Yapıkredi, AlbarakaTurk)
+                    return ActivatorUtilities.CreateInstance<PosnetPaymentProvider>(_serviceProvider);
                 }
             }
 
@@ -71,16 +73,20 @@ namespace ThreeDPayment
         public string CreatePaymentFormHtml(IDictionary<string, object> parameters, Uri actionUrl, bool appendSubmitScript = true)
         {
             if (parameters == null || !parameters.Any())
+            {
                 throw new ArgumentNullException(nameof(parameters));
+            }
 
             if (actionUrl == null)
+            {
                 throw new ArgumentNullException(nameof(actionUrl));
+            }
 
-            var formId = "PaymentForm";
-            var formBuilder = new StringBuilder();
+            string formId = "PaymentForm";
+            StringBuilder formBuilder = new StringBuilder();
             formBuilder.Append($"<form id=\"{formId}\" name=\"{formId}\" action=\"{actionUrl}\" role=\"form\" method=\"POST\">");
 
-            foreach (var parameter in parameters)
+            foreach (KeyValuePair<string, object> parameter in parameters)
             {
                 formBuilder.Append($"<input type=\"hidden\" name=\"{parameter.Key}\" value=\"{parameter.Value}\">");
             }
@@ -89,7 +95,7 @@ namespace ThreeDPayment
 
             if (appendSubmitScript)
             {
-                var scriptBuilder = new StringBuilder();
+                StringBuilder scriptBuilder = new StringBuilder();
                 scriptBuilder.Append("<script>");
                 scriptBuilder.Append($"document.{formId}.submit();");
                 scriptBuilder.Append("</script>");
@@ -98,26 +104,5 @@ namespace ThreeDPayment
 
             return formBuilder.ToString();
         }
-
-        public static readonly IDictionary<string, string> CurrencyCodes = new Dictionary<string, string>
-        {
-            { "949", "TRY" },
-            { "840", "USD" },
-            { "978", "EUR" },
-            { "826", "GBP" }
-        };
-
-        public static readonly IDictionary<string, string> MDStatuses = new Dictionary<string, string>
-        {
-           { "0", "Doğrulama başarısız, 3-D Secure imzası geçersiz" },
-           { "1", "Tam doğrulama" },
-           { "2", "Kart sahibi banka veya kart 3D-Secure üyesi değil" },
-           { "3", "Kartın bankası 3D-Secure üyesi değil" },
-           { "4", "Kart sahibi banka sisteme daha sonra kayıt olmayı seçmiş" },
-           { "5", "Doğrulama yapılamıyor" },
-           { "7", "Sistem hatası" },
-           { "8", "Bilinmeyen kart numarası" },
-           { "9", "Üye işyeri 3D-Secure üyesi değil" }
-        };
     }
 }

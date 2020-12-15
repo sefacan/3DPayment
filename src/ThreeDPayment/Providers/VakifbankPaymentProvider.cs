@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using ThreeDPayment.Models;
+using ThreeDPayment.Requests;
+using ThreeDPayment.Results;
 
 namespace ThreeDPayment.Providers
 {
     public class VakifbankPaymentProvider : IPaymentProvider
     {
         private readonly HttpClient client;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public VakifbankPaymentProvider(IHttpClientFactory httpClientFactory,
-            IHttpContextAccessor httpContextAccessor)
+        public VakifbankPaymentProvider(IHttpClientFactory httpClientFactory)
         {
             client = httpClientFactory.CreateClient();
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -31,10 +30,10 @@ namespace ThreeDPayment.Providers
                 string merchantPassword = request.BankParameters["merchantPassword"];
                 string enrollmentUrl = request.BankParameters["enrollmentUrl"];
 
-                var httpParameters = new Dictionary<string, string>();
+                Dictionary<string, string> httpParameters = new Dictionary<string, string>();
                 httpParameters.Add("Pan", request.CardNumber);
-                httpParameters.Add("ExpiryDate", $"{request.ExpireYear}{request.ExpireMonth}");
-                httpParameters.Add("PurchaseAmount", request.TotalAmount.ToString(new CultureInfo("en-US")));
+                httpParameters.Add("ExpiryDate", $"{string.Format("{0:00}", request.ExpireYear)}{string.Format("{0:00}", request.ExpireMonth)}");
+                httpParameters.Add("PurchaseAmount", request.TotalAmount.ToString("N2", new CultureInfo("en-US")));
                 httpParameters.Add("Currency", request.CurrencyIsoCode);//TL 949 | EURO 978 | Dolar 840
 
                 /*
@@ -50,29 +49,32 @@ namespace ThreeDPayment.Providers
                 httpParameters.Add("SuccessUrl", request.CallbackUrl.ToString());
                 httpParameters.Add("FailureUrl", request.CallbackUrl.ToString());
 
+                //boş veya 0 ise taksit bilgisini gönderme
                 if (request.Installment > 1)
+                {
                     httpParameters.Add("InstallmentCount", request.Installment.ToString());
+                }
 
-                var response = await client.PostAsync(enrollmentUrl, new FormUrlEncodedContent(httpParameters));
+                HttpResponseMessage response = await client.PostAsync(enrollmentUrl, new FormUrlEncodedContent(httpParameters));
                 string responseContent = await response.Content.ReadAsStringAsync();
 
-                var xmlDocument = new XmlDocument();
+                XmlDocument xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(responseContent);
-                var statusNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/Status");
+                XmlNode statusNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/Status");
                 if (statusNode.InnerText != "Y")
                 {
-                    var messageErrorNode = xmlDocument.SelectSingleNode("IPaySecure/ErrorMessage");
-                    var messageErrorCodeNode = xmlDocument.SelectSingleNode("IPaySecure/MessageErrorCode");
+                    XmlNode messageErrorNode = xmlDocument.SelectSingleNode("IPaySecure/ErrorMessage");
+                    XmlNode messageErrorCodeNode = xmlDocument.SelectSingleNode("IPaySecure/MessageErrorCode");
 
                     return PaymentGatewayResult.Failed(messageErrorNode.InnerText, messageErrorCodeNode?.InnerText);
                 }
 
-                var pareqNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/PaReq");
-                var termUrlNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/TermUrl");
-                var mdNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/MD");
-                var acsUrlNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/ACSUrl");
+                XmlNode pareqNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/PaReq");
+                XmlNode termUrlNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/TermUrl");
+                XmlNode mdNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/MD");
+                XmlNode acsUrlNode = xmlDocument.SelectSingleNode("IPaySecure/Message/VERes/ACSUrl");
 
-                var parameters = new Dictionary<string, object>();
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("PaReq", pareqNode.InnerText);
                 parameters.Add("TermUrl", termUrlNode.InnerText);
                 parameters.Add("MD", mdNode.InnerText);
@@ -86,14 +88,14 @@ namespace ThreeDPayment.Providers
             }
         }
 
-        public async Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, IFormCollection form)
+        public async Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
             {
                 return VerifyGatewayResult.Failed("Form verisi alınamadı.");
             }
 
-            var status = form["Status"];
+            StringValues status = form["Status"];
             if (StringValues.IsNullOrEmpty(status))
             {
                 return VerifyGatewayResult.Failed("İşlem sonuç bilgisi alınamadı.");
@@ -103,59 +105,88 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = "3D doğrulama başarısız";
                 if (ErrorCodes.ContainsKey(form["ErrorCode"]))
+                {
                     errorMessage = ErrorCodes[form["ErrorCode"]];
+                }
 
                 return VerifyGatewayResult.Failed(errorMessage, form["ErrorCode"], status);
             }
 
-            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
-                                        <VposRequest>
-                                        <MerchantId>{ form["MerchantId"]}</MerchantId>
-                                        <Password>{ form["get724_merchant_password"]}</Password>
-                                        <TerminalNo>{ form["get724_user_name"]}</TerminalNo>
-                                        <Pan>{ form["Pan"]}</Pan>
-                                        <Expiry>{ form["expire_date"]}</Expiry>
-                                        <CurrencyAmount>{ form["amount"]}</CurrencyAmount>
-                                        <CurrencyCode>{ form["PurchCurrency"]}</CurrencyCode>
-                                        <TransactionType>Sale</TransactionType>
-                                        <TransactionId></TransactionId>";
+            string merchantId = request.BankParameters["merchantId"];
+            string merchantPassword = request.BankParameters["merchantPassword"];
+            string terminalNo = request.BankParameters["terminalNo"];
 
-            //boş veya 0 olan taksit bilgisini gönderme
-            if (int.TryParse(form["InstallmentCount"], out int installment) && installment > 0)
-                requestXml += $"<NumberOfInstallments>{installment}</NumberOfInstallments>";
+            StringBuilder xmlBuilder = new StringBuilder();
+            xmlBuilder.Append($@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                    <VposRequest>
+                                        <MerchantId>{merchantId}</MerchantId>
+                                        <Password>{merchantPassword}</Password>
+                                        <TerminalNo>{terminalNo}</TerminalNo>
+                                        <Pan>{gatewayRequest.CardNumber}</Pan>
+                                        <Expiry>{$"{CultureInfo.CurrentCulture.Calendar.ToFourDigitYear(gatewayRequest.ExpireYear)}{string.Format("{0:00}", gatewayRequest.ExpireMonth)}"}</Expiry>
+                                        <CurrencyAmount>{gatewayRequest.TotalAmount.ToString("N2", new CultureInfo("en-US"))}</CurrencyAmount>
+                                        <CurrencyCode>{form["PurchCurrency"]}</CurrencyCode>
+                                        <TransactionId></TransactionId>");
 
-            requestXml += $@"<CardHoldersName>{form["card_holders_name"]}</CardHoldersName>
-                                        <Cvv>{form["cv2"]}</Cvv>
-                                        <ECI>{form["Eci"]}</ECI>
-                                        <CAVV>{form["CAVV"]}</CAVV>
-                                        <MpiTransactionId>{form["VerifyEnrollmentRequestId"]}</MpiTransactionId>
-                                        <OrderId>{form["VerifyEnrollmentRequestId"]}</OrderId>
-                                        <ClientIp>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</ClientIp>
-                                        <TransactionDeviceSource>0</TransactionDeviceSource>
-                                        </VposRequest>";
+            //boş veya 0 ise taksit bilgisini gönderme
+            if (int.TryParse(form["InstallmentCount"], out int installment) && installment > 1)
+            {
+                if (request.ManufacturerCard)
+                {
+                    xmlBuilder.Append($@"<TransactionType>TKSale</TransactionType>
+                                         <CustomInstallments>
+                                            <MaturityPeriod>{installment}</MaturityPeriod>
+                                            <Frequency>{installment}</Frequency>
+                                         </CustomInstallments>");
+                }
+                else
+                {
+                    xmlBuilder.Append($@"<TransactionType>Sale</TransactionType>
+                                         <NumberOfInstallments>{installment}</NumberOfInstallments>");
+                }
+            }
+            else
+            {
+                xmlBuilder.Append($@"<TransactionType>Sale</TransactionType>");
+            }
 
-            var parameters = new Dictionary<string, string>();
-            parameters.Add("prmstr", requestXml);
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
+            xmlBuilder.Append($@" <CardHoldersName>{form["card_holders_name"]}</CardHoldersName>
+                                 <Cvv>{gatewayRequest.CvvCode}</Cvv>
+                                 <ECI>{form["Eci"]}</ECI>
+                                 <CAVV>{form["CAVV"]}</CAVV>
+                                 <MpiTransactionId>{form["VerifyEnrollmentRequestId"]}</MpiTransactionId>
+                                 <OrderId>{form["VerifyEnrollmentRequestId"]}</OrderId>
+                                 <ClientIp>{gatewayRequest.CustomerIpAddress}</ClientIp>
+                                 <TransactionDeviceSource>0</TransactionDeviceSource>
+                             </VposRequest>");
+
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("prmstr", xmlBuilder.ToString());
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
-            var resultCodeNode = xmlDocument.SelectSingleNode("VposResponse/ResultCode");
-            var resultDetailNode = xmlDocument.SelectSingleNode("VposResponse/ResultDetail");
-            var transactionNode = xmlDocument.SelectSingleNode("VposResponse/TransactionId");
+            XmlNode resultCodeNode = xmlDocument.SelectSingleNode("VposResponse/ResultCode");
+            XmlNode resultDetailNode = xmlDocument.SelectSingleNode("VposResponse/ResultDetail");
+            XmlNode transactionNode = xmlDocument.SelectSingleNode("VposResponse/TransactionId");
 
             if (resultCodeNode.InnerText != "0000")
             {
                 string errorMessage = resultDetailNode.InnerText;
-                if (ErrorCodes.ContainsKey(resultCodeNode.InnerText))
+                if (string.IsNullOrEmpty(errorMessage) && ErrorCodes.ContainsKey(resultCodeNode.InnerText))
+                {
                     errorMessage = ErrorCodes[resultCodeNode.InnerText];
+                }
 
                 return VerifyGatewayResult.Failed(errorMessage, resultCodeNode.InnerText, status);
             }
 
+            int.TryParse(form["InstallmentCount"], out int installmentCount);
+            int.TryParse(form["EXTRA.ARTITAKSIT"], out int extraInstallment);
+
             return VerifyGatewayResult.Successed(transactionNode.InnerText, form["Xid"],
-                int.Parse(form["InstallmentCount"]),
+                installmentCount, extraInstallment,
                 resultDetailNode.InnerText,
                 resultCodeNode.InnerText);
         }
@@ -170,29 +201,31 @@ namespace ThreeDPayment.Providers
                                     <Password>{merchantPassword}</Password>
                                     <TransactionType>Cancel</TransactionType>
                                     <ReferenceTransactionId>{request.TransactionId}</ReferenceTransactionId>
-                                    <ClientIp>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</ClientIp>
+                                    <ClientIp>{request.CustomerIpAddress}</ClientIp>
                                 </VposRequest>";
 
-            var parameters = new Dictionary<string, string>();
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("prmstr", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
             if (xmlDocument.SelectSingleNode("VposResponse/ResultCode") == null ||
                 xmlDocument.SelectSingleNode("VposResponse/ResultCode").InnerText != "0000")
             {
                 string errorMessage = xmlDocument.SelectSingleNode("VposResponse/ResultDetail")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
 
-            var transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
-            return CancelPaymentResult.Successed(transactionId);
+            string transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
+            return CancelPaymentResult.Successed(transactionId, transactionId);
         }
 
         public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
@@ -205,37 +238,39 @@ namespace ThreeDPayment.Providers
                                     <Password>{merchantPassword}</Password>
                                     <TransactionType>Refund</TransactionType>
                                     <ReferenceTransactionId>{request.TransactionId}</ReferenceTransactionId>
-                                    <ClientIp>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</ClientIp>
+                                    <ClientIp>{request.CustomerIpAddress}</ClientIp>
                                 </VposRequest>";
 
-            var parameters = new Dictionary<string, string>();
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("prmstr", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
             if (xmlDocument.SelectSingleNode("VposResponse/ResultCode") == null ||
                 xmlDocument.SelectSingleNode("VposResponse/ResultCode").InnerText != "0000")
             {
                 string errorMessage = xmlDocument.SelectSingleNode("VposResponse/ResultDetail")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
 
-            var transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
-            return RefundPaymentResult.Successed(transactionId);
+            string transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
+            return RefundPaymentResult.Successed(transactionId, transactionId);
         }
 
         public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
         {
             string merchantId = request.BankParameters["merchantId"];
             string merchantPassword = request.BankParameters["merchantPassword"];
-            var startDate = request.PaidDate.AddDays(-1).ToString("yyyy-MM-dd");
-            var endDate = request.PaidDate.AddDays(1).ToString("yyyy-MM-dd");
+            string startDate = request.PaidDate.AddDays(-1).ToString("yyyy-MM-dd");
+            string endDate = request.PaidDate.AddDays(1).ToString("yyyy-MM-dd");
 
             string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
                                         <SearchRequest>
@@ -254,26 +289,28 @@ namespace ThreeDPayment.Providers
                                            </TransactionCriteria>
                                         </SearchRequest>";
 
-            var parameters = new Dictionary<string, string>();
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("prmstr", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(parameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
-            var totalItemCount = int.Parse(xmlDocument.SelectSingleNode("SearchResponse/PagedResponseInfo/TotalItemCount").InnerText);
+            int totalItemCount = int.Parse(xmlDocument.SelectSingleNode("SearchResponse/PagedResponseInfo/TotalItemCount").InnerText);
             if (totalItemCount < 1)
             {
                 string errorMessage = xmlDocument.SelectSingleNode("SearchResponse/ResponseInfo/ResponseMessage").InnerText;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return PaymentDetailResult.FailedResult(errorMessage);
             }
 
-            var transactionInfoNode = xmlDocument.SelectNodes("SearchResponse/TransactionSearchResultInfo/TransactionSearchResultInfo")
+            XmlNode transactionInfoNode = xmlDocument.SelectNodes("SearchResponse/TransactionSearchResultInfo/TransactionSearchResultInfo")
                 .Cast<XmlNode>()
                 .FirstOrDefault();
 
@@ -281,7 +318,9 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("SearchResponse/ResponseInfo/ResponseMessage").InnerText;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return PaymentDetailResult.FailedResult(errorMessage);
             }
@@ -292,13 +331,13 @@ namespace ThreeDPayment.Providers
             string bankMessage = transactionInfoNode.SelectSingleNode("ResponseMessage")?.InnerText;
             string responseCode = transactionInfoNode.SelectSingleNode("ResultCode")?.InnerText;
 
-            var canceled = bool.Parse(transactionInfoNode.SelectSingleNode("IsCanceled")?.InnerText ?? "false");
+            bool canceled = bool.Parse(transactionInfoNode.SelectSingleNode("IsCanceled")?.InnerText ?? "false");
             if (canceled)
             {
                 return PaymentDetailResult.CanceledResult(transactionId, referenceNumber, bankMessage, responseCode);
             }
 
-            var refunded = bool.Parse(transactionInfoNode.SelectSingleNode("IsRefunded")?.InnerText ?? "false");
+            bool refunded = bool.Parse(transactionInfoNode.SelectSingleNode("IsRefunded")?.InnerText ?? "false");
             if (refunded)
             {
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
@@ -310,7 +349,9 @@ namespace ThreeDPayment.Providers
             }
 
             if (string.IsNullOrEmpty(bankMessage))
+            {
                 bankMessage = "Bankadan hata mesajı alınamadı.";
+            }
 
             return PaymentDetailResult.FailedResult(errorMessage: bankMessage, errorCode: responseCode);
         }
@@ -428,7 +469,7 @@ namespace ThreeDPayment.Providers
             { "1054", "İşlem Numarası Hatalıdır." },
             { "1059", "Yeniden Iade Denemesi." },
             { "1060", "Hatalı Taksit Sayısı." },
-            { "2011", "Terminalno Bulunamadı." },
+            { "2011", "Terminal no bulunamadı." },
             { "2200", "İş Yerinin Işlem Için Gerekli Hakkı Yok." },
             { "2202", "İşlem Iptal Edilemez. ( Batch Kapalı )" },
             { "5001", "İş Yeri Şifresi Yanlış." },
@@ -477,7 +518,6 @@ namespace ThreeDPayment.Providers
             { "2006", "Merchant Acquirer Bin Password Required" },
             { "2009", "Brand Not Found" },
             { "2010", "Cardholder Info Is Empty" },
-            { "2011", "Pan Is Empty" },
             { "2012", "Devicecategory Must Be Between 0 And 2" },
             { "2013", "Threed Secure Message Can Not Be Found" },
             { "2014", "Pares Message Id Does Not Match Threed Secure Message Id" },
@@ -496,13 +536,10 @@ namespace ThreeDPayment.Providers
             { "2028", "Threed Secure Message Is Invalid State" },
             { "2029", "Invalid Pan" },
             { "2030", "Invalid Expire Date" },
-            { "1001", "Fail Url Format Is Invalid" },
             { "1002", "Successurl Format Is Invalid." },
             { "1003", "Brandid Format Is Invalid" },
             { "1004", "Devicecategory Format Is Invalid" },
             { "1005", "Sessioninfo Format Is Invalid" },
-            { "1006", "Xid Format Is Invalid" },
-            { "1007", "Currency Format Is Invalid" },
             { "1008", "Purchaseamount Format Is Invalid" },
             { "1009", "Expire Date Format Is Invalid" },
             { "1010", "Pan Format Is Invalid" },

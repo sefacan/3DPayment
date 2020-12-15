@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using ThreeDPayment.Models;
+using ThreeDPayment.Requests;
+using ThreeDPayment.Results;
 
 namespace ThreeDPayment.Providers
 {
@@ -32,7 +33,7 @@ namespace ThreeDPayment.Providers
                 string secureType = request.BankParameters["secureType"];
                 string totalAmount = request.TotalAmount.ToString(new CultureInfo("en-US"));
 
-                var parameters = new Dictionary<string, object>();
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("MbrId", mbrId);
                 parameters.Add("MerchantId", merchantId);
                 parameters.Add("UserCode", userCode);
@@ -60,34 +61,37 @@ namespace ThreeDPayment.Providers
             }
         }
 
-        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, IFormCollection form)
+        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
-            var mdStatus = form["mdStatus"];
-            if (StringValues.IsNullOrEmpty(mdStatus))
+            string mdStatus = form["mdStatus"].ToString();
+            if (string.IsNullOrEmpty(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
             }
 
-            var response = form["Response"];
+            string response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
-            if (!mdStatus.Equals("1") || !mdStatus.Equals("2") || !mdStatus.Equals("3") || !mdStatus.Equals("4"))
+            if (!mdStatusCodes.Contains(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
             }
 
-            if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
+            if (string.IsNullOrEmpty(response) || !response.Equals("Approved"))
             {
-                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrorMessage"]}", form["ProcReturnCode"]));
+                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
             }
 
+            int.TryParse(form["taksitsayisi"], out int taksitSayisi);
+            int.TryParse(form["EXTRA.ARTITAKSIT"], out int extraTaksitSayisi);
+
             return Task.FromResult(VerifyGatewayResult.Successed(form["TransId"], form["TransId"],
-                int.Parse(form["taksitsayisi"]), response,
-                form["ProcReturnCode"]));
+                taksitSayisi, extraTaksitSayisi,
+                response, form["ProcReturnCode"]));
         }
 
         public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
@@ -112,10 +116,10 @@ namespace ThreeDPayment.Providers
                                         <Lang>{request.LanguageIsoCode.ToUpper()}</Lang>
                                     </PayforIptal>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             //TODO Finansbank response
@@ -129,8 +133,8 @@ namespace ThreeDPayment.Providers
             //    return CancelPaymentResult.Failed(errorMessage);
             //}
 
-            var transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
-            return CancelPaymentResult.Successed(transactionId);
+            string transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
+            return CancelPaymentResult.Successed(transactionId, transactionId);
         }
 
         public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
@@ -157,10 +161,10 @@ namespace ThreeDPayment.Providers
                                         <Lang>{request.LanguageIsoCode.ToUpper()}</Lang>
                                     </PayforIade>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             //TODO Finansbank response
@@ -174,8 +178,8 @@ namespace ThreeDPayment.Providers
             //    return RefundPaymentResult.Failed(errorMessage);
             //}
 
-            var transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
-            return RefundPaymentResult.Successed(transactionId);
+            string transactionId = xmlDocument.SelectSingleNode("VposResponse/TransactionId")?.InnerText;
+            return RefundPaymentResult.Successed(transactionId, transactionId);
         }
 
         public Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
@@ -195,8 +199,6 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://google.com" },
         };
 
-        private static readonly IDictionary<string, string> ErrorCodes = new Dictionary<string, string>
-        {
-        };
+        private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
     }
 }

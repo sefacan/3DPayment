@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using ThreeDPayment.Models;
 using ThreeDPayment.Providers;
+using ThreeDPayment.Requests;
 using Xunit;
 
 namespace ThreeDPayment.Tests
@@ -11,23 +11,24 @@ namespace ThreeDPayment.Tests
     public class AssecoPaymentProviderTests
     {
         [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(4)]
-        [InlineData(5)]
-        [InlineData(6)]
-        [InlineData(7)]
-        [InlineData(8)]
+        [InlineData(46)]
+        [InlineData(64)]
+        [InlineData(12)]
+        [InlineData(10)]
+        [InlineData(32)]
+        [InlineData(99)]
+        [InlineData(206)]
+        [InlineData(135)]
+        [InlineData(123)]
+        [InlineData(59)]
         public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            var provider = paymentProviderFactory.Create((BankNames)bankId);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            IPaymentProvider provider = paymentProviderFactory.Create((BankNames)bankId);
 
             Assert.IsType<NestPayPaymentProvider>(provider);
         }
@@ -35,13 +36,13 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Asseco_GetPaymentParameterResult_Success()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            var provider = paymentProviderFactory.Create(BankNames.IsBankasi);
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.IsBankasi);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
@@ -52,7 +53,7 @@ namespace ThreeDPayment.Tests
                 CardType = "1",
                 Installment = 1,
                 TotalAmount = 1.60m,
-                CustomerIpAddress = IPAddress.Parse("127.0.0.1"),
+                CustomerIpAddress = "127.0.0.1",
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
                 OrderNumber = Guid.NewGuid().ToString(),
@@ -67,14 +68,14 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Asseco_GetPaymentParameterResult_UnSuccess()
         {
-            var serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
-            var provider = paymentProviderFactory.Create(BankNames.IsBankasi);
-            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.IsBankasi);
+            Results.PaymentGatewayResult paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
 
             Assert.False(paymentGatewayResult.Success);
         }

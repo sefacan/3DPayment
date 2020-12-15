@@ -2,25 +2,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using ThreeDPayment.Models;
+using ThreeDPayment.Requests;
+using ThreeDPayment.Results;
 
 namespace ThreeDPayment.Providers
 {
     public class GarantiPaymentProvider : IPaymentProvider
     {
         private readonly HttpClient client;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GarantiPaymentProvider(IHttpClientFactory httpClientFactory,
-            IHttpContextAccessor httpContextAccessor)
+        public GarantiPaymentProvider(IHttpClientFactory httpClientFactory)
         {
             client = httpClientFactory.CreateClient();
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -36,11 +36,16 @@ namespace ThreeDPayment.Providers
                 string mode = request.BankParameters["mode"];//PROD | TEST
                 string type = "sales";
 
-                var parameters = new Dictionary<string, object>();
-                parameters.Add("cardnumber", request.CardNumber);
-                parameters.Add("cardcvv2", request.CvvCode);//kart güvenlik kodu
-                parameters.Add("cardexpiredatemonth", request.ExpireMonth);//kart bitiş ay'ı
-                parameters.Add("cardexpiredateyear", request.ExpireYear);//kart bitiş yıl'ı
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+                if (!request.CommonPaymentPage)
+                {
+                    parameters.Add("cardnumber", request.CardNumber);
+                    parameters.Add("cardcvv2", request.CvvCode);//kart güvenlik kodu
+                    parameters.Add("cardexpiredatemonth", request.ExpireMonth);//kart bitiş ay'ı
+                    parameters.Add("cardexpiredateyear", request.ExpireYear);//kart bitiş yıl'ı
+                }
+
                 parameters.Add("secure3dsecuritylevel", "3D_PAY");//SMS onaylı ödeme modeli 3DPay olarak adlandırılıyor.
                 parameters.Add("mode", mode);
                 parameters.Add("apiversion", "v0.01");
@@ -50,6 +55,7 @@ namespace ThreeDPayment.Providers
                 parameters.Add("terminalid", terminalId);
                 parameters.Add("txntype", type);//direk satış
                 parameters.Add("txncurrencycode", request.CurrencyIsoCode);//TL ISO code | EURO 978 | Dolar 840
+                parameters.Add("lang", request.LanguageIsoCode);
                 parameters.Add("motoind", "N");
                 parameters.Add("customeripaddress", request.CustomerIpAddress);
                 parameters.Add("orderaddressname1", request.CardHolderName);
@@ -60,12 +66,14 @@ namespace ThreeDPayment.Providers
                 parameters.Add("errorurl", request.CallbackUrl);//hatalı dönüş adresi
 
                 //garanti bankasında tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
-                string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+                string amount = (request.TotalAmount * 100m).ToString("0.##", new CultureInfo("en-US"));//virgülden sonraki sıfırlara gerek yok
                 parameters.Add("txnamount", amount);
 
                 string installment = request.Installment.ToString();
                 if (request.Installment <= 1)
+                {
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
+                }
 
                 parameters.Add("txninstallmentcount", installment);//taksit sayısı | boş tek çekim olur
 
@@ -87,34 +95,36 @@ namespace ThreeDPayment.Providers
             }
         }
 
-        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, IFormCollection form)
+        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
-            var mdStatus = form["mdStatus"];
-            if (StringValues.IsNullOrEmpty(mdStatus))
+            string mdStatus = form["mdstatus"].ToString();
+            if (string.IsNullOrEmpty(mdStatus))
             {
-                return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
+                return Task.FromResult(VerifyGatewayResult.Failed(form["mderrormessage"], form["procreturncode"]));
             }
 
-            var response = form["Response"];
+            StringValues response = form["response"];
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
-            if (!mdStatus.Equals("1") || !mdStatus.Equals("2") || !mdStatus.Equals("3") || !mdStatus.Equals("4"))
+            if (!mdStatusCodes.Contains(mdStatus))
             {
-                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
+                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mderrormessage"]}", form["procreturncode"]));
             }
 
             if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
             {
-                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
+                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["errmsg"]}", form["procreturncode"]));
             }
 
-            return Task.FromResult(VerifyGatewayResult.Successed(form["TransId"], form["hostrefnum"],
-                int.Parse(form["txninstallmentcount"]), response,
-                form["ProcReturnCode"], form["campaignchooselink"]));
+            int.TryParse(form["txninstallmentcount"], out int installment);
+
+            return Task.FromResult(VerifyGatewayResult.Successed(form["transid"], form["hostrefnum"],
+                installment, 0, response,
+                form["procreturncode"], form["campaignchooselink"]));
         }
 
         public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
@@ -122,8 +132,8 @@ namespace ThreeDPayment.Providers
             string terminalUserId = request.BankParameters["terminalUserId"];
             string terminalId = request.BankParameters["terminalId"];
             string terminalMerchantId = request.BankParameters["terminalMerchantId"];
-            string terminalProvUserId = request.BankParameters["terminalProvUserId"];
-            string terminalProvPassword = request.BankParameters["terminalProvPassword"];
+            string cancelUserId = request.BankParameters["cancelUserId"];
+            string cancelUserPassword = request.BankParameters["cancelUserPassword"];
             string mode = request.BankParameters["mode"];//PROD | TEST
 
             //garanti tarafından terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesi isteniyor.
@@ -133,7 +143,7 @@ namespace ThreeDPayment.Providers
             string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-            string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+            string securityData = GetSHA1($"{cancelUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
             string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
@@ -144,14 +154,14 @@ namespace ThreeDPayment.Providers
                                             <Version>v0.01</Version>
                                             <ChannelCode></ChannelCode>
                                             <Terminal>
-                                                <ProvUserID>{terminalProvUserId}</ProvUserID>
+                                                <ProvUserID>{cancelUserId}</ProvUserID>
                                                 <HashData>{hashstr}</HashData>
                                                 <UserID>{terminalUserId}</UserID>
                                                 <ID>{terminalId}</ID>
                                                 <MerchantID>{terminalMerchantId}</MerchantID>
                                             </Terminal>
                                             <Customer>
-                                                <IPAddress>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</IPAddress>
+                                                <IPAddress>{request.CustomerIpAddress}</IPAddress>
                                                 <EmailAddress></EmailAddress>
                                             </Customer>
                                             <Order>
@@ -169,10 +179,10 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
@@ -181,13 +191,15 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
 
             string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
-            return CancelPaymentResult.Successed(transactionId);
+            return CancelPaymentResult.Successed(transactionId, transactionId);
         }
 
         public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
@@ -195,8 +207,8 @@ namespace ThreeDPayment.Providers
             string terminalUserId = request.BankParameters["terminalUserId"];
             string terminalId = request.BankParameters["terminalId"];
             string terminalMerchantId = request.BankParameters["terminalMerchantId"];
-            string terminalProvUserId = request.BankParameters["terminalProvUserId"];
-            string terminalProvPassword = request.BankParameters["terminalProvPassword"];
+            string refundUserId = request.BankParameters["refundUserId"];
+            string refundUserPassword = request.BankParameters["refundUserPassword"];
             string mode = request.BankParameters["mode"];//PROD | TEST
 
             //garanti terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesini istiyor.
@@ -206,7 +218,7 @@ namespace ThreeDPayment.Providers
             string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-            string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+            string securityData = GetSHA1($"{refundUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
             string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
@@ -217,14 +229,14 @@ namespace ThreeDPayment.Providers
                                             <Version>v0.01</Version>
                                             <ChannelCode></ChannelCode>
                                             <Terminal>
-                                                <ProvUserID>{terminalProvUserId}</ProvUserID>
+                                                <ProvUserID>{refundUserId}</ProvUserID>
                                                 <HashData>{hashstr}</HashData>
                                                 <UserID>{terminalUserId}</UserID>
                                                 <ID>{terminalId}</ID>
                                                 <MerchantID>{terminalMerchantId}</MerchantID>
                                             </Terminal>
                                             <Customer>
-                                                <IPAddress>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</IPAddress>
+                                                <IPAddress>{request.CustomerIpAddress}</IPAddress>
                                                 <EmailAddress></EmailAddress>
                                             </Customer>
                                             <Order>
@@ -242,10 +254,10 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
@@ -254,13 +266,15 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
+                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
+                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
 
             string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
-            return RefundPaymentResult.Successed(transactionId);
+            return RefundPaymentResult.Successed(transactionId, transactionId);
         }
 
         public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
@@ -296,7 +310,7 @@ namespace ThreeDPayment.Providers
                                               <MerchantID>{terminalMerchantId}</MerchantID>
                                            </Terminal>
                                            <Customer>
-                                              <IPAddress>{_httpContextAccessor.HttpContext.Connection.RemoteIpAddress}</IPAddress>
+                                              <IPAddress>{request.CustomerIpAddress}</IPAddress>
                                               <EmailAddress></EmailAddress>
                                            </Customer>
                                            <Card>
@@ -318,10 +332,10 @@ namespace ThreeDPayment.Providers
                                            </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             string finalStatus = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/Status")?.InnerText ?? string.Empty;
@@ -334,7 +348,7 @@ namespace ThreeDPayment.Providers
 
             if (finalStatus.Equals("APPROVED", StringComparison.OrdinalIgnoreCase))
             {
-                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, int.Parse(installment), bankMessage, responseCode);
+                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, int.Parse(installment), 0, bankMessage, responseCode);
             }
             else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
             {
@@ -345,20 +359,22 @@ namespace ThreeDPayment.Providers
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
             }
 
-            var bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
-            var errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+            string bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
+            string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
             if (string.IsNullOrEmpty(errorMessage))
+            {
                 errorMessage = "Bankadan hata mesajı alınamadı.";
+            }
 
             return PaymentDetailResult.FailedResult(bankErrorMessage, responseCode, errorMessage);
         }
 
         private string GetSHA1(string text)
         {
-            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
 
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             for (int i = 0; i < inputbytes.Length; i++)
             {
                 builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
@@ -380,65 +396,6 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://sanalposprov.garanti.com.tr/VPServlet" }
         };
 
-        private static readonly IDictionary<string, string> ErrorCodes = new Dictionary<string, string>
-        {
-            { "1", "Bankasından Provizyon Alınız." },
-            { "2", "Bankasından Provizyon Alınız.(Visa)" },
-            { "3", "Üye İşyeri Kategori Kodu Hatalı." },
-            { "4", "Karta El Koy" },
-            { "5", "İşlem Onaylanmadı." },
-            { "6", "İşlem Kabul Edilmedi." },
-            { "7", "Karta El Koyunuz." },
-            { "8", "Kimliğini Kontrol Ederek Işlemi Yapınız." },
-            { "9", "Kart Yenilenmiş. Müşteriden Isteyin" },
-            { "11", "İşlem Gerçekleştirildi(Vip)." },
-            { "12", "Geçersiz Işlem." },
-            { "13", "Geçersiz Tutar." },
-            { "14", "Kart Numarası Hatalı." },
-            { "15", "Bankası Bulunamadı/iem Routing Problem." },
-            { "16", "Bakiye Yetersiz. Yarın Tekrar Deneyin." },
-            { "17", "İşlem İptal Edildi." },
-            { "18", "Kapalı Kart.tekrar Denemeyin." },
-            { "19", "Bir Kere Daha Provizyon Talep Ediniz." },
-            { "21", "İşlem Iptal Edilemedi." },
-            { "25", "Böyle Bir Bilgi Bulunamadı." },
-            { "28", "Orijinali Rededilmiş/dosya Servis Dışı." },
-            { "29", "İptal Yapılamadı.(Orjinali Bulunamadı)" },
-            { "30", "Mesajı Nformatı Hatalı." },
-            { "31", "Issuer Sign-on Olmamış." },
-            { "32", "İşlem Kısmen Gerçekleştirilebildi." },
-            { "33", "Kartın Süresi Dolmuş! Karta El Koyunuz." },
-            { "34", "Muhtemelen Çalıntı Kart!!! El Koyunuz." },
-            { "36", "Sınırlandırılmış Kart!! El Koyunuz." },
-            { "37", "Lütfen Banka Güvenliğini Arayınız." },
-            { "38", "Şifre Giriş Limiti Aşıldı!! El Koyunuz." },
-            { "39", "Kredi Hesabı Tanımsız." },
-            { "41", "Kayıp Kart!!!karta El Koyunuz." },
-            { "43", "çalıntı Kart!!!karta El Koyunuz." },
-            { "51", "Hesap Müsait Değil." },
-            { "52", "Çek Hesabı Tanımsız." },
-            { "53", "Hesap Tanımsız." },
-            { "54", "Vadesi Dolmuş Kart." },
-            { "55", "Şifre Hatalı." },
-            { "56", "Bu Kart Mevcut Değil." },
-            { "57", "Kart Sahibi Bu İşlemi Yapamaz." },
-            { "58", "Bu Işlemiy Apmanıza Müsaade Edilmiyor." },
-            { "61", "Para Çekme Limiti Aşılıyor." },
-            { "62", "Kısıtlı Kart/kendi Ülkesinde Geçerli." },
-            { "63", "Bu İşlemi Yapmaya Yetkili Değilsiniz" },
-            { "65", "Günlük İşlem Adedi Dolmuş." },
-            { "68", "Cevapçokgeçgeldi.i̇şlemii̇ptalediniz." },
-            { "75", "Şifre Giriş Limiti Aşıldı." },
-            { "76", "Şifre Hatalı. Şifre Giriş Limiti Aşıldı." },
-            { "77", "Orjinal Işlem Ile Uyumsuz Bilgi Alındı." },
-            { "78", "Account Balance Not Available." },
-            { "80", "Hatalı Tarih/network Hatası." },
-            { "81", "Şifreleme/yabancı Network Hatası." },
-            { "82", "Hatalı Cvv/issuer Cevap Vermedi." },
-            { "83", "Şifre Doğrulanamıyor/i̇letişim Hatası." },
-            { "85", "Hesap Doğrulandı." },
-            { "86", "Şifre Doğrulanamıyor." },
-            { "88", "Şifreleme Hatası." }
-        };
+        private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
     }
 }

@@ -1,0 +1,25 @@
+@{
+    Layout = null;
+}
+@model VerifyGatewayResult
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Gateway Confirm - Success</title>
+</head>
+<body>
+    <h3 style="width:100%;display:inline-block;margin:0 auto; text-align:center">Ödemeniz alındı. Lütfen bekleyin...</h3>
+    <script>
+        if (window) {
+            window.postMessage(@Html.Raw(JsonConvert.SerializeObject(Model)), "*");
+        }
+
+        if (window.parent) {//for iframe
+            window.parent.postMessage(@Html.Raw(JsonConvert.SerializeObject(Model)), "*");
+        }
+    </script>
+</body>
+</html>

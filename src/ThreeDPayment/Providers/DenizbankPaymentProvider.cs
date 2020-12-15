@@ -1,14 +1,15 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using ThreeDPayment.Models;
+using ThreeDPayment.Requests;
+using ThreeDPayment.Results;
 
 namespace ThreeDPayment.Providers
 {
@@ -32,7 +33,7 @@ namespace ThreeDPayment.Providers
                 string totalAmount = request.TotalAmount.ToString(new CultureInfo("en-US"));
                 string random = DateTime.Now.ToString();
 
-                var parameters = new Dictionary<string, object>();
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("ShopCode", shopCode);
                 parameters.Add("PurchAmount", totalAmount);//kuruş ayrımı nokta olmalı!!!
                 parameters.Add("OrderId", request.OrderNumber);//sipariş numarası
@@ -41,13 +42,25 @@ namespace ThreeDPayment.Providers
                 parameters.Add("OkUrl", request.CallbackUrl);//başarılı dönüş adresi
                 parameters.Add("FailUrl", request.CallbackUrl);//hatalı dönüş adresi
                 parameters.Add("TxnType", txnType);//direk satış
-                parameters.Add("taksitsayisi", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
                 parameters.Add("Rnd", random);//rastgele bir sayı üretilmesi isteniyor
 
+                //üretici kartı taksit desteği
+                if (request.ManufacturerCard)
+                {
+                    parameters.Add("AgricultureTxnFlag", "T");
+                    parameters.Add("PaymentFrequency", request.Installment);
+                    parameters.Add("MaturityPeriod", request.Installment);
+                }
+                else
+                {
+                    //normal taksit
+                    parameters.Add("InstallmentCount", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
+                }
+
                 string hashstr = $"{shopCode}{request.OrderNumber}{totalAmount}{request.CallbackUrl}{request.CallbackUrl}{txnType}{request.Installment}{random}{storeKey}";
-                var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-                var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashstr));
-                var hashData = Convert.ToBase64String(inputbytes);
+                SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider();
+                byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashstr));
+                string hashData = Convert.ToBase64String(inputbytes);
 
                 parameters.Add("Hash", hashData);//hash data
                 parameters.Add("Currency", request.CurrencyIsoCode);//TL ISO code | EURO 978 | Dolar 840
@@ -67,43 +80,46 @@ namespace ThreeDPayment.Providers
             }
         }
 
-        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, IFormCollection form)
+        public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
-            var mdStatus = form["mdStatus"];
-            if (StringValues.IsNullOrEmpty(mdStatus))
+            string mdStatus = form["mdStatus"].ToString();
+            if (string.IsNullOrEmpty(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
             }
 
-            var response = form["Response"];
+            string response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
-            if (!mdStatus.Equals("1") || !mdStatus.Equals("2") || !mdStatus.Equals("3") || !mdStatus.Equals("4"))
+            if (!mdStatusCodes.Contains(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
             }
 
-            if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
+            if (string.IsNullOrEmpty(response) || !response.Equals("Approved"))
             {
-                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrorMessage"]}", form["ProcReturnCode"]));
+                return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
             }
 
+            int.TryParse(form["taksitsayisi"], out int taksitSayisi);
+            int.TryParse(form["EXTRA.ARTITAKSIT"], out int extraTaksitSayisi);
+
             return Task.FromResult(VerifyGatewayResult.Successed(form["TransId"], form["TransId"],
-                int.Parse(form["taksitsayisi"]), response,
-                form["ProcReturnCode"]));
+                taksitSayisi, extraTaksitSayisi,
+                response, form["ProcReturnCode"]));
         }
 
         public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
         {
             string shopCode = request.BankParameters["shopCode"];
-            string userCode = request.BankParameters["userCode"];
-            string userPass = request.BankParameters["userPass"];
+            string userCode = request.BankParameters["cancelUserCode"];
+            string userPass = request.BankParameters["cancelUserPass"];
 
-            var formBuilder = new StringBuilder();
+            StringBuilder formBuilder = new StringBuilder();
             formBuilder.AppendFormat("ShopCode={0}&", shopCode);
             formBuilder.AppendFormat("PurchAmount={0}&", request.TotalAmount.ToString(new CultureInfo("en-US")));
             formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
@@ -116,28 +132,32 @@ namespace ThreeDPayment.Providers
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
             formBuilder.Append("MOTO=0");
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
+            {
                 return CancelPaymentResult.Failed("İptal işlemi başarısız.");
+            }
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            var responseParams = HttpUtility.ParseQueryString(responseContent);
+            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
+            {
                 return CancelPaymentResult.Failed(responseParams["ErrorMessage"]);
+            }
 
-            return CancelPaymentResult.Successed(responseParams["TransId"]);
+            return CancelPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
         }
 
         public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
         {
             string shopCode = request.BankParameters["shopCode"];
-            string userCode = request.BankParameters["userCode"];
-            string userPass = request.BankParameters["userPass"];
+            string userCode = request.BankParameters["refundUserCode"];
+            string userPass = request.BankParameters["refundUserPass"];
 
-            var formBuilder = new StringBuilder();
+            StringBuilder formBuilder = new StringBuilder();
             formBuilder.AppendFormat("ShopCode={0}&", shopCode);
             formBuilder.AppendFormat("PurchAmount={0}&", request.TotalAmount.ToString(new CultureInfo("en-US")));
             formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
@@ -150,19 +170,23 @@ namespace ThreeDPayment.Providers
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
             formBuilder.Append("MOTO=0");
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
+            {
                 return RefundPaymentResult.Failed("İade işlemi başarısız.");
+            }
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            var responseParams = HttpUtility.ParseQueryString(responseContent);
+            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
+            {
                 return RefundPaymentResult.Failed(responseParams["ErrorMessage"]);
+            }
 
-            return RefundPaymentResult.Successed(responseParams["TransId"]);
+            return RefundPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
         }
 
         public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
@@ -171,7 +195,7 @@ namespace ThreeDPayment.Providers
             string userCode = request.BankParameters["userCode"];
             string userPass = request.BankParameters["userPass"];
 
-            var formBuilder = new StringBuilder();
+            StringBuilder formBuilder = new StringBuilder();
             formBuilder.AppendFormat("ShopCode={0}&", shopCode);
             formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
             formBuilder.Append("TxnType=StatusHistory&");
@@ -181,17 +205,21 @@ namespace ThreeDPayment.Providers
             formBuilder.Append("SecureType=NonSecure&");
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
+            {
                 return PaymentDetailResult.FailedResult(errorMessage: "İade işlemi başarısız.");
+            }
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            var responseParams = HttpUtility.ParseQueryString(responseContent);
+            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
+            {
                 return PaymentDetailResult.FailedResult(errorMessage: responseParams["ErrorMessage"], errorCode: responseParams["ErrorCode"]);
+            }
 
             return PaymentDetailResult.PaidResult(responseParams["TransId"], responseParams["TransId"]);
         }
@@ -208,54 +236,6 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://spos.denizbank.com/mpi/Default.aspx" }
         };
 
-        private static readonly IDictionary<string, string> ErrorCodes = new Dictionary<string, string>
-        {
-            { "00", "Onaylandı" },
-            { "01", "Bankanızı Arayın" },
-            { "02", "Bankanızı Arayın(Özel)" },
-            { "03", "Geçersiz Üye İşyeri" },
-            { "04", "Karta El Koy" },
-            { "05", "Onaylanmadı" },
-            { "06", "Stop List Bildirim Hatası" },
-            { "07", "Karta El Koy(Özel)" },
-            { "08", "Kimlik Sorgula" },
-            { "09", "Tekrar Deneyin" },
-            { "11", "Onaylandı(VIP)" },
-            { "12", "Geçersiz İşlem" },
-            { "13", "Geçersiz Tutar" },
-            { "14", "Geçersiz Hesap Numarası" },
-            { "15", "Tanımsız Issuer" },
-            { "25", "Kayıt Dosyada Bulunamadı" },
-            { "28", "Orjinal Reddedildi" },
-            { "29", "Orjinal Bulunmadı" },
-            { "30", "Mesaj Hatası" },
-            { "33", "Süresi Dolmuş Kart, El Koy" },
-            { "36", "Kısıtlı Kart, El Koy" },
-            { "38", "PIN Deneme Sayısı Aşıldı" },
-            { "41", "Kayıp Kart, El Koy" },
-            { "43", "Çalıntı Kart, El Koy" },
-            { "51", "Limit Yetersiz" },
-            { "52", "Tanımlı Hesap Yok" },
-            { "53", "Tanımlı Hesap Yok" },
-            { "54", "Süresi Dolmus Kart" },
-            { "55", "Yanlış PIN" },
-            { "57", "Karta İzin Verilmeyen İşlem" },
-            { "58", "POSa İzin Verilmeyen İşlem" },
-            { "61", "Para Çekme Limiti Aşıldı" },
-            { "62", "Sınırlı Kart" },
-            { "63", "Güvenlik İhlali" },
-            { "65", "Para Çekme Limiti Aşıldı" },
-            { "75", "PIN Deneme Limiti Aşıldı" },
-            { "76", "Key Senkronizasyon Hatası" },
-            { "77", "Red, Script Yok" },
-            { "78", "Güvenli Olmayan PIN" },
-            { "79", "ARQC Hatası" },
-            { "81", "Aygıt Versiyon Uyuşmazlığı" },
-            { "85", "Onaylandı" },
-            { "91", "Issuer Çalışmıyor" },
-            { "92", "Finansal Kurum Tanımıyor" },
-            { "95", "POS Günsonu Hatası" },
-            { "96", "Sistem Hatası" }
-        };
+        private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
     }
 }
