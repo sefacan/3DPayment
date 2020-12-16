@@ -40,7 +40,7 @@ namespace ThreeDPayment.Controllers
 
         public IActionResult Index()
         {
-            var model = new PaymentViewModel();
+            PaymentViewModel model = new PaymentViewModel();
             return View(model);
         }
 
@@ -50,7 +50,7 @@ namespace ThreeDPayment.Controllers
             try
             {
                 //gateway request
-                var gatewayRequest = new PaymentGatewayRequest
+                PaymentGatewayRequest gatewayRequest = new PaymentGatewayRequest
                 {
                     CardHolderName = model.CardHolderName,
                     //clear credit card unnecessary characters
@@ -68,17 +68,17 @@ namespace ThreeDPayment.Controllers
                 };
 
                 //bank
-                var bank = await _bankService.GetById(model.BankId.Value);
+                Bank bank = await _bankService.GetById(model.BankId.Value);
                 gatewayRequest.BankName = Enum.Parse<BankNames>(bank.SystemName);
 
                 //bank parameters
-                var bankParameters = await _bankService.GetBankParameters(bank.Id);
+                System.Collections.Generic.List<BankParameter> bankParameters = await _bankService.GetBankParameters(bank.Id);
                 gatewayRequest.BankParameters = bankParameters.ToDictionary(key => key.Key, value => value.Value);
 
                 //create payment transaction
-                var payment = new PaymentTransaction
+                PaymentTransaction payment = new PaymentTransaction
                 {
-                    OrderNumber =Guid.Parse(gatewayRequest.OrderNumber),
+                    OrderNumber = Guid.Parse(gatewayRequest.OrderNumber),
                     UserIpAddress = gatewayRequest.CustomerIpAddress,
                     UserAgent = HttpContext.Request.Headers[HeaderNames.UserAgent],
                     BankId = model.BankId.Value,
@@ -115,52 +115,58 @@ namespace ThreeDPayment.Controllers
         {
             if (paymentId == Guid.Empty)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
             //get transaction by identifier
-            var payment = await _paymentService.GetByOrderNumber(paymentId);
+            PaymentTransaction payment = await _paymentService.GetByOrderNumber(paymentId);
             if (payment == null)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
-            var bankRequest = JsonConvert.DeserializeObject<PaymentGatewayRequest>(payment.BankRequest);
+            PaymentGatewayRequest bankRequest = JsonConvert.DeserializeObject<PaymentGatewayRequest>(payment.BankRequest);
             if (bankRequest == null)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
             if (!IPAddress.TryParse(bankRequest.CustomerIpAddress, out IPAddress ipAddress))
+            {
                 bankRequest.CustomerIpAddress = HttpContext.Connection.RemoteIpAddress.ToString();
+            }
 
             if (bankRequest.CustomerIpAddress == "::1")
+            {
                 bankRequest.CustomerIpAddress = "127.0.0.1";
+            }
 
-            var provider = _paymentProviderFactory.Create(bankRequest.BankName);
+            IPaymentProvider provider = _paymentProviderFactory.Create(bankRequest.BankName);
 
             //set callback url
             bankRequest.CallbackUrl = new Uri($"{Request.GetHostUrl(false)}{Url.RouteUrl("Callback", new { paymentId = payment.OrderNumber })}");
 
             //gateway request
-            var gatewayResult = await provider.ThreeDGatewayRequest(bankRequest);
+            PaymentGatewayResult gatewayResult = await provider.ThreeDGatewayRequest(bankRequest);
 
             //check result status
             if (!gatewayResult.Success)
             {
-                var failModel = VerifyGatewayResult.Failed(gatewayResult.ErrorMessage);
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed(gatewayResult.ErrorMessage);
                 return View("Fail", failModel);
             }
 
             //html content
             if (gatewayResult.HtmlContent)
+            {
                 return View(model: gatewayResult.HtmlFormContent);
+            }
 
             //create form submit with parameters
-            var model = _paymentProviderFactory.CreatePaymentFormHtml(gatewayResult.Parameters, gatewayResult.GatewayUrl);
+            string model = _paymentProviderFactory.CreatePaymentFormHtml(gatewayResult.Parameters, gatewayResult.GatewayUrl);
             return View(model: model);
         }
 
@@ -171,14 +177,16 @@ namespace ThreeDPayment.Controllers
             model.AddCashRate(model.TotalAmount);
 
             //get card prefix by prefix
-            var creditCard = await _bankService.GetCreditCardByPrefix(model.Prefix, true);
+            CreditCard creditCard = await _bankService.GetCreditCardByPrefix(model.Prefix, true);
             if (creditCard == null)
             {
                 //get default bank
-                var defaultBank = await _bankService.GetDefaultBank();
+                Bank defaultBank = await _bankService.GetDefaultBank();
 
                 if (defaultBank == null || !defaultBank.Active)
+                {
                     return Ok(new { errorMessage = "Ödeme için aktif banka bulunamadı." });
+                }
 
                 model.BankId = defaultBank.Id;
                 model.BankLogo = defaultBank.LogoPath;
@@ -188,23 +196,29 @@ namespace ThreeDPayment.Controllers
             }
 
             //get bank by identifier
-            var bank = await _bankService.GetById(creditCard.BankId);
+            Bank bank = await _bankService.GetById(creditCard.BankId);
 
             //get default bank
             if (bank == null || !bank.Active)
+            {
                 bank = await _bankService.GetDefaultBank();
+            }
 
             if (bank == null || !bank.Active)
+            {
                 return Ok(new { errorMessage = "Ödeme için aktif banka bulunamadı." });
+            }
 
             //prepare installment model
-            foreach (var installment in creditCard.Installments)
+            foreach (CreditCardInstallment installment in creditCard.Installments)
             {
                 decimal installmentAmount = model.TotalAmount;
                 decimal installmentTotalAmount = installmentAmount;
 
                 if (installment.InstallmentRate > 0)
+                {
                     installmentTotalAmount = Math.Round(model.TotalAmount + ((model.TotalAmount * installment.InstallmentRate) / 100), 2, MidpointRounding.AwayFromZero);
+                }
 
                 installmentAmount = Math.Round(installmentTotalAmount / installment.Installment, 2, MidpointRounding.AwayFromZero);
 
@@ -234,34 +248,34 @@ namespace ThreeDPayment.Controllers
         {
             if (paymentId == Guid.Empty)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
             //get transaction by identifier
-            var payment = await _paymentService.GetByOrderNumber(paymentId);
+            PaymentTransaction payment = await _paymentService.GetByOrderNumber(paymentId);
             if (payment == null)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
-            var bankRequest = JsonConvert.DeserializeObject<PaymentGatewayRequest>(payment.BankRequest);
+            PaymentGatewayRequest bankRequest = JsonConvert.DeserializeObject<PaymentGatewayRequest>(payment.BankRequest);
             if (bankRequest == null)
             {
-                var failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
+                VerifyGatewayResult failModel = VerifyGatewayResult.Failed("Ödeme bilgisi geçersiz.");
                 return View("Fail", failModel);
             }
 
             //create provider
-            var provider = _paymentProviderFactory.Create(bankRequest.BankName);
-            var verifyRequest = new VerifyGatewayRequest
+            IPaymentProvider provider = _paymentProviderFactory.Create(bankRequest.BankName);
+            VerifyGatewayRequest verifyRequest = new VerifyGatewayRequest
             {
                 BankName = bankRequest.BankName,
                 BankParameters = bankRequest.BankParameters
             };
 
-            var verifyResult = await provider.VerifyGateway(verifyRequest, bankRequest, form);
+            VerifyGatewayResult verifyResult = await provider.VerifyGateway(verifyRequest, bankRequest, form);
             verifyResult.OrderNumber = bankRequest.OrderNumber;
 
             //save bank response
@@ -276,10 +290,14 @@ namespace ThreeDPayment.Controllers
             payment.BankResponse = verifyResult.Message;
 
             if (verifyResult.Installment > 1)
+            {
                 payment.Installment = verifyResult.Installment;
+            }
 
             if (verifyResult.ExtraInstallment > 1)
+            {
                 payment.ExtraInstallment = verifyResult.ExtraInstallment;
+            }
 
             if (verifyResult.Success)
             {
@@ -302,12 +320,14 @@ namespace ThreeDPayment.Controllers
         public async Task<IActionResult> Completed([FromRoute(Name = "id")] Guid orderNumber)
         {
             //get order by order number
-            var payment = await _paymentService.GetByOrderNumber(orderNumber, includeBank: true);
+            PaymentTransaction payment = await _paymentService.GetByOrderNumber(orderNumber, includeBank: true);
             if (payment == null)
+            {
                 return RedirectToAction("Index", "Home");
+            }
 
             //create completed view model
-            var model = new CompletedViewModel
+            CompletedViewModel model = new CompletedViewModel
             {
                 OrderNumber = payment.OrderNumber,
                 TransactionNumber = payment.TransactionNumber,

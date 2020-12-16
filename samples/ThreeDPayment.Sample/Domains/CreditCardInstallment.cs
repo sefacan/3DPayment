@@ -1,9 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ThreeDPayment.Sample.Domains
 {
-    public class CreditCardInstallment : BaseEntity, IEquatable<CreditCardInstallment>
+    public class CreditCardInstallment : BaseEntity
     {
         public int CreditCardId { get; set; }
         public int Installment { get; set; }
@@ -14,13 +13,5 @@ namespace ThreeDPayment.Sample.Domains
         public DateTime UpdateDate { get; set; }
 
         public CreditCard CreditCard { get; set; }
-
-        public bool Equals([AllowNull] CreditCardInstallment other)
-        {
-            if (other == null)
-                return false;
-
-            return other.Installment == Installment;
-        }
     }
 }

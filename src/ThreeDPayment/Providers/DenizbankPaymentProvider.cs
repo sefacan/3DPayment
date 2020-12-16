@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using ThreeDPayment.Requests;
 using ThreeDPayment.Results;
 
@@ -15,13 +13,6 @@ namespace ThreeDPayment.Providers
 {
     public class DenizbankPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
-
-        public DenizbankPaymentProvider(IHttpClientFactory httpClientFactory)
-        {
-            client = httpClientFactory.CreateClient();
-        }
-
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
         {
             try

@@ -11,12 +11,6 @@ namespace ThreeDPayment.Sample.Domains
         Paid = 20,
 
         [Display(Name = "Hatalı")]
-        Failed = 30,
-
-        [Display(Name = "İptal")]
-        Canceled = 40,
-
-        [Display(Name = "İade")]
-        Refunded = 50
+        Failed = 30
     }
 }

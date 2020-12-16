@@ -6,24 +6,6 @@ namespace ThreeDPayment.Sample.Domains
         {
         }
 
-        public BankParameter(string key)
-        {
-            Key = key;
-        }
-
-        public BankParameter(int bankId, string key)
-        {
-            BankId = bankId;
-            Key = key;
-        }
-
-        public BankParameter(int bankId, string key, string value)
-        {
-            BankId = bankId;
-            Key = key;
-            Value = value;
-        }
-
         public BankParameter(string key, string value)
         {
             Key = key;

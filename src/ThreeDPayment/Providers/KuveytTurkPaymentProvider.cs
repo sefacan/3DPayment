@@ -170,21 +170,6 @@ namespace ThreeDPayment.Providers
             return VerifyGatewayResult.Failed(model.ResponseMessage, model.ResponseCode);
         }
 
-        public Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
-        {
-            throw new NotImplementedException();
-        }
-
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
         };
