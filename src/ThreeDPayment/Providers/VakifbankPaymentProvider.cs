@@ -32,7 +32,7 @@ namespace ThreeDPayment.Providers
 
                 Dictionary<string, string> httpParameters = new Dictionary<string, string>();
                 httpParameters.Add("Pan", request.CardNumber);
-                httpParameters.Add("ExpiryDate", $"{string.Format("{0:00}", request.ExpireYear)}{string.Format("{0:00}", request.ExpireMonth)}");
+                httpParameters.Add("ExpiryDate", $"{string.Format("{0:00}", request.ExpireYear)}{string.Format("{0:00}", request.ExpireMonth)}");//YYAA formatında
                 httpParameters.Add("PurchaseAmount", request.TotalAmount.ToString("N2", new CultureInfo("en-US")));
                 httpParameters.Add("Currency", request.CurrencyIsoCode);//TL 949 | EURO 978 | Dolar 840
 
@@ -51,9 +51,7 @@ namespace ThreeDPayment.Providers
 
                 //boş veya 0 ise taksit bilgisini gönderme
                 if (request.Installment > 1)
-                {
                     httpParameters.Add("InstallmentCount", request.Installment.ToString());
-                }
 
                 HttpResponseMessage response = await client.PostAsync(enrollmentUrl, new FormUrlEncodedContent(httpParameters));
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -360,8 +358,8 @@ namespace ThreeDPayment.Providers
         {
             { "merchantId", "" },
             { "merchantPassword", "" },
-            { "enrollmentUrl", "https://onlineodeme.vakifbank.com.tr:4443/UIService/Search.aspx" },
-            { "verifyUrl", "https://onlineodeme.vakifbank.com.tr:4443/UIService/Search.aspx" }
+            { "enrollmentUrl", "https://3dsecuretest.vakifbank.com.tr/MPIAPI/MPI_Enrollment.aspx" },
+            { "verifyUrl", "https://onlineodemetest.vakifbank.com.tr:4443/UIService/TransactionSearchOperations.asmx" }
         };
 
         private static readonly IDictionary<string, string> ErrorCodes = new Dictionary<string, string>

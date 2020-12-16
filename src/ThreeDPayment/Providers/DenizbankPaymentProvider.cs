@@ -83,27 +83,20 @@ namespace ThreeDPayment.Providers
         public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
-            }
 
             string mdStatus = form["mdStatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
-            }
 
             string response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
-            }
 
             if (string.IsNullOrEmpty(response) || !response.Equals("Approved"))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
-            }
+
 
             int.TryParse(form["taksitsayisi"], out int taksitSayisi);
             int.TryParse(form["EXTRA.ARTITAKSIT"], out int extraTaksitSayisi);
@@ -136,17 +129,13 @@ namespace ThreeDPayment.Providers
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
-            {
                 return CancelPaymentResult.Failed("İptal işlemi başarısız.");
-            }
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
             System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
-            {
                 return CancelPaymentResult.Failed(responseParams["ErrorMessage"]);
-            }
 
             return CancelPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
         }
@@ -174,17 +163,15 @@ namespace ThreeDPayment.Providers
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
-            {
                 return RefundPaymentResult.Failed("İade işlemi başarısız.");
-            }
+
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
             System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
-            {
                 return RefundPaymentResult.Failed(responseParams["ErrorMessage"]);
-            }
+
 
             return RefundPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
         }
@@ -209,17 +196,13 @@ namespace ThreeDPayment.Providers
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
-            {
                 return PaymentDetailResult.FailedResult(errorMessage: "İade işlemi başarısız.");
-            }
 
             responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
             System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
 
             if (responseParams["ProcReturnCode"] != "00")
-            {
-                return PaymentDetailResult.FailedResult(errorMessage: responseParams["ErrorMessage"], errorCode: responseParams["ErrorCode"]);
-            }
+              return PaymentDetailResult.FailedResult(errorMessage: responseParams["ErrorMessage"], errorCode: responseParams["ErrorCode"]);           
 
             return PaymentDetailResult.PaidResult(responseParams["TransId"], responseParams["TransId"]);
         }

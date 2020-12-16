@@ -71,9 +71,8 @@ namespace ThreeDPayment.Providers
 
                 string installment = request.Installment.ToString();
                 if (request.Installment <= 1)
-                {
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
-                }
+
 
                 parameters.Add("txninstallmentcount", installment);//taksit sayısı | boş tek çekim olur
 
@@ -98,27 +97,19 @@ namespace ThreeDPayment.Providers
         public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
-            }
 
             string mdStatus = form["mdstatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mderrormessage"], form["procreturncode"]));
-            }
 
             StringValues response = form["response"];
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mderrormessage"]}", form["procreturncode"]));
-            }
 
             if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["errmsg"]}", form["procreturncode"]));
-            }
 
             int.TryParse(form["txninstallmentcount"], out int installment);
 
@@ -191,9 +182,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
@@ -266,9 +255,8 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
+
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
@@ -347,24 +335,19 @@ namespace ThreeDPayment.Providers
             string responseCode = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode")?.InnerText;
 
             if (finalStatus.Equals("APPROVED", StringComparison.OrdinalIgnoreCase))
-            {
                 return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, int.Parse(installment), 0, bankMessage, responseCode);
-            }
+
             else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
-            {
                 return PaymentDetailResult.CanceledResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
+
             else if (finalStatus.Equals("REFUNDED", StringComparison.OrdinalIgnoreCase))
-            {
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
+
 
             string bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
             string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
             if (string.IsNullOrEmpty(errorMessage))
-            {
                 errorMessage = "Bankadan hata mesajı alınamadı.";
-            }
 
             return PaymentDetailResult.FailedResult(bankErrorMessage, responseCode, errorMessage);
         }
@@ -376,9 +359,7 @@ namespace ThreeDPayment.Providers
 
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < inputbytes.Length; i++)
-            {
                 builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
-            }
 
             return builder.ToString().ToUpper();
         }

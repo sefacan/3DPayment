@@ -29,9 +29,12 @@ namespace ThreeDPayment.Providers
                 string merchantId = request.BankParameters["merchantId"];//Mağaza numarası
                 string userCode = request.BankParameters["userCode"];//
                 string userPass = request.BankParameters["userPass"];//Mağaza anahtarı
+                string rnd = DateTime.Now.ToString("yyyyMMdd_hh:mm:ss.fff");
                 string txnType = request.BankParameters["txnType"];//İşlem tipi
                 string secureType = request.BankParameters["secureType"];
                 string totalAmount = request.TotalAmount.ToString(new CultureInfo("en-US"));
+                string hash = mbrId + request.OrderNumber + totalAmount + request.CallbackUrl + request.CallbackUrl + txnType + request.Installment + rnd + userPass;
+                hash = get3DHash(hash);
 
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("MbrId", mbrId);
@@ -52,6 +55,8 @@ namespace ThreeDPayment.Providers
                 //işlem başarılı da olsa başarısız da olsa callback sayfasına yönlendirerek kendi tarafımızda işlem sonucunu kontrol ediyoruz
                 parameters.Add("OkUrl", request.CallbackUrl);//başarılı dönüş adresi
                 parameters.Add("FailUrl", request.CallbackUrl);//hatalı dönüş adresi
+                parameters.Add("Rnd", rnd);
+                parameters.Add("Hash", hash);
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
             }
@@ -200,5 +205,15 @@ namespace ThreeDPayment.Providers
         };
 
         private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
+
+        private string get3DHash(string clearValue)
+        {
+            string hashedValue;
+            System.Security.Cryptography.SHA1 sha = new System.Security.Cryptography.SHA1CryptoServiceProvider();
+            byte[] bytes = System.Text.Encoding.UTF8.GetBytes(clearValue);
+            byte[] hashingbytes = sha.ComputeHash(bytes);
+            hashedValue = Convert.ToBase64String(hashingbytes);
+            return hashedValue;
+        }
     }
 }

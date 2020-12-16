@@ -84,27 +84,23 @@ namespace ThreeDPayment.Providers
         public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
-            }
+
 
             string mdStatus = form["mdStatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
-            }
+
 
             string response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
-            }
+
 
             if (string.IsNullOrEmpty(response) || !response.Equals("Approved"))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
-            }
+
 
             StringBuilder hashBuilder = new StringBuilder();
             hashBuilder.Append(request.BankParameters["clientId"]);
@@ -124,9 +120,8 @@ namespace ThreeDPayment.Providers
             string hashData = Convert.ToBase64String(inputbytes);
 
             if (!form["HASH"].Equals(hashData))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
-            }
+
 
             int.TryParse(form["taksit"], out int installment);
             int.TryParse(form["EXTRA.HOSTMSG"], out int extraInstallment);
@@ -162,9 +157,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
@@ -174,9 +167,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
@@ -211,9 +202,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
@@ -223,9 +212,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
@@ -271,19 +258,13 @@ namespace ThreeDPayment.Providers
                 return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, installmentValue, 0, bankMessage, responseCode);
             }
             else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
-            {
                 return PaymentDetailResult.CanceledResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
             else if (finalStatus.Equals("REFUND", StringComparison.OrdinalIgnoreCase))
-            {
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
 
             string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
             if (string.IsNullOrEmpty(errorMessage))
-            {
                 errorMessage = "Bankadan hata mesajı alınamadı.";
-            }
 
             return PaymentDetailResult.FailedResult(errorMessage: errorMessage);
         }
