@@ -3,14 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Description>.NET Core 3.1 ile geliştirilmiş Akbank, İş Bankası, HalkBank, Ziraat Bankası, Türk Ekonomi Bankası(TEB), INGBank, Türkiye Finans, AnadoluBank, HSBC, Deniz Bank, QNB Finansbank, Garanti Bankası, Kuveyt Türk, Yapı Kredi ve Vakıfbank Sanal Entegrasyonları</Description>
-    <Version>1.5.2</Version>
+    <Version>2.0</Version>
     <AssemblyName>ThreeDPayment</AssemblyName>
     <RootNamespace>ThreeDPayment</RootNamespace>
     <Copyright>2020 sefacan.net</Copyright>
     <RepositoryUrl>https://github.com/sefacan/3DPaymentAspNetCore</RepositoryUrl>
     <PackageProjectUrl>https://github.com/sefacan/3DPaymentAspNetCore</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>1.5.2.0</AssemblyVersion>
     <Authors>Sefa Can</Authors>
     <Company>sefacan.net</Company>
   </PropertyGroup>
