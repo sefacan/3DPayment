@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using ThreeDPayment.Providers;
 using ThreeDPayment.Requests;
@@ -8,7 +7,7 @@ using Xunit;
 
 namespace ThreeDPayment.Tests
 {
-    public class AssecoPaymentProviderTests
+    public class NestPayPaymentProviderTests
     {
         [Theory]
         [InlineData(46)]
@@ -24,8 +23,6 @@ namespace ThreeDPayment.Tests
         public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
         {
             ServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddHttpClient();
-
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create((BankNames)bankId);
@@ -37,8 +34,6 @@ namespace ThreeDPayment.Tests
         public async Task Asseco_GetPaymentParameterResult_Success()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddHttpClient();
-
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
@@ -69,8 +64,6 @@ namespace ThreeDPayment.Tests
         public async Task Asseco_GetPaymentParameterResult_UnSuccess()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddHttpClient();
-
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 

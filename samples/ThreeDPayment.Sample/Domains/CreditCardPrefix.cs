@@ -1,9 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ThreeDPayment.Sample.Domains
 {
-    public class CreditCardPrefix : BaseEntity, IEquatable<CreditCardPrefix>
+    public class CreditCardPrefix : BaseEntity
     {
         public int CreditCardId { get; set; }
         public string Prefix { get; set; }
@@ -13,13 +12,5 @@ namespace ThreeDPayment.Sample.Domains
         public DateTime UpdateDate { get; set; }
 
         public CreditCard CreditCard { get; set; }
-
-        public bool Equals([AllowNull] CreditCardPrefix other)
-        {
-            if (other == null)
-                return false;
-
-            return other.Prefix == Prefix;
-        }
     }
 }

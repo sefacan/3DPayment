@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using ThreeDPayment.Requests;
 using ThreeDPayment.Results;
 
@@ -15,13 +13,6 @@ namespace ThreeDPayment.Providers
 {
     public class NestPayPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
-
-        public NestPayPaymentProvider(IHttpClientFactory httpClientFactory)
-        {
-            client = httpClientFactory.CreateClient();
-        }
-
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
         {
             try
@@ -134,158 +125,6 @@ namespace ThreeDPayment.Providers
             return Task.FromResult(VerifyGatewayResult.Successed(form["TransId"], form["TransId"],
                 installment, extraInstallment,
                 response, form["ProcReturnCode"]));
-        }
-
-        public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
-        {
-            string clientId = request.BankParameters["clientId"];
-            string userName = request.BankParameters["cancelUsername"];
-            string password = request.BankParameters["cancelUserPassword"];
-
-            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
-                                    <CC5Request>
-                                      <Name>{userName}</Name>
-                                      <Password>{password}</Password>
-                                      <ClientId>{clientId}</ClientId>
-                                      <Type>Void</Type>
-                                      <OrderId>{request.OrderNumber}</OrderId>
-                                    </CC5Request>";
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(responseContent);
-
-            if (xmlDocument.SelectSingleNode("CC5Response/Response") == null ||
-                xmlDocument.SelectSingleNode("CC5Response/Response").InnerText != "Approved")
-            {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
-                if (string.IsNullOrEmpty(errorMessage))
-                {
-                    errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
-
-                return CancelPaymentResult.Failed(errorMessage);
-            }
-
-            if (xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode") == null ||
-                xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode").InnerText != "00")
-            {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
-                if (string.IsNullOrEmpty(errorMessage))
-                {
-                    errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
-
-                return CancelPaymentResult.Failed(errorMessage);
-            }
-
-            string transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
-            return CancelPaymentResult.Successed(transactionId, transactionId);
-        }
-
-        public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
-        {
-            string clientId = request.BankParameters["clientId"];
-            string userName = request.BankParameters["refundUsername"];
-            string password = request.BankParameters["refundUserPassword"];
-
-            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
-                                    <CC5Request>
-                                      <Name>{userName}</Name>
-                                      <Password>{password}</Password>
-                                      <ClientId>{clientId}</ClientId>
-                                      <Type>Credit</Type>
-                                      <OrderId>{request.OrderNumber}</OrderId>
-                                    </CC5Request>";
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(responseContent);
-
-            if (xmlDocument.SelectSingleNode("CC5Response/Response") == null ||
-                xmlDocument.SelectSingleNode("CC5Response/Response").InnerText != "Approved")
-            {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
-                if (string.IsNullOrEmpty(errorMessage))
-                {
-                    errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
-
-                return RefundPaymentResult.Failed(errorMessage);
-            }
-
-            if (xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode") == null ||
-                xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode").InnerText != "00")
-            {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
-                if (string.IsNullOrEmpty(errorMessage))
-                {
-                    errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
-
-                return RefundPaymentResult.Failed(errorMessage);
-            }
-
-            string transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
-            return RefundPaymentResult.Successed(transactionId, transactionId);
-        }
-
-        public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
-        {
-            string clientId = request.BankParameters["clientId"];
-            string userName = request.BankParameters["userName"];
-            string password = request.BankParameters["password"];
-
-            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
-                                    <CC5Request>
-                                        <Name>{userName}</Name>
-                                        <Password>{password}</Password>
-                                        <ClientId>{clientId}</ClientId>
-                                        <OrderId>{request.OrderNumber}</OrderId>
-                                        <Extra>
-                                            <ORDERDETAIL>QUERY</ORDERDETAIL>
-                                        </Extra>
-                                    </CC5Request>";
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            XmlDocument xmlDocument = new XmlDocument();
-            xmlDocument.LoadXml(responseContent);
-
-            string finalStatus = xmlDocument.SelectSingleNode("CC5Response/Extra/ORDER_FINAL_STATUS")?.InnerText ?? string.Empty;
-            string transactionId = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_TRAN_UID")?.InnerText;
-            string referenceNumber = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_TRAN_UID")?.InnerText;
-            string cardPrefix = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_CARDBIN")?.InnerText;
-            string installment = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_INSTALMENT")?.InnerText ?? "0";
-            string bankMessage = xmlDocument.SelectSingleNode("CC5Response/Response")?.InnerText;
-            string responseCode = xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode")?.InnerText;
-
-            if (finalStatus.Equals("SALE", StringComparison.OrdinalIgnoreCase))
-            {
-                int.TryParse(installment, out int installmentValue);
-                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, installmentValue, 0, bankMessage, responseCode);
-            }
-            else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
-            {
-                return PaymentDetailResult.CanceledResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
-            else if (finalStatus.Equals("REFUND", StringComparison.OrdinalIgnoreCase))
-            {
-                return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
-            }
-
-            string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
-            if (string.IsNullOrEmpty(errorMessage))
-            {
-                errorMessage = "Bankadan hata mesajı alınamadı.";
-            }
-
-            return PaymentDetailResult.FailedResult(errorMessage: errorMessage);
         }
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>

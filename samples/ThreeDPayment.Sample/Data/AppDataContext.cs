@@ -10,11 +10,6 @@ namespace ThreeDPayment.Sample.Data
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-        }
-
         // banks
         public DbSet<Bank> Banks { get; set; }
         public DbSet<BankParameter> BankParameters { get; set; }

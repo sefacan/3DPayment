@@ -13,8 +13,8 @@ namespace ThreeDPayment.Sample.Data
     {
         public static IApplicationBuilder InitializeDatabase(this IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.CreateScope())
-            using (var context = scope.ServiceProvider.GetRequiredService<AppDataContext>())
+            using (IServiceScope scope = app.ApplicationServices.CreateScope())
+            using (AppDataContext context = scope.ServiceProvider.GetRequiredService<AppDataContext>())
             {
                 try
                 {
@@ -40,12 +40,14 @@ namespace ThreeDPayment.Sample.Data
                 //banks
                 if (!dataContext.Banks.Any())
                 {
-                    var bankNames = Enum.GetValues(typeof(BankNames)).Cast<BankNames>().OrderBy(b => b.GetDisplayName());
-                    foreach (var bankName in bankNames)
+                    IOrderedEnumerable<BankNames> bankNames = Enum.GetValues(typeof(BankNames)).Cast<BankNames>().OrderBy(b => b.GetDisplayName());
+                    foreach (BankNames bankName in bankNames)
                     {
                         //skip if exists
                         if (dataContext.Banks.Any(b => b.SystemName.Equals(bankName)))
+                        {
                             continue;
+                        }
 
                         dataContext.Banks.Add(new Bank
                         {
@@ -70,14 +72,11 @@ namespace ThreeDPayment.Sample.Data
                 //bank parameters
                 if (!dataContext.BankParameters.Any())
                 {
-                    var defaultBank = dataContext.Banks.FirstOrDefault(x => x.SystemName.Equals(BankNames.IsBankasi.ToString()));
+                    Bank defaultBank = dataContext.Banks.FirstOrDefault(x => x.SystemName.Equals(BankNames.IsBankasi.ToString()));
                     defaultBank.Parameters.Add(new BankParameter("clientId", "190200000"));
                     defaultBank.Parameters.Add(new BankParameter("processType", "Auth"));
                     defaultBank.Parameters.Add(new BankParameter("storeKey", "123456"));
                     defaultBank.Parameters.Add(new BankParameter("storeType", "3D_PAY"));
-                    defaultBank.Parameters.Add(new BankParameter("userName", ""));//for refund,cancel, query
-                    defaultBank.Parameters.Add(new BankParameter("password", ""));//for refund,cancel, query
-                    defaultBank.Parameters.Add(new BankParameter("verifyUrl", "https://entegrasyon.asseco-see.com.tr/fim/api"));
                     defaultBank.Parameters.Add(new BankParameter("gatewayUrl", "https://entegrasyon.asseco-see.com.tr/fim/est3Dgate"));
 
                     dataContext.SaveChanges();
@@ -86,9 +85,9 @@ namespace ThreeDPayment.Sample.Data
                 //credit cards, installments, prefixes
                 if (!dataContext.CreditCards.Any())
                 {
-                    var defaultBank = dataContext.Banks.FirstOrDefault(x => x.SystemName.Equals(BankNames.IsBankasi.ToString()));
+                    Bank defaultBank = dataContext.Banks.FirstOrDefault(x => x.SystemName.Equals(BankNames.IsBankasi.ToString()));
 
-                    var creditCard = new CreditCard
+                    CreditCard creditCard = new CreditCard
                     {
                         BankId = defaultBank.Id,
                         Name = "İşbank Maximum",

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
@@ -18,7 +17,6 @@ namespace ThreeDPayment.Tests
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddHttpContextAccessor();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
@@ -51,7 +49,7 @@ namespace ThreeDPayment.Tests
             HttpClient httpClient = new HttpClient(messageHandler, false);
             httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            VakifbankPaymentProvider provider = new VakifbankPaymentProvider(httpClientFactory.Object);
+            var provider = new VakifbankPaymentProvider(httpClientFactory.Object);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
@@ -79,7 +77,6 @@ namespace ThreeDPayment.Tests
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddHttpContextAccessor();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);

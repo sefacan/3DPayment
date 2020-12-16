@@ -17,7 +17,6 @@ namespace ThreeDPayment.Tests
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddHttpContextAccessor();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
@@ -74,7 +73,6 @@ namespace ThreeDPayment.Tests
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
-            serviceCollection.AddHttpContextAccessor();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);

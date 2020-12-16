@@ -3,11 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using ThreeDPayment.Requests;
 using ThreeDPayment.Results;
 
@@ -15,13 +13,6 @@ namespace ThreeDPayment.Providers
 {
     public class DenizbankPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
-
-        public DenizbankPaymentProvider(IHttpClientFactory httpClientFactory)
-        {
-            client = httpClientFactory.CreateClient();
-        }
-
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
         {
             try
@@ -111,117 +102,6 @@ namespace ThreeDPayment.Providers
             return Task.FromResult(VerifyGatewayResult.Successed(form["TransId"], form["TransId"],
                 taksitSayisi, extraTaksitSayisi,
                 response, form["ProcReturnCode"]));
-        }
-
-        public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
-        {
-            string shopCode = request.BankParameters["shopCode"];
-            string userCode = request.BankParameters["cancelUserCode"];
-            string userPass = request.BankParameters["cancelUserPass"];
-
-            StringBuilder formBuilder = new StringBuilder();
-            formBuilder.AppendFormat("ShopCode={0}&", shopCode);
-            formBuilder.AppendFormat("PurchAmount={0}&", request.TotalAmount.ToString(new CultureInfo("en-US")));
-            formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
-            formBuilder.Append("OrderId=&");
-            formBuilder.Append("TxnType=Void&");
-            formBuilder.AppendFormat("orgOrderId={0}&", request.OrderNumber);
-            formBuilder.AppendFormat("UserCode={0}&", userCode);
-            formBuilder.AppendFormat("UserPass={0}&", userPass);
-            formBuilder.Append("SecureType=NonSecure&");
-            formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
-            formBuilder.Append("MOTO=0");
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrEmpty(responseContent))
-            {
-                return CancelPaymentResult.Failed("İptal işlemi başarısız.");
-            }
-
-            responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
-
-            if (responseParams["ProcReturnCode"] != "00")
-            {
-                return CancelPaymentResult.Failed(responseParams["ErrorMessage"]);
-            }
-
-            return CancelPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
-        }
-
-        public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
-        {
-            string shopCode = request.BankParameters["shopCode"];
-            string userCode = request.BankParameters["refundUserCode"];
-            string userPass = request.BankParameters["refundUserPass"];
-
-            StringBuilder formBuilder = new StringBuilder();
-            formBuilder.AppendFormat("ShopCode={0}&", shopCode);
-            formBuilder.AppendFormat("PurchAmount={0}&", request.TotalAmount.ToString(new CultureInfo("en-US")));
-            formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
-            formBuilder.Append("OrderId=&");
-            formBuilder.Append("TxnType=Refund&");
-            formBuilder.AppendFormat("orgOrderId={0}&", request.OrderNumber);
-            formBuilder.AppendFormat("UserCode={0}&", userCode);
-            formBuilder.AppendFormat("UserPass={0}&", userPass);
-            formBuilder.Append("SecureType=NonSecure&");
-            formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
-            formBuilder.Append("MOTO=0");
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrEmpty(responseContent))
-            {
-                return RefundPaymentResult.Failed("İade işlemi başarısız.");
-            }
-
-            responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
-
-            if (responseParams["ProcReturnCode"] != "00")
-            {
-                return RefundPaymentResult.Failed(responseParams["ErrorMessage"]);
-            }
-
-            return RefundPaymentResult.Successed(responseParams["TransId"], responseParams["TransId"]);
-        }
-
-        public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
-        {
-            string shopCode = request.BankParameters["shopCode"];
-            string userCode = request.BankParameters["userCode"];
-            string userPass = request.BankParameters["userPass"];
-
-            StringBuilder formBuilder = new StringBuilder();
-            formBuilder.AppendFormat("ShopCode={0}&", shopCode);
-            formBuilder.AppendFormat("Currency={0}&", request.CurrencyIsoCode);
-            formBuilder.Append("TxnType=StatusHistory&");
-            formBuilder.AppendFormat("orgOrderId={0}&", request.OrderNumber);
-            formBuilder.AppendFormat("UserCode={0}&", userCode);
-            formBuilder.AppendFormat("UserPass={0}&", userPass);
-            formBuilder.Append("SecureType=NonSecure&");
-            formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
-
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrEmpty(responseContent))
-            {
-                return PaymentDetailResult.FailedResult(errorMessage: "İade işlemi başarısız.");
-            }
-
-            responseContent = responseContent.Replace(";;", ";").Replace(";", "&");
-            System.Collections.Specialized.NameValueCollection responseParams = HttpUtility.ParseQueryString(responseContent);
-
-            if (responseParams["ProcReturnCode"] != "00")
-            {
-                return PaymentDetailResult.FailedResult(errorMessage: responseParams["ErrorMessage"], errorCode: responseParams["ErrorCode"]);
-            }
-
-            return PaymentDetailResult.PaidResult(responseParams["TransId"], responseParams["TransId"]);
         }
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
