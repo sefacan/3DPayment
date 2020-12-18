@@ -1,0 +1,53 @@
+İş Bankası
+-----------------------------------------------------
+Kart Numarası (Visa) : 4508034508034509
+Kart Numarası (Master Card) : 5406675406675403
+Son Kullanma Tarihi : 12/26
+Güvenlik Numarası : 000
+Kart 3D Secure Şifresi : a
+======================================================
+
+Akbank
+-----------------------------------------------------
+Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Mağaza Numarası (Client Id) : 100200000
+Storekey (Üye İş Yeri Anahtarı) : 123456
+Model : 3d_pay
+
+Kart Numarası (Visa) : 4355084355084358
+Kart Numarası (Master Card) : 5571135571135575
+Son Kullanma Tarihi : 12/26
+Güvenlik Numarası : 000
+Kart 3D Secure Şifresi : a
+
+======================================================
+
+
+Ziraat Bankası
+-----------------------------------------------------
+Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Mağaza Numarası (Client Id ) : 190200000
+Storekey (Üye İş Yeri Anahtarı) : 123456
+Model : 3d_pay
+
+Kart Numarası (Visa) : 4546711234567894
+Kart Numarası (Master Card) : 5401341234567891
+Son Kullanma Tarihi :12/26
+Güvenlik Numarası : 000
+Kart 3D Secure Şifresi : a
+======================================================
+
+
+Halkbank
+-----------------------------------------------------
+Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Mağaza Numarası (Client Id ) : 500200000
+Storekey (Üye İş Yeri Anahtarı) : 123456
+Model : 3d_pay
+
+Kart Numarası (Visa) : 4531444531442283
+Kart Numarası (Master Card) : 5818775818772285
+Son Kullanma Tarihi : 12/26
+Güvenlik Numarası : 001
+Kart 3D Secure Şifresi : a
+======================================================

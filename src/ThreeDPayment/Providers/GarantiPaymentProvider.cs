@@ -62,9 +62,8 @@ namespace ThreeDPayment.Providers
 
                 string installment = request.Installment.ToString();
                 if (request.Installment <= 1)
-                {
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
-                }
+
 
                 parameters.Add("txninstallmentcount", installment);//taksit sayısı | boş tek çekim olur
 
@@ -89,33 +88,259 @@ namespace ThreeDPayment.Providers
         public Task<VerifyGatewayResult> VerifyGateway(VerifyGatewayRequest request, PaymentGatewayRequest gatewayRequest, IFormCollection form)
         {
             if (form == null)
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
-            }
 
             string mdStatus = form["mdstatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mderrormessage"], form["procreturncode"]));
-            }
 
             StringValues response = form["response"];
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mderrormessage"]}", form["procreturncode"]));
-            }
 
             if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
-            {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["errmsg"]}", form["procreturncode"]));
-            }
 
             int.TryParse(form["txninstallmentcount"], out int installment);
 
             return Task.FromResult(VerifyGatewayResult.Successed(form["transid"], form["hostrefnum"],
                 installment, 0, response,
                 form["procreturncode"], form["campaignchooselink"]));
+        }
+
+        public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
+        {
+            string terminalUserId = request.BankParameters["terminalUserId"];
+            string terminalId = request.BankParameters["terminalId"];
+            string terminalMerchantId = request.BankParameters["terminalMerchantId"];
+            string cancelUserId = request.BankParameters["cancelUserId"];
+            string cancelUserPassword = request.BankParameters["cancelUserPassword"];
+            string mode = request.BankParameters["mode"];//PROD | TEST
+
+            //garanti tarafından terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesi isteniyor.
+            string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
+
+            //garanti bankasında tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
+            string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+
+            //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
+            string securityData = GetSHA1($"{cancelUserPassword}{_terminalid}");
+
+            //ilgili veriler birleştirilip hash oluşturuluyor
+            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+
+            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                        <GVPSRequest>
+                                            <Mode>{mode}</Mode>
+                                            <Version>v0.01</Version>
+                                            <ChannelCode></ChannelCode>
+                                            <Terminal>
+                                                <ProvUserID>{cancelUserId}</ProvUserID>
+                                                <HashData>{hashstr}</HashData>
+                                                <UserID>{terminalUserId}</UserID>
+                                                <ID>{terminalId}</ID>
+                                                <MerchantID>{terminalMerchantId}</MerchantID>
+                                            </Terminal>
+                                            <Customer>
+                                                <IPAddress>{request.CustomerIpAddress}</IPAddress>
+                                                <EmailAddress></EmailAddress>
+                                            </Customer>
+                                            <Order>
+                                                <OrderID>{request.OrderNumber}</OrderID>
+                                                <GroupID></GroupID>
+                                            </Order>
+                                            <Transaction>
+                                                <Type>void</Type>
+                                                <InstallmentCnt>{request.Installment}</InstallmentCnt>
+                                                <Amount>{amount}</Amount>
+                                                <CurrencyCode>{request.CurrencyIsoCode}</CurrencyCode>
+                                                <CardholderPresentCode>0</CardholderPresentCode>
+                                                <MotoInd>N</MotoInd>
+                                                <OriginalRetrefNum>{request.ReferenceNumber}</OriginalRetrefNum>
+                                            </Transaction>
+                                        </GVPSRequest>";
+
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
+                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "00" ||
+                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "0000")
+            {
+                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Bankadan hata mesajı alınamadı.";
+
+                return CancelPaymentResult.Failed(errorMessage);
+            }
+
+            string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
+            return CancelPaymentResult.Successed(transactionId, transactionId);
+        }
+
+        public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
+        {
+            string terminalUserId = request.BankParameters["terminalUserId"];
+            string terminalId = request.BankParameters["terminalId"];
+            string terminalMerchantId = request.BankParameters["terminalMerchantId"];
+            string refundUserId = request.BankParameters["refundUserId"];
+            string refundUserPassword = request.BankParameters["refundUserPassword"];
+            string mode = request.BankParameters["mode"];//PROD | TEST
+
+            //garanti terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesini istiyor.
+            string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
+
+            //garanti tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
+            string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+
+            //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
+            string securityData = GetSHA1($"{refundUserPassword}{_terminalid}");
+
+            //ilgili veriler birleştirilip hash oluşturuluyor
+            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+
+            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                        <GVPSRequest>
+                                            <Mode>{mode}</Mode>
+                                            <Version>v0.01</Version>
+                                            <ChannelCode></ChannelCode>
+                                            <Terminal>
+                                                <ProvUserID>{refundUserId}</ProvUserID>
+                                                <HashData>{hashstr}</HashData>
+                                                <UserID>{terminalUserId}</UserID>
+                                                <ID>{terminalId}</ID>
+                                                <MerchantID>{terminalMerchantId}</MerchantID>
+                                            </Terminal>
+                                            <Customer>
+                                                <IPAddress>{request.CustomerIpAddress}</IPAddress>
+                                                <EmailAddress></EmailAddress>
+                                            </Customer>
+                                            <Order>
+                                                <OrderID>{request.OrderNumber}</OrderID>
+                                                <GroupID></GroupID>
+                                            </Order>
+                                            <Transaction>
+                                                <Type>refund</Type>
+                                                <InstallmentCnt>{request.Installment}</InstallmentCnt>
+                                                <Amount>{amount}</Amount>
+                                                <CurrencyCode>{request.CurrencyIsoCode}</CurrencyCode>
+                                                <CardholderPresentCode>0</CardholderPresentCode>
+                                                <MotoInd>N</MotoInd>
+                                                <OriginalRetrefNum>{request.ReferenceNumber}</OriginalRetrefNum>
+                                            </Transaction>
+                                        </GVPSRequest>";
+
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
+                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "00" ||
+                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "0000")
+            {
+                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Bankadan hata mesajı alınamadı.";
+
+
+                return RefundPaymentResult.Failed(errorMessage);
+            }
+
+            string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
+            return RefundPaymentResult.Successed(transactionId, transactionId);
+        }
+
+        public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
+        {
+            string terminalUserId = request.BankParameters["terminalUserId"];
+            string terminalId = request.BankParameters["terminalId"];
+            string terminalMerchantId = request.BankParameters["terminalMerchantId"];
+            string terminalProvUserId = request.BankParameters["terminalProvUserId"];
+            string terminalProvPassword = request.BankParameters["terminalProvPassword"];
+            string mode = request.BankParameters["mode"];//PROD | TEST
+
+            //garanti terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesini istiyor.
+            string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
+
+            //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
+            string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+
+            string amount = "100";//sabit 100 gönderin dediler. Yani 1 TL.
+
+            //ilgili veriler birleştirilip hash oluşturuluyor
+            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+
+            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                        <GVPSRequest>
+                                           <Mode>{mode}</Mode>
+                                           <Version>v0.01</Version>
+                                           <ChannelCode />
+                                           <Terminal>
+                                              <ProvUserID>{terminalProvUserId}</ProvUserID>
+                                              <HashData>{hashstr}</HashData>
+                                              <UserID>{terminalUserId}</UserID>
+                                              <ID>{terminalId}</ID>
+                                              <MerchantID>{terminalMerchantId}</MerchantID>
+                                           </Terminal>
+                                           <Customer>
+                                              <IPAddress>{request.CustomerIpAddress}</IPAddress>
+                                              <EmailAddress></EmailAddress>
+                                           </Customer>
+                                           <Card>
+                                              <Number />
+                                              <ExpireDate />
+                                              <CVV2 />
+                                           </Card>
+                                           <Order>
+                                              <OrderID>{request.OrderNumber}</OrderID>
+                                              <GroupID />
+                                           </Order>
+                                           <Transaction>
+                                              <Type>orderinq</Type>
+                                              <InstallmentCnt />
+                                              <Amount>{amount}</Amount>
+                                              <CurrencyCode>{request.CurrencyIsoCode}</CurrencyCode>
+                                              <CardholderPresentCode>0</CardholderPresentCode>
+                                              <MotoInd>N</MotoInd>
+                                           </Transaction>
+                                        </GVPSRequest>";
+
+            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            string finalStatus = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/Status")?.InnerText ?? string.Empty;
+            string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
+            string referenceNumber = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
+            string cardPrefix = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/CardNumberMasked")?.InnerText;
+            string installment = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/InstallmentCnt")?.InnerText ?? "0";
+            string bankMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/Message")?.InnerText;
+            string responseCode = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode")?.InnerText;
+
+            if (finalStatus.Equals("APPROVED", StringComparison.OrdinalIgnoreCase))
+                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, int.Parse(installment), 0, bankMessage, responseCode);
+
+            else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
+                return PaymentDetailResult.CanceledResult(transactionId, referenceNumber, bankMessage, responseCode);
+
+            else if (finalStatus.Equals("REFUNDED", StringComparison.OrdinalIgnoreCase))
+                return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
+
+
+            string bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
+            string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+            if (string.IsNullOrEmpty(errorMessage))
+                errorMessage = "Bankadan hata mesajı alınamadı.";
+
+            return PaymentDetailResult.FailedResult(bankErrorMessage, responseCode, errorMessage);
         }
 
         private string GetSHA1(string text)
@@ -125,9 +350,7 @@ namespace ThreeDPayment.Providers
 
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < inputbytes.Length; i++)
-            {
                 builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
-            }
 
             return builder.ToString().ToUpper();
         }
