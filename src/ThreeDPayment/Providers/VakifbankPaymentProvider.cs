@@ -50,7 +50,9 @@ namespace ThreeDPayment.Providers
 
                 //boş veya 0 ise taksit bilgisini gönderme
                 if (request.Installment > 1)
+                {
                     httpParameters.Add("InstallmentCount", request.Installment.ToString());
+                }
 
                 HttpResponseMessage response = await client.PostAsync(enrollmentUrl, new FormUrlEncodedContent(httpParameters));
                 string responseContent = await response.Content.ReadAsStringAsync();

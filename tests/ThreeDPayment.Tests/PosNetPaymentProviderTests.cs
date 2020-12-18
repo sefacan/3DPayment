@@ -45,7 +45,7 @@ namespace ThreeDPayment.Tests
             HttpClient httpClient = new HttpClient(messageHandler, false);
             httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-            var provider = new PosnetPaymentProvider(httpClientFactory.Object);
+            IPaymentProvider provider = new PosnetPaymentProvider(httpClientFactory.Object);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
             {
                 CardHolderName = "Sefa Can",
@@ -78,7 +78,7 @@ namespace ThreeDPayment.Tests
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
-            Results.PaymentGatewayResult paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
 
             Assert.False(paymentGatewayResult.Success);
         }

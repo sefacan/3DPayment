@@ -58,7 +58,7 @@ namespace ThreeDPayment.Tests
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.DenizBank);
-            Results.PaymentGatewayResult paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
+            var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
 
             Assert.False(paymentGatewayResult.Success);
         }
