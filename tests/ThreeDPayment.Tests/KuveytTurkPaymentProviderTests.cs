@@ -55,6 +55,8 @@ namespace ThreeDPayment.Tests
                 CallbackUrl = new Uri("https://google.com")
             });
 
+            Assert.NotEmpty(paymentGatewayResult.HtmlFormContent);
+            Assert.True(paymentGatewayResult.HtmlContent);
             Assert.True(paymentGatewayResult.Success);
         }
 

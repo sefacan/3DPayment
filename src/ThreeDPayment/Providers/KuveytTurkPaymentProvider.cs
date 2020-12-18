@@ -75,7 +75,7 @@ namespace ThreeDPayment.Providers
                 }
 
                 //successed
-                return PaymentGatewayResult.Successed(responseContent, request.BankParameters["gatewayUrl"]);
+                return PaymentGatewayResult.Successed(responseContent);
             }
             catch (Exception ex)
             {
