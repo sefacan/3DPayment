@@ -13,6 +13,8 @@ namespace ThreeDPayment.Tests
         public void PaymentProviderFactory_CreateGarantiPaymentProvider()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
@@ -24,6 +26,8 @@ namespace ThreeDPayment.Tests
         public async Task Garanti_GetPaymentParameterResult_Success()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
@@ -54,6 +58,8 @@ namespace ThreeDPayment.Tests
         public async Task Garanti_GetPaymentParameterResult_UnSuccess()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddHttpClient();
+
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
 
