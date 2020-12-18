@@ -172,6 +172,12 @@ namespace ThreeDPayment.Providers
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
+            { "merchantId", "496" },
+            { "customerNumber", "400235" },
+            { "gatewayUrl", "https://boatest.kuveytturk.com.tr/boa.virtualpos.services/Home/ThreeDModelPayGate" },
+            { "userName", "apitest" },
+            { "password", "api123" },
+            { "verifyUrl", "https://boatest.kuveytturk.com.tr/boa.virtualpos.services/Home/ThreeDModelProvisionGate" }
         };
 
         private string CreateHash(string merchantId, string merchantOrderId, string amount, string okUrl, string failUrl, string userName, string password)
@@ -180,7 +186,7 @@ namespace ThreeDPayment.Providers
             byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
             string hashedPassword = Convert.ToBase64String(inputbytes);
 
-            string hashstr = merchantId + merchantOrderId + amount + okUrl + failUrl + userName + hashedPassword;
+            string hashstr = $"{merchantId}{merchantOrderId}{amount}{okUrl}{failUrl}{userName}{hashedPassword}";
             byte[] hashbytes = Encoding.GetEncoding("ISO-8859-9").GetBytes(hashstr);
 
             return Convert.ToBase64String(cryptoServiceProvider.ComputeHash(hashbytes));
