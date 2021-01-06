@@ -20,7 +20,7 @@ namespace ThreeDPayment.Tests
         [InlineData(135)]
         [InlineData(123)]
         [InlineData(59)]
-        public void PaymentProviderFactory_CreateAssecoPaymentProvider(int bankId)
+        public void PaymentProviderFactory_CreateNestPayPaymentProvider(int bankId)
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -33,7 +33,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Asseco_GetPaymentParameterResult_Success()
+        public async Task NestPay_GetPaymentParameterResult_Success()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -65,7 +65,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Asseco_GetPaymentParameterResult_UnSuccess()
+        public async Task NestPay_GetPaymentParameterResult_UnSuccess()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();

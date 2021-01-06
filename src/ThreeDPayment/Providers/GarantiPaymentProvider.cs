@@ -36,7 +36,7 @@ namespace ThreeDPayment.Providers
                 string mode = request.BankParameters["mode"];//PROD | TEST
                 string type = "sales";
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                var parameters = new Dictionary<string, object>();
 
                 if (!request.CommonPaymentPage)
                 {
@@ -70,22 +70,30 @@ namespace ThreeDPayment.Providers
                 parameters.Add("txnamount", amount);
 
                 string installment = request.Installment.ToString();
-                if (request.Installment <= 1)
-                {
+                if (request.Installment < 2)
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
-                }
 
                 parameters.Add("txninstallmentcount", installment);//taksit sayısı | boş tek çekim olur
+
+                var hashBuilder = new StringBuilder();
+                hashBuilder.Append(terminalId);
+                hashBuilder.Append(request.OrderNumber);
+                hashBuilder.Append(amount);
+                hashBuilder.Append(request.CallbackUrl);
+                hashBuilder.Append(request.CallbackUrl);
+                hashBuilder.Append(type);
+                hashBuilder.Append(installment);
+                hashBuilder.Append(storeKey);
 
                 //garanti tarafından terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesi isteniyor.
                 string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
 
                 //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
                 string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+                hashBuilder.Append(securityData);
 
-                //ilgili veriler birleştirilip hash oluşturuluyor
-                string hashstr = GetSHA1($"{terminalId}{request.OrderNumber}{amount}{request.CallbackUrl}{request.CallbackUrl}{type}{installment}{storeKey}{securityData}");
-                parameters.Add("secure3dhash", hashstr);
+                var hashData = GetSHA1(hashBuilder.ToString());
+                parameters.Add("secure3dhash", hashData);
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
             }
@@ -102,13 +110,13 @@ namespace ThreeDPayment.Providers
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
-            string mdStatus = form["mdstatus"].ToString();
+            var mdStatus = form["mdstatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mderrormessage"], form["procreturncode"]));
             }
 
-            StringValues response = form["response"];
+            var response = form["response"];
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
             {
@@ -118,6 +126,25 @@ namespace ThreeDPayment.Providers
             if (StringValues.IsNullOrEmpty(response) || !response.Equals("Approved"))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["errmsg"]}", form["procreturncode"]));
+            }
+
+            var hashBuilder = new StringBuilder();
+            hashBuilder.Append(request.BankParameters["terminalId"]);
+            hashBuilder.Append(form["oid"].FirstOrDefault());
+            hashBuilder.Append(form["authcode"].FirstOrDefault());
+            hashBuilder.Append(form["procreturncode"].FirstOrDefault());
+            hashBuilder.Append(form["response"].FirstOrDefault());
+            hashBuilder.Append(form["mdstatus"].FirstOrDefault());
+            hashBuilder.Append(form["cavv"].FirstOrDefault());
+            hashBuilder.Append(form["eci"].FirstOrDefault());
+            hashBuilder.Append(form["md"].FirstOrDefault());
+            hashBuilder.Append(form["rnd"].FirstOrDefault());
+            hashBuilder.Append(request.BankParameters["storeKey"]);
+
+            var hashData = GetSHA1(hashBuilder.ToString());
+            if (!form["HASH"].Equals(hashData))
+            {
+                return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
             }
 
             int.TryParse(form["txninstallmentcount"], out int installment);
@@ -179,10 +206,10 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
@@ -191,9 +218,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
@@ -254,10 +279,10 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
@@ -266,9 +291,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
@@ -332,10 +355,10 @@ namespace ThreeDPayment.Providers
                                            </Transaction>
                                         </GVPSRequest>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             string finalStatus = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/Status")?.InnerText ?? string.Empty;
@@ -359,22 +382,20 @@ namespace ThreeDPayment.Providers
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
             }
 
-            string bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
-            string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+            var bankErrorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText ?? string.Empty;
+            var errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
             if (string.IsNullOrEmpty(errorMessage))
-            {
                 errorMessage = "Bankadan hata mesajı alınamadı.";
-            }
 
             return PaymentDetailResult.FailedResult(bankErrorMessage, responseCode, errorMessage);
         }
 
         private string GetSHA1(string text)
         {
-            SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             for (int i = 0; i < inputbytes.Length; i++)
             {
                 builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));

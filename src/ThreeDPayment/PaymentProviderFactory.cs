@@ -9,6 +9,40 @@ namespace ThreeDPayment
 {
     public class PaymentProviderFactory : IPaymentProviderFactory
     {
+        private static readonly Dictionary<BankNames, Type> _providerTypes = new Dictionary<BankNames, Type>
+        {
+            //NestPay(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC, SekerBank)
+            { BankNames.AkBank, typeof(NestPayPaymentProvider) },
+            { BankNames.IsBankasi, typeof(NestPayPaymentProvider) },
+            { BankNames.HalkBank, typeof(NestPayPaymentProvider) },
+            { BankNames.ZiraatBankasi, typeof(NestPayPaymentProvider) },
+            { BankNames.TurkEkonomiBankasi, typeof(NestPayPaymentProvider) },
+            { BankNames.IngBank, typeof(NestPayPaymentProvider) },
+            { BankNames.TurkiyeFinans, typeof(NestPayPaymentProvider) },
+            { BankNames.AnadoluBank, typeof(NestPayPaymentProvider) },
+            { BankNames.HSBC, typeof(NestPayPaymentProvider) },
+            { BankNames.SekerBank, typeof(NestPayPaymentProvider) },
+
+            //Denizbank(InterVpos)
+            { BankNames.DenizBank, typeof(DenizbankPaymentProvider) },
+
+            //Finansbank(PayFor)
+            { BankNames.FinansBank, typeof(FinansbankPaymentProvider) },
+
+            //Garanti(GVP)
+            { BankNames.Garanti, typeof(GarantiPaymentProvider) },
+
+            //KuveytTurk
+            { BankNames.KuveytTurk, typeof(KuveytTurkPaymentProvider) },
+
+            //Vakıfbank(GET 7/24)
+            { BankNames.VakifBank, typeof(VakifbankPaymentProvider) },
+
+            //POSNET(Yapıkredi, AlbarakaTurk)
+            { BankNames.Yapikredi, typeof(PosnetPaymentProvider) },
+            { BankNames.Albaraka, typeof(PosnetPaymentProvider) },
+        };
+
         private readonly IServiceProvider _serviceProvider;
 
         public PaymentProviderFactory(IServiceProvider serviceProvider)
@@ -18,56 +52,11 @@ namespace ThreeDPayment
 
         public IPaymentProvider Create(BankNames bankName)
         {
-            switch (bankName)
-            {
-                case BankNames.AkBank:
-                case BankNames.IsBankasi:
-                case BankNames.HalkBank:
-                case BankNames.ZiraatBankasi:
-                case BankNames.TurkEkonomiBankasi:
-                case BankNames.IngBank:
-                case BankNames.TurkiyeFinans:
-                case BankNames.AnadoluBank:
-                case BankNames.HSBC:
-                case BankNames.SekerBank:
-                {
-                    //NestPay(AkBank, IsBankasi, HalkBank, ZiraatBankasi, TurkEkonomiBankasi, IngBank, TurkiyeFinans, AnadoluBank, HSBC, SekerBank)
-                    return ActivatorUtilities.CreateInstance<NestPayPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.DenizBank:
-                {
-                    //Denizbank(InterVpos)
-                    return ActivatorUtilities.CreateInstance<DenizbankPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.FinansBank:
-                {
-                    //Finansbank(PayFor)
-                    return ActivatorUtilities.CreateInstance<FinansbankPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.Garanti:
-                {
-                    //Garanti(GVP)
-                    return ActivatorUtilities.CreateInstance<GarantiPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.KuveytTurk:
-                {
-                    //KuveytTurk
-                    return ActivatorUtilities.CreateInstance<KuveytTurkPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.VakifBank:
-                {
-                    //Vakıfbank(GET 7/24)
-                    return ActivatorUtilities.CreateInstance<VakifbankPaymentProvider>(_serviceProvider);
-                }
-                case BankNames.Yapikredi:
-                case BankNames.Albaraka:
-                {
-                    //POSNET(Yapıkredi, AlbarakaTurk)
-                    return ActivatorUtilities.CreateInstance<PosnetPaymentProvider>(_serviceProvider);
-                }
-            }
+            if (!_providerTypes.ContainsKey(bankName))
+                throw new NotSupportedException("Bank not supported");
 
-            throw new NotSupportedException("Bank not supported");
+            Type type = _providerTypes[bankName];
+            return ActivatorUtilities.CreateInstance(_serviceProvider, type) as IPaymentProvider;
         }
 
         public string CreatePaymentFormHtml(IDictionary<string, object> parameters, Uri actionUrl, bool appendSubmitScript = true)

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using ThreeDPayment.Requests;
@@ -48,13 +50,13 @@ namespace ThreeDPayment.Providers
                                             </oosRequestData>
                                         </posnetRequest>";
 
-                Dictionary<string, string> httpParameters = new Dictionary<string, string>();
+                var httpParameters = new Dictionary<string, string>();
                 httpParameters.Add("xmldata", requestXml);
 
-                HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+                var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
                 string responseContent = await response.Content.ReadAsStringAsync();
 
-                XmlDocument xmlDocument = new XmlDocument();
+                var xmlDocument = new XmlDocument();
                 xmlDocument.LoadXml(responseContent);
 
                 if (xmlDocument.SelectSingleNode("posnetResponse/approved") == null ||
@@ -62,18 +64,16 @@ namespace ThreeDPayment.Providers
                 {
                     string errorMessage = xmlDocument.SelectSingleNode("posnetResponse/respText")?.InnerText ?? string.Empty;
                     if (string.IsNullOrEmpty(errorMessage))
-                    {
                         errorMessage = "Bankadan hata mesajı alınamadı.";
-                    }
 
                     return PaymentGatewayResult.Failed(errorMessage);
                 }
 
-                XmlNode data1Node = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/data1");
-                XmlNode data2Node = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/data2");
-                XmlNode signNode = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/sign");
+                var data1Node = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/data1");
+                var data2Node = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/data2");
+                var signNode = xmlDocument.SelectSingleNode("posnetResponse/oosRequestDataResponse/sign");
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                var parameters = new Dictionary<string, object>();
                 parameters.Add("posnetData", data1Node.InnerText);
                 parameters.Add("posnetData2", data2Node.InnerText);
                 parameters.Add("digest", signNode.InnerText);
@@ -111,8 +111,8 @@ namespace ThreeDPayment.Providers
                 return VerifyGatewayResult.Failed("Form verisi alınamadı.");
             }
 
-            string merchantId = request.BankParameters["merchantId"];
-            string terminalId = request.BankParameters["terminalId"];
+            var merchantId = request.BankParameters["merchantId"];
+            var terminalId = request.BankParameters["terminalId"];
 
             string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
                                     <posnetRequest>
@@ -125,13 +125,13 @@ namespace ThreeDPayment.Providers
                                         </oosResolveMerchantData>
                                     </posnetRequest>";
 
-            Dictionary<string, string> httpParameters = new Dictionary<string, string>();
+            var httpParameters = new Dictionary<string, string>();
             httpParameters.Add("xmldata", requestXml);
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("posnetResponse/approved") == null ||
@@ -140,9 +140,7 @@ namespace ThreeDPayment.Providers
             {
                 string errorMessage = "3D doğrulama başarısız.";
                 if (xmlDocument.SelectSingleNode("posnetResponse/respText") != null)
-                {
                     errorMessage = xmlDocument.SelectSingleNode("posnetResponse/respText").InnerText;
-                }
 
                 return VerifyGatewayResult.Failed(errorMessage, form["ApprovedCode"],
                     xmlDocument.SelectSingleNode("posnetResponse/approved").InnerText);
@@ -154,6 +152,145 @@ namespace ThreeDPayment.Providers
                 instalmentNumber, 0,
                 xmlDocument.SelectSingleNode("posnetResponse/respText")?.InnerText,
                 form["ApprovedCode"]);
+        }
+
+        public async Task<CancelPaymentResult> CancelRequest(CancelPaymentRequest request)
+        {
+            string merchantId = request.BankParameters["merchantId"];
+            string terminalId = request.BankParameters["terminalId"];
+
+            var xmlBuilder = new StringBuilder();
+            xmlBuilder.Append($@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                     <posnetRequest>
+                                         <mid>{merchantId}</mid>
+                                         <tid>{terminalId}</tid>
+                                         <reverse>
+                                             <transaction>sale</transaction>
+                                             <hostLogKey>{request.ReferenceNumber.Split('-').First().Trim()}</hostLogKey>");
+
+            //taksitli işlemde 6 haneli auth kodu isteniyor
+            if (request.Installment > 0)
+                xmlBuilder.Append($"<authCode>{request.ReferenceNumber.Split('-').Last().Trim()}</authCode>");
+
+            xmlBuilder.Append(@"</reverse>
+                                </posnetRequest>");
+
+            var httpParameters = new Dictionary<string, string>();
+            httpParameters.Add("xmldata", xmlBuilder.ToString());
+
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            if (xmlDocument.SelectSingleNode("posnetResponse/approved") == null ||
+                xmlDocument.SelectSingleNode("posnetResponse/approved").InnerText != "1")
+            {
+                string errorMessage = xmlDocument.SelectSingleNode("posnetResponse/respText")?.InnerText ?? string.Empty;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Bankadan hata mesajı alınamadı.";
+
+                return CancelPaymentResult.Failed(errorMessage);
+            }
+
+            var transactionId = xmlDocument.SelectSingleNode("posnetResponse/hostlogkey")?.InnerText;
+            return CancelPaymentResult.Successed(transactionId, transactionId);
+        }
+
+        public async Task<RefundPaymentResult> RefundRequest(RefundPaymentRequest request)
+        {
+            string merchantId = request.BankParameters["merchantId"];
+            string terminalId = request.BankParameters["terminalId"];
+
+            //yapıkredi bankasında tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
+            string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+
+            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                        <posnetRequest>
+                                            <mid>{merchantId}</mid>
+                                            <tid>{terminalId}</tid>
+                                            <tranDateRequired>1</tranDateRequired>
+                                            <return>
+                                                <amount>{amount}</amount>
+                                                <currencyCode>{CurrencyCodes[request.CurrencyIsoCode]}</currencyCode>
+                                                <hostLogKey>{request.ReferenceNumber.Split('-').First().Trim()}</hostLogKey>
+                                            </return>
+                                        </posnetRequest>";
+
+            var httpParameters = new Dictionary<string, string>();
+            httpParameters.Add("xmldata", requestXml);
+
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            if (xmlDocument.SelectSingleNode("posnetResponse/approved") == null ||
+                xmlDocument.SelectSingleNode("posnetResponse/approved").InnerText != "1")
+            {
+                string errorMessage = xmlDocument.SelectSingleNode("posnetResponse/respText")?.InnerText ?? string.Empty;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = "Bankadan hata mesajı alınamadı.";
+
+                return RefundPaymentResult.Failed(errorMessage);
+            }
+
+            var transactionId = xmlDocument.SelectSingleNode("posnetResponse/hostlogkey")?.InnerText;
+            return RefundPaymentResult.Successed(transactionId, transactionId);
+        }
+
+        public async Task<PaymentDetailResult> PaymentDetailRequest(PaymentDetailRequest request)
+        {
+            string merchantId = request.BankParameters["merchantId"];
+            string terminalId = request.BankParameters["terminalId"];
+
+            string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+                                        <posnetRequest>
+                                            <mid>{merchantId}</mid>
+                                            <tid>{terminalId}</tid>
+                                            <agreement>
+                                                <orderID>TDSC{request.OrderNumber}</orderID>
+                                            </agreement>
+                                        </posnetRequest>";
+
+            var httpParameters = new Dictionary<string, string>();
+            httpParameters.Add("xmldata", requestXml);
+
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(responseContent);
+
+            string bankMessage = xmlDocument.SelectSingleNode("posnetResponse/respText")?.InnerText;
+            string responseCode = xmlDocument.SelectSingleNode("posnetResponse/respCode")?.InnerText;
+            string approved = xmlDocument.SelectSingleNode("posnetResponse/approved")?.InnerText ?? string.Empty;
+
+            if (!approved.Equals("1"))
+            {
+                if (string.IsNullOrEmpty(bankMessage))
+                    bankMessage = "Bankadan hata mesajı alınamadı.";
+
+                return PaymentDetailResult.FailedResult(errorMessage: bankMessage, errorCode: responseCode);
+            }
+
+            string finalStatus = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/state")?.InnerText ?? string.Empty;
+            if (!finalStatus.Equals("SALE", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrEmpty(bankMessage))
+                    bankMessage = "Bankadan hata mesajı alınamadı.";
+
+                return PaymentDetailResult.FailedResult(errorMessage: bankMessage, errorCode: responseCode);
+            }
+
+            string transactionId = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/hostLogKey")?.InnerText;
+            string referenceNumber = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/hostLogKey")?.InnerText;
+            string authCode = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/authCode")?.InnerText;
+            string cardPrefix = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/ccno")?.InnerText;
+
+            return PaymentDetailResult.PaidResult(transactionId, $"{referenceNumber}-{authCode}", cardPrefix, bankMessage: bankMessage, responseCode: responseCode);
         }
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>

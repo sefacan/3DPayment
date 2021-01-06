@@ -30,35 +30,11 @@ namespace ThreeDPayment.Providers
                 string processType = request.BankParameters["processType"];
                 string storeKey = request.BankParameters["storeKey"];
                 string storeType = request.BankParameters["storeType"];
-                string totalAmount = request.TotalAmount.ToString(new CultureInfo("en-US"));
                 string random = DateTime.Now.ToString();
 
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                var parameters = new Dictionary<string, object>();
                 parameters.Add("clientid", clientId);
-                parameters.Add("amount", totalAmount);//kuruş ayrımı nokta olmalı!!!
                 parameters.Add("oid", request.OrderNumber);//sipariş numarası
-
-                //işlem başarılı da olsa başarısız da olsa callback sayfasına yönlendirerek kendi tarafımızda işlem sonucunu kontrol ediyoruz
-                parameters.Add("okUrl", request.CallbackUrl);//başarılı dönüş adresi
-                parameters.Add("failUrl", request.CallbackUrl);//hatalı dönüş adresi
-                parameters.Add("islemtipi", processType);//direk satış
-                parameters.Add("rnd", random);//rastgele bir sayı üretilmesi isteniyor
-
-                string installment = string.Empty;
-
-                if (request.Installment > 1)
-                {
-                    installment = request.Installment.ToString();
-                    parameters.Add("taksit", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
-                }
-
-                string hashstr = $"{clientId}{request.OrderNumber}{totalAmount}{request.CallbackUrl}{request.CallbackUrl}{processType}{installment}{random}{storeKey}";
-                SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider();
-                byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashstr));
-                string hashData = Convert.ToBase64String(inputbytes);
-
-                parameters.Add("hash", hashData);//hash data
-                parameters.Add("currency", request.CurrencyIsoCode);//ISO code TL 949 | EURO 978 | Dolar 840
 
                 if (!request.CommonPaymentPage)
                 {
@@ -70,8 +46,38 @@ namespace ThreeDPayment.Providers
                     parameters.Add("cardType", "1");//kart tipi visa 1 | master 2 | amex 3
                 }
 
+                //işlem başarılı da olsa başarısız da olsa callback sayfasına yönlendirerek kendi tarafımızda işlem sonucunu kontrol ediyoruz
+                parameters.Add("okUrl", request.CallbackUrl);//başarılı dönüş adresi
+                parameters.Add("failUrl", request.CallbackUrl);//hatalı dönüş adresi
+                parameters.Add("islemtipi", processType);//direk satış
+                parameters.Add("rnd", random);//rastgele bir sayı üretilmesi isteniyor
+                parameters.Add("currency", request.CurrencyIsoCode);//ISO code TL 949 | EURO 978 | Dolar 840
                 parameters.Add("storetype", storeType);
                 parameters.Add("lang", request.LanguageIsoCode);//iki haneli dil iso kodu
+
+                //kuruş ayrımı nokta olmalı!!!
+                string totalAmount = request.TotalAmount.ToString(new CultureInfo("en-US"));
+                parameters.Add("amount", totalAmount);
+
+                string installment = request.Installment.ToString();
+                if (request.Installment > 1)
+                    parameters.Add("taksit", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
+                else
+                    installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
+
+                var hashBuilder = new StringBuilder();
+                hashBuilder.Append(clientId);
+                hashBuilder.Append(request.OrderNumber);
+                hashBuilder.Append(totalAmount);
+                hashBuilder.Append(request.CallbackUrl);
+                hashBuilder.Append(request.CallbackUrl);
+                hashBuilder.Append(processType);
+                hashBuilder.Append(installment);
+                hashBuilder.Append(random);
+                hashBuilder.Append(storeKey);
+
+                var hashData = GetSHA1(hashBuilder.ToString());
+                parameters.Add("hash", hashData);//hash data
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
             }
@@ -88,13 +94,13 @@ namespace ThreeDPayment.Providers
                 return Task.FromResult(VerifyGatewayResult.Failed("Form verisi alınamadı."));
             }
 
-            string mdStatus = form["mdStatus"].ToString();
+            var mdStatus = form["mdStatus"].ToString();
             if (string.IsNullOrEmpty(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed(form["mdErrorMsg"], form["ProcReturnCode"]));
             }
 
-            string response = form["Response"].ToString();
+            var response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
             if (!mdStatusCodes.Contains(mdStatus))
             {
@@ -106,7 +112,7 @@ namespace ThreeDPayment.Providers
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["ErrMsg"]}", form["ProcReturnCode"]));
             }
 
-            StringBuilder hashBuilder = new StringBuilder();
+            var hashBuilder = new StringBuilder();
             hashBuilder.Append(request.BankParameters["clientId"]);
             hashBuilder.Append(form["oid"].FirstOrDefault());
             hashBuilder.Append(form["AuthCode"].FirstOrDefault());
@@ -119,10 +125,7 @@ namespace ThreeDPayment.Providers
             hashBuilder.Append(form["rnd"].FirstOrDefault());
             hashBuilder.Append(request.BankParameters["storeKey"]);
 
-            SHA1CryptoServiceProvider cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            byte[] inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(hashBuilder.ToString()));
-            string hashData = Convert.ToBase64String(inputbytes);
-
+            var hashData = GetSHA1(hashBuilder.ToString());
             if (!form["HASH"].Equals(hashData))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
@@ -151,20 +154,18 @@ namespace ThreeDPayment.Providers
                                       <OrderId>{request.OrderNumber}</OrderId>
                                     </CC5Request>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("CC5Response/Response") == null ||
                 xmlDocument.SelectSingleNode("CC5Response/Response").InnerText != "Approved")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
+                var errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
@@ -172,16 +173,14 @@ namespace ThreeDPayment.Providers
             if (xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode") == null ||
                 xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode").InnerText != "00")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
+                var errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return CancelPaymentResult.Failed(errorMessage);
             }
 
-            string transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
+            var transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
             return CancelPaymentResult.Successed(transactionId, transactionId);
         }
 
@@ -200,20 +199,18 @@ namespace ThreeDPayment.Providers
                                       <OrderId>{request.OrderNumber}</OrderId>
                                     </CC5Request>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             if (xmlDocument.SelectSingleNode("CC5Response/Response") == null ||
                 xmlDocument.SelectSingleNode("CC5Response/Response").InnerText != "Approved")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
+                var errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
@@ -221,16 +218,14 @@ namespace ThreeDPayment.Providers
             if (xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode") == null ||
                 xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode").InnerText != "00")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
+                var errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
                 if (string.IsNullOrEmpty(errorMessage))
-                {
                     errorMessage = "Bankadan hata mesajı alınamadı.";
-                }
 
                 return RefundPaymentResult.Failed(errorMessage);
             }
 
-            string transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
+            var transactionId = xmlDocument.SelectSingleNode("CC5Response/TransId")?.InnerText ?? string.Empty;
             return RefundPaymentResult.Successed(transactionId, transactionId);
         }
 
@@ -251,10 +246,10 @@ namespace ThreeDPayment.Providers
                                         </Extra>
                                     </CC5Request>";
 
-            HttpResponseMessage response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
             string finalStatus = xmlDocument.SelectSingleNode("CC5Response/Extra/ORDER_FINAL_STATUS")?.InnerText ?? string.Empty;
@@ -279,11 +274,9 @@ namespace ThreeDPayment.Providers
                 return PaymentDetailResult.RefundedResult(transactionId, referenceNumber, bankMessage, responseCode);
             }
 
-            string errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
+            var errorMessage = xmlDocument.SelectSingleNode("CC5Response/ErrMsg")?.InnerText ?? string.Empty;
             if (string.IsNullOrEmpty(errorMessage))
-            {
                 errorMessage = "Bankadan hata mesajı alınamadı.";
-            }
 
             return PaymentDetailResult.FailedResult(errorMessage: errorMessage);
         }
@@ -299,6 +292,15 @@ namespace ThreeDPayment.Providers
             { "password", "ISBANK07" },
             { "verifyUrl", "https://entegrasyon.asseco-see.com.tr/fim/api" }
         };
+
+        private string GetSHA1(string text)
+        {
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var hashData = Convert.ToBase64String(inputbytes);
+
+            return hashData;
+        }
 
         private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
     }

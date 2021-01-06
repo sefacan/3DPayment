@@ -10,7 +10,7 @@ namespace ThreeDPayment.Tests
     public class DenizbankPaymentProviderTests
     {
         [Fact]
-        public void PaymentProviderFactory_CreateAssecoPaymentProvider()
+        public void PaymentProviderFactory_CreateDenizbankPaymentProvider()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -23,7 +23,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Finansbank_GetPaymentParameterResult_Success()
+        public async Task Denizbank_GetPaymentParameterResult_Success()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
@@ -55,7 +55,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Finansbank_GetPaymentParameterResult_UnSuccess()
+        public async Task Denizbank_GetPaymentParameterResult_UnSuccess()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();

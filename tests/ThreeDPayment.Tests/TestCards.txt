@@ -9,7 +9,7 @@ Kart 3D Secure Şifresi : a
 
 Akbank
 -----------------------------------------------------
-Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Link: https://entegrasyon.NestPay-see.com.tr/fim/est3Dgate
 Mağaza Numarası (Client Id) : 100200000
 Storekey (Üye İş Yeri Anahtarı) : 123456
 Model : 3d_pay
@@ -25,7 +25,7 @@ Kart 3D Secure Şifresi : a
 
 Ziraat Bankası
 -----------------------------------------------------
-Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Link: https://entegrasyon.NestPay-see.com.tr/fim/est3Dgate
 Mağaza Numarası (Client Id ) : 190200000
 Storekey (Üye İş Yeri Anahtarı) : 123456
 Model : 3d_pay
@@ -40,7 +40,7 @@ Kart 3D Secure Şifresi : a
 
 Halkbank
 -----------------------------------------------------
-Link: https://entegrasyon.asseco-see.com.tr/fim/est3Dgate
+Link: https://entegrasyon.NestPay-see.com.tr/fim/est3Dgate
 Mağaza Numarası (Client Id ) : 500200000
 Storekey (Üye İş Yeri Anahtarı) : 123456
 Model : 3d_pay

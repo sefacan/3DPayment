@@ -13,20 +13,23 @@ namespace ThreeDPayment.Tests
     public class PosNetPaymentProviderTests
     {
         [Fact]
-        public void PaymentProviderFactory_CreateYapikrediPaymentProvider()
+        public void PaymentProviderFactory_CreatePosNetPaymentProvider()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
             PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
-            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Yapikredi);
 
+            IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Yapikredi);
+            Assert.IsType<PosnetPaymentProvider>(provider);
+
+            provider = paymentProviderFactory.Create(BankNames.Albaraka);
             Assert.IsType<PosnetPaymentProvider>(provider);
         }
 
         [Fact]
-        public async Task Yapikredi_GetPaymentParameterResult_Success()
+        public async Task PosNet_GetPaymentParameterResult_Success()
         {
             string successResponseXml = @"<posnetResponse>
                                           	<approved>1</approved>
@@ -69,7 +72,7 @@ namespace ThreeDPayment.Tests
         }
 
         [Fact]
-        public async Task Yapikredi_GetPaymentResult_UnSuccess()
+        public async Task PosNet_GetPaymentResult_UnSuccess()
         {
             ServiceCollection serviceCollection = new ServiceCollection();
             serviceCollection.AddHttpClient();
