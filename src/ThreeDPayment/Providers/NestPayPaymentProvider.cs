@@ -60,10 +60,19 @@ namespace ThreeDPayment.Providers
                 parameters.Add("amount", totalAmount);
 
                 string installment = request.Installment.ToString();
-                if (request.Installment > 1)
-                    parameters.Add("taksit", request.Installment);//taksit sayısı | 1 veya boş tek çekim olur
-                else
+                if (request.Installment < 2 || request.ManufacturerCard)//imece kart durumunda taksit boş olacak
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
+
+                //üretici kartı taksit desteği
+                if (request.ManufacturerCard && request.Installment > 1)
+                {
+                    string ertelemeDonemSayisi = request.Installment.ToString();
+                    parameters.Add("IMCKOD", request.BankParameters["imecekod"]);
+                    parameters.Add("FDONEM", ertelemeDonemSayisi);
+                }
+
+                //normal taksit
+                parameters.Add("taksit", installment);//taksit sayısı | 1 veya boş tek çekim olur
 
                 var hashBuilder = new StringBuilder();
                 hashBuilder.Append(clientId);
@@ -256,6 +265,8 @@ namespace ThreeDPayment.Providers
             string transactionId = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_TRAN_UID")?.InnerText;
             string referenceNumber = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_TRAN_UID")?.InnerText;
             string cardPrefix = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_CARDBIN")?.InnerText;
+            int.TryParse(cardPrefix, out int cardPrefixValue);
+
             string installment = xmlDocument.SelectSingleNode("CC5Response/Extra/TRX_1_INSTALMENT")?.InnerText ?? "0";
             string bankMessage = xmlDocument.SelectSingleNode("CC5Response/Response")?.InnerText;
             string responseCode = xmlDocument.SelectSingleNode("CC5Response/ProcReturnCode")?.InnerText;
@@ -263,7 +274,7 @@ namespace ThreeDPayment.Providers
             if (finalStatus.Equals("SALE", StringComparison.OrdinalIgnoreCase))
             {
                 int.TryParse(installment, out int installmentValue);
-                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, installmentValue, 0, bankMessage, responseCode);
+                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefixValue.ToString(), installmentValue, 0, bankMessage, responseCode);
             }
             else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
             {

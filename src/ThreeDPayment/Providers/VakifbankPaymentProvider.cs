@@ -318,6 +318,8 @@ namespace ThreeDPayment.Providers
             string transactionId = transactionInfoNode.SelectSingleNode("TransactionId")?.InnerText;
             string referenceNumber = transactionInfoNode.SelectSingleNode("TransactionId")?.InnerText;
             string cardPrefix = transactionInfoNode.SelectSingleNode("PanMasked")?.InnerText;
+            int.TryParse(cardPrefix, out int cardPrefixValue);
+
             string bankMessage = transactionInfoNode.SelectSingleNode("ResponseMessage")?.InnerText;
             string responseCode = transactionInfoNode.SelectSingleNode("ResultCode")?.InnerText;
 
@@ -335,7 +337,7 @@ namespace ThreeDPayment.Providers
 
             if (responseCode == "0000")
             {
-                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, bankMessage: bankMessage, responseCode: responseCode);
+                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefixValue.ToString(), bankMessage: bankMessage, responseCode: responseCode);
             }
 
             if (string.IsNullOrEmpty(bankMessage))

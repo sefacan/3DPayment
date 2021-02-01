@@ -199,8 +199,8 @@ namespace ThreeDPayment.Providers
             { "userPass", "" },
             { "txnType", "" },
             { "secureType", "" },
-            { "gatewayUrl", "https://google.com" },
-            { "verifyUrl", "https://google.com" },
+            { "gatewayUrl", "" },
+            { "verifyUrl", "" }
         };
     }
 }

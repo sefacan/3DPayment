@@ -27,8 +27,8 @@ namespace ThreeDPayment.Providers
         {
             try
             {
-                string terminalUserId = request.BankParameters["terminalUserId"];
                 string terminalId = request.BankParameters["terminalId"];
+                string terminalUserId = request.BankParameters["terminalUserId"];
                 string terminalMerchantId = request.BankParameters["terminalMerchantId"];
                 string terminalProvUserId = request.BankParameters["terminalProvUserId"];
                 string terminalProvPassword = request.BankParameters["terminalProvPassword"];
@@ -129,7 +129,7 @@ namespace ThreeDPayment.Providers
             }
 
             var hashBuilder = new StringBuilder();
-            hashBuilder.Append(request.BankParameters["terminalId"]);
+            hashBuilder.Append(form["clientid"].FirstOrDefault());
             hashBuilder.Append(form["oid"].FirstOrDefault());
             hashBuilder.Append(form["authcode"].FirstOrDefault());
             hashBuilder.Append(form["procreturncode"].FirstOrDefault());
@@ -141,7 +141,10 @@ namespace ThreeDPayment.Providers
             hashBuilder.Append(form["rnd"].FirstOrDefault());
             hashBuilder.Append(request.BankParameters["storeKey"]);
 
-            var hashData = GetSHA1(hashBuilder.ToString());
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.GetEncoding("ISO-8859-9").GetBytes(hashBuilder.ToString()));
+            var hashData = Convert.ToBase64String(inputbytes);
+
             if (!form["HASH"].Equals(hashData))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
@@ -167,13 +170,17 @@ namespace ThreeDPayment.Providers
             string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
 
             //garanti bankasında tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
-            string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+            string amount = (request.TotalAmount * 100m).ToString("0.##", new CultureInfo("en-US"));//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
             string securityData = GetSHA1($"{cancelUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
             string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+
+            string installment = request.Installment.ToString();
+            if (request.Installment < 2)
+                installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
 
             string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
                                         <GVPSRequest>
@@ -197,7 +204,7 @@ namespace ThreeDPayment.Providers
                                             </Order>
                                             <Transaction>
                                                 <Type>void</Type>
-                                                <InstallmentCnt>{request.Installment}</InstallmentCnt>
+                                                <InstallmentCnt>{installment}</InstallmentCnt>
                                                 <Amount>{amount}</Amount>
                                                 <CurrencyCode>{request.CurrencyIsoCode}</CurrencyCode>
                                                 <CardholderPresentCode>0</CardholderPresentCode>
@@ -212,11 +219,12 @@ namespace ThreeDPayment.Providers
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
-            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
-                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "00" ||
-                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "0000")
+            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode")?.InnerText != "00")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText;
+
                 if (string.IsNullOrEmpty(errorMessage))
                     errorMessage = "Bankadan hata mesajı alınamadı.";
 
@@ -239,14 +247,18 @@ namespace ThreeDPayment.Providers
             //garanti terminal numarasını 9 haneye tamamlamak için başına sıfır eklenmesini istiyor.
             string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
 
-            //garanti tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
-            string amount = (request.TotalAmount * 100m).ToString("N");//virgülden sonraki sıfırlara gerek yok
+            //garanti bankasında tutar bilgisinde nokta, virgül gibi değerler istenmiyor. 1.10 TL'lik işlem 110 olarak gönderilmeli. Yani tutarı 100 ile çarpabiliriz.
+            string amount = (request.TotalAmount * 100m).ToString("0.##", new CultureInfo("en-US"));//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
             string securityData = GetSHA1($"{refundUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
             string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+
+            string installment = request.Installment.ToString();
+            if (request.Installment < 2)
+                installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
 
             string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
                                         <GVPSRequest>
@@ -270,7 +282,7 @@ namespace ThreeDPayment.Providers
                                             </Order>
                                             <Transaction>
                                                 <Type>refund</Type>
-                                                <InstallmentCnt>{request.Installment}</InstallmentCnt>
+                                                <InstallmentCnt>{installment}</InstallmentCnt>
                                                 <Amount>{amount}</Amount>
                                                 <CurrencyCode>{request.CurrencyIsoCode}</CurrencyCode>
                                                 <CardholderPresentCode>0</CardholderPresentCode>
@@ -285,11 +297,12 @@ namespace ThreeDPayment.Providers
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(responseContent);
 
-            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode") == null ||
-                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "00" ||
-                xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode").InnerText != "0000")
+            if (xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode")?.InnerText != "00")
             {
-                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText ?? string.Empty;
+                string errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ErrorMsg")?.InnerText;
+                if (string.IsNullOrEmpty(errorMessage))
+                    errorMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/SysErrMsg")?.InnerText;
+
                 if (string.IsNullOrEmpty(errorMessage))
                     errorMessage = "Bankadan hata mesajı alınamadı.";
 
@@ -365,13 +378,15 @@ namespace ThreeDPayment.Providers
             string transactionId = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
             string referenceNumber = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/RetrefNum")?.InnerText;
             string cardPrefix = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/CardNumberMasked")?.InnerText;
+            int.TryParse(cardPrefix, out int cardPrefixValue);
+
             string installment = xmlDocument.SelectSingleNode("GVPSResponse/Order/OrderInqResult/InstallmentCnt")?.InnerText ?? "0";
             string bankMessage = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/Message")?.InnerText;
             string responseCode = xmlDocument.SelectSingleNode("GVPSResponse/Transaction/Response/ReasonCode")?.InnerText;
 
             if (finalStatus.Equals("APPROVED", StringComparison.OrdinalIgnoreCase))
             {
-                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefix, int.Parse(installment), 0, bankMessage, responseCode);
+                return PaymentDetailResult.PaidResult(transactionId, referenceNumber, cardPrefixValue.ToString(), int.Parse(installment), 0, bankMessage, responseCode);
             }
             else if (finalStatus.Equals("VOID", StringComparison.OrdinalIgnoreCase))
             {
@@ -390,20 +405,6 @@ namespace ThreeDPayment.Providers
             return PaymentDetailResult.FailedResult(bankErrorMessage, responseCode, errorMessage);
         }
 
-        private string GetSHA1(string text)
-        {
-            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
-
-            var builder = new StringBuilder();
-            for (int i = 0; i < inputbytes.Length; i++)
-            {
-                builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
-            }
-
-            return builder.ToString().ToUpper();
-        }
-
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
             { "terminalUserId", "1" },
@@ -416,6 +417,20 @@ namespace ThreeDPayment.Providers
             { "gatewayUrl", "https://sanalposprov.garanti.com.tr/VPServlet" },
             { "verifyUrl", "https://sanalposprov.garanti.com.tr/VPServlet" }
         };
+
+        private string GetSHA1(string text)
+        {
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.GetEncoding("ISO-8859-9").GetBytes(text));
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < inputbytes.Length; i++)
+            {
+                builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
+            }
+
+            return builder.ToString().ToUpper();
+        }
 
         private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
     }

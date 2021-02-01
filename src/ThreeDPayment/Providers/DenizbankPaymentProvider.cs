@@ -247,15 +247,6 @@ namespace ThreeDPayment.Providers
             return PaymentDetailResult.PaidResult(responseParams["TransId"], responseParams["TransId"]);
         }
 
-        private string GetSHA1(string text)
-        {
-            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
-            var hashData = Convert.ToBase64String(inputbytes);
-
-            return hashData;
-        }
-
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
             { "shopCode", "" },
@@ -267,5 +258,14 @@ namespace ThreeDPayment.Providers
             { "userPass", "" },
             { "verifyUrl", "https://spos.denizbank.com/mpi/Default.aspx" }
         };
+
+        private string GetSHA1(string text)
+        {
+            var cryptoServiceProvider = new SHA1CryptoServiceProvider();
+            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var hashData = Convert.ToBase64String(inputbytes);
+
+            return hashData;
+        }
     }
 }

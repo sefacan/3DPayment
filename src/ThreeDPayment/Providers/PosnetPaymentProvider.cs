@@ -169,7 +169,7 @@ namespace ThreeDPayment.Providers
                                              <hostLogKey>{request.ReferenceNumber.Split('-').First().Trim()}</hostLogKey>");
 
             //taksitli işlemde 6 haneli auth kodu isteniyor
-            if (request.Installment > 0)
+            if (request.Installment > 1)
                 xmlBuilder.Append($"<authCode>{request.ReferenceNumber.Split('-').Last().Trim()}</authCode>");
 
             xmlBuilder.Append(@"</reverse>
@@ -289,8 +289,10 @@ namespace ThreeDPayment.Providers
             string referenceNumber = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/hostLogKey")?.InnerText;
             string authCode = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/authCode")?.InnerText;
             string cardPrefix = xmlDocument.SelectSingleNode("posnetResponse/transactions/transaction/ccno")?.InnerText;
+            int.TryParse(cardPrefix, out int cardPrefixValue);
 
-            return PaymentDetailResult.PaidResult(transactionId, $"{referenceNumber}-{authCode}", cardPrefix, bankMessage: bankMessage, responseCode: responseCode);
+            var refNumber = $"{referenceNumber}-{authCode}";
+            return PaymentDetailResult.PaidResult(transactionId, refNumber, cardPrefixValue.ToString(), bankMessage: bankMessage, responseCode: responseCode);
         }
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
@@ -302,7 +304,7 @@ namespace ThreeDPayment.Providers
             { "gatewayUrl", "https://posnettest.yapikredi.com.tr/PosnetWebService/XML" }
         };
 
-        private static readonly IDictionary<string, string> CurrencyCodes = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> CurrencyCodes = new Dictionary<string, string>
         {
             { "949", "TL" },
             { "840", "USD" },
