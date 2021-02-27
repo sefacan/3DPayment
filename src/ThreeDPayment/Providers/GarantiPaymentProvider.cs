@@ -27,6 +27,9 @@ namespace ThreeDPayment.Providers
         {
             try
             {
+                System.Text.EncodingProvider provider = System.Text.CodePagesEncodingProvider.Instance;
+                Encoding.RegisterProvider(provider);
+
                 string terminalId = request.BankParameters["terminalId"];
                 string terminalUserId = request.BankParameters["terminalUserId"];
                 string terminalMerchantId = request.BankParameters["terminalMerchantId"];
