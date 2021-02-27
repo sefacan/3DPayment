@@ -46,7 +46,7 @@ namespace ThreeDPayment.Tests
                 CurrencyIsoCode = "949",
                 LanguageIsoCode = "tr",
                 OrderNumber = Guid.NewGuid().ToString(),
-                BankName = BankNames.IsBankasi,
+                BankName = BankNames.DenizBank,
                 BankParameters = provider.TestParameters,
                 CallbackUrl = new Uri("https://google.com")
             });
