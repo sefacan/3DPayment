@@ -195,6 +195,9 @@ namespace ThreeDPayment.Providers
 
         private string CreateHash(string merchantId, string merchantOrderId, string amount, string okUrl, string failUrl, string userName, string password)
         {
+            var provider = CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(provider);
+
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
             var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
             var hashedPassword = Convert.ToBase64String(inputbytes);

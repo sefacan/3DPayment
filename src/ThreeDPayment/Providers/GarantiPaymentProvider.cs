@@ -27,9 +27,6 @@ namespace ThreeDPayment.Providers
         {
             try
             {
-                System.Text.EncodingProvider provider = System.Text.CodePagesEncodingProvider.Instance;
-                Encoding.RegisterProvider(provider);
-
                 string terminalId = request.BankParameters["terminalId"];
                 string terminalUserId = request.BankParameters["terminalUserId"];
                 string terminalMerchantId = request.BankParameters["terminalMerchantId"];
@@ -423,6 +420,9 @@ namespace ThreeDPayment.Providers
 
         private string GetSHA1(string text)
         {
+            var provider = CodePagesEncodingProvider.Instance;
+            Encoding.RegisterProvider(provider);
+
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
             var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.GetEncoding("ISO-8859-9").GetBytes(text));
 
