@@ -29,11 +29,11 @@ namespace ThreeDPayment.Tests
         [InlineData(203)]
         public void PaymentProviderFactory_CreateProvider_ByBank(int bankId)
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create((BankNames)bankId);
 
             //NestPay
@@ -83,24 +83,24 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreatePaymentForm_EmptyParameters_ThrowNullException()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             Assert.Throws<ArgumentNullException>(() => paymentProviderFactory.CreatePaymentFormHtml(null, new Uri("https://google.com")));
         }
 
         [Fact]
         public void PaymentProviderFactory_CreatePaymentForm_PaymentUri_ThrowNullException()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            Dictionary<string, object> parameters = new();
             parameters.Add("test", decimal.Zero);
             parameters.Add("test-1", int.MaxValue);
             parameters.Add("test-2", int.MinValue);

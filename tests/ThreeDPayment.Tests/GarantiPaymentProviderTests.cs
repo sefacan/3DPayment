@@ -12,11 +12,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreateGarantiPaymentProvider()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
 
             Assert.IsType<GarantiPaymentProvider>(provider);
@@ -25,11 +25,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Garanti_GetPaymentParameterResult_Success()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
 
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
@@ -57,11 +57,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Garanti_GetPaymentParameterResult_UnSuccess()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);

@@ -16,11 +16,11 @@ namespace ThreeDPayment.Providers
 {
     public class GarantiPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public GarantiPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -89,10 +89,10 @@ namespace ThreeDPayment.Providers
                 string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
 
                 //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-                string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+                string securityData = GetSha1($"{terminalProvPassword}{_terminalid}");
                 hashBuilder.Append(securityData);
 
-                var hashData = GetSHA1(hashBuilder.ToString());
+                var hashData = GetSha1(hashBuilder.ToString());
                 parameters.Add("secure3dhash", hashData);
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
@@ -118,7 +118,7 @@ namespace ThreeDPayment.Providers
 
             var response = form["response"];
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
-            if (!mdStatusCodes.Contains(mdStatus))
+            if (!MdStatusCodes.Contains(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mderrormessage"]}", form["procreturncode"]));
             }
@@ -173,10 +173,10 @@ namespace ThreeDPayment.Providers
             string amount = (request.TotalAmount * 100m).ToString("0.##", new CultureInfo("en-US"));//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-            string securityData = GetSHA1($"{cancelUserPassword}{_terminalid}");
+            string securityData = GetSha1($"{cancelUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
-            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+            string hashstr = GetSha1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
 
             string installment = request.Installment.ToString();
             if (request.Installment < 2)
@@ -213,7 +213,7 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -251,10 +251,10 @@ namespace ThreeDPayment.Providers
             string amount = (request.TotalAmount * 100m).ToString("0.##", new CultureInfo("en-US"));//virgülden sonraki sıfırlara gerek yok
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-            string securityData = GetSHA1($"{refundUserPassword}{_terminalid}");
+            string securityData = GetSha1($"{refundUserPassword}{_terminalid}");
 
             //ilgili veriler birleştirilip hash oluşturuluyor
-            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+            string hashstr = GetSha1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
 
             string installment = request.Installment.ToString();
             if (request.Installment < 2)
@@ -291,7 +291,7 @@ namespace ThreeDPayment.Providers
                                             </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -326,12 +326,12 @@ namespace ThreeDPayment.Providers
             string _terminalid = string.Format("{0:000000000}", int.Parse(terminalId));
 
             //provizyon şifresi ve 9 haneli terminal numarasının birleşimi ile bir hash oluşturuluyor
-            string securityData = GetSHA1($"{terminalProvPassword}{_terminalid}");
+            string securityData = GetSha1($"{terminalProvPassword}{_terminalid}");
 
             string amount = "100";//sabit 100 gönderin dediler. Yani 1 TL.
 
             //ilgili veriler birleştirilip hash oluşturuluyor
-            string hashstr = GetSHA1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
+            string hashstr = GetSha1($"{request.OrderNumber}{terminalId}{amount}{securityData}");
 
             string requestXml = $@"<?xml version=""1.0"" encoding=""utf-8""?>
                                         <GVPSRequest>
@@ -368,7 +368,7 @@ namespace ThreeDPayment.Providers
                                            </Transaction>
                                         </GVPSRequest>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -418,23 +418,23 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://sanalposprov.garanti.com.tr/VPServlet" }
         };
 
-        private string GetSHA1(string text)
+        private static string GetSha1(string text)
         {
             var provider = CodePagesEncodingProvider.Instance;
             Encoding.RegisterProvider(provider);
 
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.GetEncoding("ISO-8859-9").GetBytes(text));
+            var inputBytes = cryptoServiceProvider.ComputeHash(Encoding.GetEncoding("ISO-8859-9").GetBytes(text));
 
             var builder = new StringBuilder();
-            for (int i = 0; i < inputbytes.Length; i++)
+            for (int i = 0; i < inputBytes.Length; i++)
             {
-                builder.Append(string.Format("{0,2:x}", inputbytes[i]).Replace(" ", "0"));
+                builder.Append(string.Format("{0,2:x}", inputBytes[i]).Replace(" ", "0"));
             }
 
             return builder.ToString().ToUpper();
         }
 
-        private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
+        private static readonly string[] MdStatusCodes = { "1", "2", "3", "4" };
     }
 }

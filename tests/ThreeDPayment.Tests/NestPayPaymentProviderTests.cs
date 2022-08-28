@@ -22,11 +22,11 @@ namespace ThreeDPayment.Tests
         [InlineData(59)]
         public void PaymentProviderFactory_CreateNestPayPaymentProvider(int bankId)
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create((BankNames)bankId);
 
             Assert.IsType<NestPayPaymentProvider>(provider);
@@ -35,11 +35,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task NestPay_GetPaymentParameterResult_Success()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.IsBankasi);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
@@ -67,11 +67,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task NestPay_GetPaymentParameterResult_UnSuccess()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.IsBankasi);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);

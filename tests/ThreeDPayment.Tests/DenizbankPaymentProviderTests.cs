@@ -12,11 +12,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreateDenizbankPaymentProvider()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.DenizBank);
 
             Assert.IsType<DenizbankPaymentProvider>(provider);
@@ -25,11 +25,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Denizbank_GetPaymentParameterResult_Success()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.DenizBank);
 
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(new PaymentGatewayRequest
@@ -57,11 +57,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Denizbank_GetPaymentParameterResult_UnSuccess()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.DenizBank);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);

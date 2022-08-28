@@ -14,11 +14,11 @@ namespace ThreeDPayment.Providers
 {
     public class FinansbankPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public FinansbankPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -120,7 +120,7 @@ namespace ThreeDPayment.Providers
                                         <Lang>{request.LanguageIsoCode.ToUpper()}</Lang>
                                     </PayforIptal>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -165,7 +165,7 @@ namespace ThreeDPayment.Providers
                                         <Lang>{request.LanguageIsoCode.ToUpper()}</Lang>
                                     </PayforIade>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();

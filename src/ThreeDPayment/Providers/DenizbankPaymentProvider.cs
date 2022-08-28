@@ -16,11 +16,11 @@ namespace ThreeDPayment.Providers
 {
     public class DenizbankPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public DenizbankPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -83,7 +83,7 @@ namespace ThreeDPayment.Providers
                 hashBuilder.Append(random);
                 hashBuilder.Append(storeKey);
 
-                var hashData = GetSHA1(hashBuilder.ToString());
+                var hashData = GetSha1(hashBuilder.ToString());
                 parameters.Add("Hash", hashData);//hash data
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
@@ -134,7 +134,7 @@ namespace ThreeDPayment.Providers
             hashBuilder.Append(form["mdStatus"].FirstOrDefault());
             hashBuilder.Append(request.BankParameters["storeKey"]);
 
-            var hashData = GetSHA1(hashBuilder.ToString());
+            var hashData = GetSha1(hashBuilder.ToString());
             if (!form["HASH"].Equals(hashData))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
@@ -167,7 +167,7 @@ namespace ThreeDPayment.Providers
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
             formBuilder.Append("MOTO=0");
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
@@ -201,7 +201,7 @@ namespace ThreeDPayment.Providers
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
             formBuilder.Append("MOTO=0");
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
@@ -232,7 +232,7 @@ namespace ThreeDPayment.Providers
             formBuilder.Append("SecureType=NonSecure&");
             formBuilder.AppendFormat("Lang={0}&", request.LanguageIsoCode.ToUpper());
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(formBuilder.ToString(), Encoding.UTF8, "application/x-www-form-urlencoded"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(responseContent))
@@ -259,11 +259,11 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://spos.denizbank.com/mpi/Default.aspx" }
         };
 
-        private string GetSHA1(string text)
+        private static string GetSha1(string text)
         {
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
-            var hashData = Convert.ToBase64String(inputbytes);
+            var inputBytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var hashData = Convert.ToBase64String(inputBytes);
 
             return hashData;
         }

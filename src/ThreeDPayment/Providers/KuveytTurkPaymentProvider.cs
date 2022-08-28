@@ -15,11 +15,11 @@ namespace ThreeDPayment.Providers
 {
     public class KuveytTurkPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public KuveytTurkPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public async Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -40,7 +40,7 @@ namespace ThreeDPayment.Providers
                     installment = string.Empty;//0 veya 1 olması durumunda taksit bilgisini boş gönderiyoruz
 
                 //merchantId, merchantOrderId, amount, okUrl, failUrl, userName and password
-                var hashData = CreateHash(merchantId, merchantOrderId, amount, request.CallbackUrl.ToString(), request.CallbackUrl.ToString(), userName, password);
+                var hashData = GetSha1(merchantId, merchantOrderId, amount, request.CallbackUrl.ToString(), request.CallbackUrl.ToString(), userName, password);
 
                 var requestXml = $@"<KuveytTurkVPosMessage
                     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -69,7 +69,7 @@ namespace ThreeDPayment.Providers
                         </KuveytTurkVPosMessage>";
 
                 //send request
-                var response = await client.PostAsync(request.BankParameters["gatewayUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+                var response = await _client.PostAsync(request.BankParameters["gatewayUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
                 string responseContent = await response.Content.ReadAsStringAsync();
 
                 //failed
@@ -149,7 +149,7 @@ namespace ThreeDPayment.Providers
                         </KuveytTurkVPosMessage>";
 
             //send request
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
             responseContent = HttpUtility.UrlDecode(responseContent);
 
@@ -193,19 +193,19 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://boatest.kuveytturk.com.tr/boa.virtualpos.services/Home/ThreeDModelProvisionGate" }
         };
 
-        private string CreateHash(string merchantId, string merchantOrderId, string amount, string okUrl, string failUrl, string userName, string password)
+        private static string GetSha1(string merchantId, string merchantOrderId, string amount, string okUrl, string failUrl, string userName, string password)
         {
             var provider = CodePagesEncodingProvider.Instance;
             Encoding.RegisterProvider(provider);
 
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
-            var hashedPassword = Convert.ToBase64String(inputbytes);
+            var inputBytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var hashedPassword = Convert.ToBase64String(inputBytes);
 
-            var hashstr = $"{merchantId}{merchantOrderId}{amount}{okUrl}{failUrl}{userName}{hashedPassword}";
-            var hashbytes = Encoding.GetEncoding("ISO-8859-9").GetBytes(hashstr);
+            var hashString = $"{merchantId}{merchantOrderId}{amount}{okUrl}{failUrl}{userName}{hashedPassword}";
+            var hashBytes = Encoding.GetEncoding("ISO-8859-9").GetBytes(hashString);
 
-            return Convert.ToBase64String(cryptoServiceProvider.ComputeHash(hashbytes));
+            return Convert.ToBase64String(cryptoServiceProvider.ComputeHash(hashBytes));
         }
 
         private class VPosTransactionResponseContract

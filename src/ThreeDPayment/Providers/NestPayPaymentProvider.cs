@@ -15,11 +15,11 @@ namespace ThreeDPayment.Providers
 {
     public class NestPayPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public NestPayPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -85,7 +85,7 @@ namespace ThreeDPayment.Providers
                 hashBuilder.Append(random);
                 hashBuilder.Append(storeKey);
 
-                var hashData = GetSHA1(hashBuilder.ToString());
+                var hashData = GetSha1(hashBuilder.ToString());
                 parameters.Add("hash", hashData);//hash data
 
                 return Task.FromResult(PaymentGatewayResult.Successed(parameters, request.BankParameters["gatewayUrl"]));
@@ -111,7 +111,7 @@ namespace ThreeDPayment.Providers
 
             var response = form["Response"].ToString();
             //mdstatus 1,2,3 veya 4 olursa 3D doğrulama geçildi anlamına geliyor
-            if (!mdStatusCodes.Contains(mdStatus))
+            if (!MdStatusCodes.Contains(mdStatus))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed($"{response} - {form["mdErrorMsg"]}", form["ProcReturnCode"]));
             }
@@ -134,7 +134,7 @@ namespace ThreeDPayment.Providers
             hashBuilder.Append(form["rnd"].FirstOrDefault());
             hashBuilder.Append(request.BankParameters["storeKey"]);
 
-            var hashData = GetSHA1(hashBuilder.ToString());
+            var hashData = GetSha1(hashBuilder.ToString());
             if (!form["HASH"].Equals(hashData))
             {
                 return Task.FromResult(VerifyGatewayResult.Failed("Güvenlik imza doğrulaması geçersiz."));
@@ -163,7 +163,7 @@ namespace ThreeDPayment.Providers
                                       <OrderId>{request.OrderNumber}</OrderId>
                                     </CC5Request>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -208,7 +208,7 @@ namespace ThreeDPayment.Providers
                                       <OrderId>{request.OrderNumber}</OrderId>
                                     </CC5Request>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -255,7 +255,7 @@ namespace ThreeDPayment.Providers
                                         </Extra>
                                     </CC5Request>";
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new StringContent(requestXml, Encoding.UTF8, "text/xml"));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -304,15 +304,15 @@ namespace ThreeDPayment.Providers
             { "verifyUrl", "https://entegrasyon.asseco-see.com.tr/fim/api" }
         };
 
-        private string GetSHA1(string text)
+        private static string GetSha1(string text)
         {
             var cryptoServiceProvider = new SHA1CryptoServiceProvider();
-            var inputbytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
-            var hashData = Convert.ToBase64String(inputbytes);
+            var inputBytes = cryptoServiceProvider.ComputeHash(Encoding.UTF8.GetBytes(text));
+            var hashData = Convert.ToBase64String(inputBytes);
 
             return hashData;
         }
 
-        private static readonly string[] mdStatusCodes = new[] { "1", "2", "3", "4" };
+        private static readonly string[] MdStatusCodes = { "1", "2", "3", "4" };
     }
 }

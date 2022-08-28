@@ -15,11 +15,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreatePosNetPaymentProvider()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Yapikredi);
             Assert.IsType<PosnetPaymentProvider>(provider);
@@ -35,17 +35,17 @@ namespace ThreeDPayment.Tests
                                           	<approved>1</approved>
                                           	<respText>successed</respText>
                                           	<oosRequestDataResponse>
-                                                  <data1>345345FDGSFSDF</data1>  
-                                                  <data2>345345FDGSFSDF</data2>  
-                                                  <sign>345345FDGSFSDF</sign>  
+                                                  <data1>345345FDGSFSDF</data1>
+                                                  <data2>345345FDGSFSDF</data2>
+                                                  <sign>345345FDGSFSDF</sign>
                                             </oosRequestDataResponse>
                                           </posnetResponse>";
 
-            Mock<IHttpClientFactory> httpClientFactory = new Mock<IHttpClientFactory>();
-            FakeResponseHandler messageHandler = new FakeResponseHandler();
+            Mock<IHttpClientFactory> httpClientFactory = new();
+            FakeResponseHandler messageHandler = new();
             messageHandler.AddFakeResponse(new HttpResponseMessage(HttpStatusCode.OK), successResponseXml, true);
 
-            HttpClient httpClient = new HttpClient(messageHandler, false);
+            HttpClient httpClient = new(messageHandler, false);
             httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             IPaymentProvider provider = new PosnetPaymentProvider(httpClientFactory.Object);
@@ -74,11 +74,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task PosNet_GetPaymentResult_UnSuccess()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);

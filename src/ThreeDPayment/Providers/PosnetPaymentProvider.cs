@@ -14,11 +14,11 @@ namespace ThreeDPayment.Providers
 {
     public class PosnetPaymentProvider : IPaymentProvider
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         public PosnetPaymentProvider(IHttpClientFactory httpClientFactory)
         {
-            client = httpClientFactory.CreateClient();
+            _client = httpClientFactory.CreateClient();
         }
 
         public async Task<PaymentGatewayResult> ThreeDGatewayRequest(PaymentGatewayRequest request)
@@ -53,7 +53,7 @@ namespace ThreeDPayment.Providers
                 var httpParameters = new Dictionary<string, string>();
                 httpParameters.Add("xmldata", requestXml);
 
-                var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+                var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
                 string responseContent = await response.Content.ReadAsStringAsync();
 
                 var xmlDocument = new XmlDocument();
@@ -128,7 +128,7 @@ namespace ThreeDPayment.Providers
             var httpParameters = new Dictionary<string, string>();
             httpParameters.Add("xmldata", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -178,7 +178,7 @@ namespace ThreeDPayment.Providers
             var httpParameters = new Dictionary<string, string>();
             httpParameters.Add("xmldata", xmlBuilder.ToString());
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -221,7 +221,7 @@ namespace ThreeDPayment.Providers
             var httpParameters = new Dictionary<string, string>();
             httpParameters.Add("xmldata", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();
@@ -258,7 +258,7 @@ namespace ThreeDPayment.Providers
             var httpParameters = new Dictionary<string, string>();
             httpParameters.Add("xmldata", requestXml);
 
-            var response = await client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
+            var response = await _client.PostAsync(request.BankParameters["verifyUrl"], new FormUrlEncodedContent(httpParameters));
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var xmlDocument = new XmlDocument();

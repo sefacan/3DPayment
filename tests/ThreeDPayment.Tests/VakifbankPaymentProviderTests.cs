@@ -15,11 +15,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public void PaymentProviderFactory_CreateVakifbankPaymentProvider()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.VakifBank);
 
             Assert.IsType<VakifbankPaymentProvider>(provider);
@@ -42,11 +42,11 @@ namespace ThreeDPayment.Tests
                                           	<ErrorMessage></ErrorMessage>
                                           </IPaySecure>";
 
-            Mock<IHttpClientFactory> httpClientFactory = new Mock<IHttpClientFactory>();
-            FakeResponseHandler messageHandler = new FakeResponseHandler();
+            Mock<IHttpClientFactory> httpClientFactory = new();
+            FakeResponseHandler messageHandler = new();
             messageHandler.AddFakeResponse(new HttpResponseMessage(HttpStatusCode.OK), successResponseXml, true);
 
-            HttpClient httpClient = new HttpClient(messageHandler, false);
+            HttpClient httpClient = new(messageHandler, false);
             httpClientFactory.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
             IPaymentProvider provider = new VakifbankPaymentProvider(httpClientFactory.Object);
@@ -75,11 +75,11 @@ namespace ThreeDPayment.Tests
         [Fact]
         public async Task Vakifbank_GetPaymentParameterResult_UnSuccess()
         {
-            ServiceCollection serviceCollection = new ServiceCollection();
+            ServiceCollection serviceCollection = new();
             serviceCollection.AddHttpClient();
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            PaymentProviderFactory paymentProviderFactory = new PaymentProviderFactory(serviceProvider);
+            PaymentProviderFactory paymentProviderFactory = new(serviceProvider);
 
             IPaymentProvider provider = paymentProviderFactory.Create(BankNames.Garanti);
             var paymentGatewayResult = await provider.ThreeDGatewayRequest(null);
