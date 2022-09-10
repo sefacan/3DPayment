@@ -185,11 +185,11 @@ namespace ThreeDPayment.Providers
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
-            { "merchantId", "496" },
-            { "customerNumber", "400235" },
+            { "merchantId", "" },
+            { "customerNumber", "" },
             { "gatewayUrl", "https://boatest.kuveytturk.com.tr/boa.virtualpos.services/Home/ThreeDModelPayGate" },
-            { "userName", "apitest" },
-            { "password", "api123" },
+            { "userName", "" },
+            { "password", "" },
             { "verifyUrl", "https://boatest.kuveytturk.com.tr/boa.virtualpos.services/Home/ThreeDModelProvisionGate" }
         };
 
