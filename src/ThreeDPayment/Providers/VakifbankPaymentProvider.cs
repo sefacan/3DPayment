@@ -348,8 +348,8 @@ namespace ThreeDPayment.Providers
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
-            { "merchantId", "655500056" },
-            { "merchantPassword", "123456" },
+            { "merchantId", "" },
+            { "merchantPassword", "" },
             { "enrollmentUrl", "https://3dsecuretest.vakifbank.com.tr/MPIAPI/MPI_Enrollment.aspx" },
             { "verifyUrl", "https://onlineodemetest.vakifbank.com.tr:4443/UIService/TransactionSearchOperations.asmx" }
         };
