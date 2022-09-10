@@ -294,13 +294,13 @@ namespace ThreeDPayment.Providers
 
         public Dictionary<string, string> TestParameters => new Dictionary<string, string>
         {
-            { "clientId", "700655000200" },
+            { "clientId", "" },
             { "processType", "Auth" },
-            { "storeKey", "TRPS0200" },
+            { "storeKey", "" },
             { "storeType", "3D_PAY" },
             { "gatewayUrl", "https://entegrasyon.asseco-see.com.tr/fim/est3Dgate" },
-            { "userName", "ISBANKAPI" },
-            { "password", "ISBANK07" },
+            { "userName", "" },
+            { "password", "" },
             { "verifyUrl", "https://entegrasyon.asseco-see.com.tr/fim/api" }
         };
 
