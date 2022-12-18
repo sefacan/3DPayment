@@ -7,8 +7,8 @@
     <AssemblyName>ThreeDPayment</AssemblyName>
     <RootNamespace>ThreeDPayment</RootNamespace>
     <Copyright>2020 sefacan.net</Copyright>
-    <RepositoryUrl>https://github.com/sefacan/3DPaymentAspNetCore</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/sefacan/3DPaymentAspNetCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sefacan/3DPayment</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/sefacan/3DPayment</PackageProjectUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Sefa Can</Authors>
     <Company>sefacan.net</Company>
