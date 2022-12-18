@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 namespace ThreeDPayment.Sample.Domains
 {
     public abstract class BaseEntity

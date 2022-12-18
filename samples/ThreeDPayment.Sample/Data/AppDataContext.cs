@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 using Microsoft.EntityFrameworkCore;
 using ThreeDPayment.Sample.Domains;
 

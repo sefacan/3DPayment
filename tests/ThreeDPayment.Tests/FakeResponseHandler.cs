@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
