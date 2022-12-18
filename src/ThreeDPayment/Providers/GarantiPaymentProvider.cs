@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;

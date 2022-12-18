@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 namespace ThreeDPayment.Results
 {
     public class CancelPaymentResult
