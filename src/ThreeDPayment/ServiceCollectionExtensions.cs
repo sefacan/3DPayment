@@ -1,3 +1,7 @@
+/*
+   Support: fsefacan@gmail.com
+*/
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ThreeDPayment
